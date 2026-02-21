@@ -1,0 +1,126 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.Banner>
+
+@{
+    ViewData["Title"] = "Quản lý Banner";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; // Đảm bảo đúng tên Layout Admin của bạn
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h3 class="fw-bold text-primary text-uppercase"><i class="bi bi-images me-2"></i>Quản lý Banner</h3>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Thêm Banner mới
+        </a>
+    </div>
+
+    @* --- HIỂN THỊ THÔNG BÁO TEMP DATA (BASE CONTROLLER) --- *@
+    @if (TempData["AlertMessage"] != null)
+    {
+        <div class="alert @TempData["AlertType"] alert-dismissible fade show shadow-sm border-0 border-start border-4" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i> @TempData["AlertMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow mb-4 border-0">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách Banner quảng cáo</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" width="5%">TT</th>
+                            <th class="text-center" width="20%">Hình ảnh</th>
+                            <th>Tiêu đề</th>
+                            <th>Link liên kết</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="text-center" width="10%">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center fw-bold">@item.ThuTu</td>
+                                    <td class="text-center">
+                                        @if (!string.IsNullOrEmpty(item.Anh))
+                                        {
+                                            // 1. Khởi tạo biến ảnh
+                                            string imgUrl = item.Anh;
+
+                                            // 2. Kiểm tra logic:
+                                            // Nếu KHÔNG bắt đầu bằng "http" (ảnh online) VÀ KHÔNG bắt đầu bằng "/" (đường dẫn tuyệt đối)
+                                            // Thì mới nối thêm đường dẫn thư mục local "~/Image/Banner/"
+                                            if (!imgUrl.StartsWith("http") && !imgUrl.StartsWith("/"))
+                                            {
+                                                imgUrl = Url.Content("~/Image/Banner/" + imgUrl);
+                                            }
+
+                                            // 3. Hiển thị ảnh
+                                            <img src="@imgUrl"
+                                                 alt="@item.TieuDe"
+                                                 class="img-thumbnail shadow-sm"
+                                                 style="max-height: 80px; width: auto; object-fit: cover;"
+                                                 onerror="this.src='/images/no-image.png'" />
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted fst-italic small">Không có ảnh</span>
+                                            }
+                                    </td>
+                                    <td class="fw-semibold">@item.TieuDe</td>
+                                    <td class="small">
+                                        <a href="@item.Link" target="_blank" class="text-decoration-none">
+                                            @item.Link <i class="bi bi-box-arrow-up-right ms-1" style="font-size: 10px;"></i>
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.IsActive == true)
+                                        {
+                                            <span class="badge bg-success border border-success rounded-pill px-3">Hiển thị</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary rounded-pill px-3">Ẩn</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            @* Form xóa dùng Tag Helper *@
+                                            <a asp-action="Details" asp-route-id="@item.BannerId" class="btn btn-outline-info btn-sm rounded-circle" title="Xem chi tiết">
+                                                <i class="bi bi-info-circle"></i>
+                                            </a>
+
+                                            <a asp-action="Edit" asp-route-id="@item.BannerId" class="btn btn-outline-warning btn-sm rounded-circle" title="Cập nhật">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form asp-action="Delete" asp-route-id="@item.BannerId" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa Banner này không? Hành động này không thể hoàn tác!');">
+                                                @* AntiForgeryToken tự động được thêm bởi Form Tag Helper trong Core *@
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle" title="Xóa">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="bi bi-inbox display-4 d-block mb-3 opacity-25"></i>
+                                    Chưa có dữ liệu banner nào.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

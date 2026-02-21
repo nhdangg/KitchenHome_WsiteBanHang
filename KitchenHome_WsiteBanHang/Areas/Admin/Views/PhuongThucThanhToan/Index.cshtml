@@ -1,0 +1,73 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.PhuongThucThanhToan>
+
+@{
+    ViewData["Title"] = "Phương thức thanh toán";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold text-primary">Phương thức thanh toán</h4>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Thêm mới
+    </a>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th style="width:60px">#</th>
+            <th>Mã</th>
+            <th>Tên phương thức</th>
+            <th style="width:120px" class="text-center">Trạng thái</th>
+            <th style="width:180px" class="text-center">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int stt = 1;
+        }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="text-center">@stt</td>
+                <td><span class="badge bg-secondary">@item.MaPhuongThuc</span></td>
+                <td>@item.TenPhuongThuc</td>
+                <td class="text-center">
+                    @if (item.DangHoatDong)
+                    {
+                        <span class="badge bg-success">Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Tạm tắt</span>
+                    }
+                </td>
+                <td class="text-center">
+                    <a asp-action="Edit" asp-route-id="@item.PhuongThucId"
+                       class="btn btn-sm btn-warning">
+                        Sửa
+                    </a>
+
+                    <form asp-action="Toggle" asp-route-id="@item.PhuongThucId"
+                          method="post" class="d-inline">
+                        <button type="submit"
+                                class="btn btn-sm btn-secondary">
+                            @(item.DangHoatDong ? "Tắt" : "Bật")
+                        </button>
+                    </form>
+
+                    <a asp-action="Delete" asp-route-id="@item.PhuongThucId"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Bạn có chắc muốn xóa?');">
+                        Xóa
+                    </a>
+                </td>
+            </tr>
+            stt++;
+        }
+    </tbody>
+</table>

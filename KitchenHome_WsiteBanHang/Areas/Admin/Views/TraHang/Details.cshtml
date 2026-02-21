@@ -1,0 +1,145 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TraHang
+
+@{
+    ViewData["Title"] = "Chi tiết yêu cầu trả hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary text-uppercase mb-0">
+            <i class="bi bi-file-earmark-break me-2"></i>Chi tiết yêu cầu trả hàng
+        </h3>
+        <a asp-action="Index" class="btn btn-outline-secondary px-3 shadow-sm rounded-pill">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-3 mb-4 overflow-hidden">
+                <div class="card-header bg-dark text-white py-3">
+                    <h6 class="fw-bold mb-0 text-uppercase small">
+                        <i class="bi bi-info-circle me-2"></i>Thông tin phiếu: @Model.MaTraHang
+                    </h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3 border-bottom pb-2">
+                        <label class="text-muted small fw-bold text-uppercase d-block">Đơn hàng gốc</label>
+                        <span class="text-primary fw-bold fs-5">#@Model.DonHang.MaDonHang</span>
+                    </div>
+
+                    <div class="mb-3 border-bottom pb-2">
+                        <label class="text-muted small fw-bold text-uppercase d-block">Trạng thái hiện tại</label>
+                        @switch (Model.TrangThai)
+                        {
+                            case "YEU_CAU":
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill mt-1">
+                                    <i class="bi bi-clock-history me-1"></i> Đang chờ xử lý
+                                </span>
+                                break;
+                            case "HOAN_TAT":
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill mt-1">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Đã hoàn tất
+                                </span>
+                                break;
+                            default:
+                                <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 rounded-pill mt-1">@Model.TrangThai</span>
+                                break;
+                        }
+                    </div>
+
+                    <div class="mb-3 border-bottom pb-2">
+                        <label class="text-muted small fw-bold text-uppercase d-block">Ngày tạo phiếu</label>
+                        <span class="text-dark"><i class="bi bi-calendar3 me-2"></i>@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+
+                    <div class="mb-3 border-bottom pb-2">
+                        <label class="text-muted small fw-bold text-uppercase d-block">Tổng tiền hoàn trả</label>
+                        <span class="text-danger fw-bold fs-4">@Model.SoTienDuKienHoan.ToString("N0") <small>đ</small></span>
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="text-muted small fw-bold text-uppercase d-block">Lý do hoàn trả</label>
+                        <div class="p-3 bg-light rounded mt-2 fst-italic text-secondary border-start border-3 border-secondary">
+                            "@(Model.LyDo ?? "Không có lý do cụ thể")"
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* NÚT THAO TÁC XÁC NHẬN *@
+            @if (Model.TrangThai == "YEU_CAU")
+            {
+                <div class="card shadow-sm border-0 rounded-3 border-top border-4 border-success">
+                    <div class="card-body p-4 text-center">
+                        <p class="small text-muted mb-3">Sau khi kiểm tra hàng trả về, hãy bấm nút dưới đây để nhập kho và kết thúc phiếu.</p>
+                        <form asp-action="HoanTat" asp-route-id="@Model.TraHangId" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-bold shadow-sm" 
+                                    onclick="return confirm('Xác nhận đã nhận lại hàng, nhập lại kho và hoàn tiền cho khách?')">
+                                <i class="bi bi-check-circle-fill me-2"></i>XÁC NHẬN HOÀN TẤT
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark text-uppercase small">
+                        <i class="bi bi-box-seam me-2 text-primary"></i>Danh sách sản phẩm trả về
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-secondary">
+                                <tr>
+                                    <th class="ps-4">Sản phẩm</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-end">Đơn giá hoàn</th>
+                                    <th class="text-end pe-4">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ct in Model.ChiTietTraHangs)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold text-dark">@ct.BienThe?.SanPham?.TenSanPham</div>
+                                            <div class="text-muted small">Phân loại: @ct.BienThe?.TenBienThe</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-light text-dark border px-3">@ct.SoLuong</span>
+                                        </td>
+                                        <td class="text-end text-muted">@ct.DonGiaHoan.ToString("N0") <small>đ</small></td>
+                                        <td class="text-end fw-bold text-danger pe-4">
+                                            @( (ct.DonGiaHoan * ct.SoLuong).ToString("N0") ) <small>đ</small>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white py-3 text-end">
+                    <span class="text-muted me-2">Tổng cộng:</span>
+                    <span class="fs-5 fw-bold text-danger pe-3">@Model.SoTienDuKienHoan.ToString("N0") đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Đồng bộ với hệ thống Admin */
+    .bg-success-subtle { background-color: #d1e7dd !important; }
+    .bg-warning-subtle { background-color: #fff3cd !important; }
+    .bg-info-subtle { background-color: #cff4fc !important; }
+    .table thead th { font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+</style>

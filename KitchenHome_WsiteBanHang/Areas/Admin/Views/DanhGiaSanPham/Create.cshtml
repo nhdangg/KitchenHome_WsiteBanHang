@@ -1,0 +1,147 @@
+﻿@model KitchenHome_WsiteBanHang.Models.DanhGiaSanPham
+
+@{
+    ViewData["Title"] = "Thêm đánh giá mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+    /* Style bẫy lỗi đồng bộ */
+    .input-validation-error {
+        border: 1px solid #dc3545 !important;
+        background-color: rgba(220, 53, 69, 0.02);
+    }
+
+    .field-validation-error {
+        font-size: 0.85rem;
+        color: #dc3545;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .star-item:hover {
+        transform: scale(1.2);
+        transition: 0.15s;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary text-uppercase mb-0">
+            <i class="bi bi-plus-circle me-2"></i>Thêm đánh giá mới
+        </h3>
+        <a asp-action="Index" class="btn btn-outline-secondary px-3 shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post" id="createForm">
+                        @Html.AntiForgeryToken()
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger border-0 shadow-sm mb-4">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong>Lỗi dữ liệu!</strong> Vui lòng kiểm tra lại các thông tin bên dưới.
+                                <div asp-validation-summary="ModelOnly" class="small mt-1"></div>
+                            </div>
+                        }
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Sản phẩm <span class="text-danger">*</span></label>
+                                <select asp-for="SanPhamId" class="form-select shadow-none" asp-items="ViewBag.SanPhamId">
+                                    <option value="">-- Chọn sản phẩm --</option>
+                                </select>
+                                <span asp-validation-for="SanPhamId"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Khách hàng</label>
+                                <select asp-for="KhachHangId" class="form-select shadow-none" asp-items="ViewBag.KhachHangId">
+                                    <option value="">-- Khách vãng lai --</option>
+                                </select>
+                                <span asp-validation-for="KhachHangId"></span>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <label class="form-label fw-bold d-block mb-1">Mức độ hài lòng</label>
+                                <div class="star-rating fs-2 text-warning">
+                                    <input asp-for="SoSao" type="hidden" id="inputSoSao" value="@(Model?.SoSao ?? 5)" />
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi @(i <= (Model?.SoSao ?? 5) ? "bi-star-fill" : "bi-star") star-item cursor-pointer"
+                                           data-value="@i"></i>
+                                    }
+                                </div>
+                                <span asp-validation-for="SoSao"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="TieuDe" class="form-label fw-bold">Tiêu đề ngắn <span class="text-danger">*</span></label>
+                                <input asp-for="TieuDe" class="form-control shadow-none" placeholder="Ví dụ: Rất hài lòng, sản phẩm đẹp..." />
+                                <span asp-validation-for="TieuDe"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="NoiDung" class="form-label fw-bold">Nội dung chi tiết <span class="text-danger">*</span></label>
+                                <textarea asp-for="NoiDung" class="form-control shadow-none" rows="4" placeholder="Cảm nhận cụ thể của khách hàng về sản phẩm..."></textarea>
+                                <span asp-validation-for="NoiDung"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input cursor-pointer" type="checkbox" asp-for="HienThi">
+                                    <label class="form-check-label fw-bold ms-2" asp-for="HienThi">Cho phép hiển thị lên Website</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 text-muted opacity-25">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="reset" class="btn btn-light px-4 rounded-pill">Làm mới</button>
+                            <button type="submit" class="btn btn-success px-5 rounded-pill shadow-sm fw-bold">
+                                <i class="bi bi-check-lg me-1"></i> Lưu đánh giá
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.13/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.star-item').click(function () {
+                const val = $(this).data('value');
+                $('#inputSoSao').val(val);
+
+                $('.star-item').each(function () {
+                    const itemVal = $(this).data('value');
+                    if (itemVal <= val) {
+                        $(this).removeClass('bi-star').addClass('bi-star-fill');
+                    } else {
+                        $(this).removeClass('bi-star-fill').addClass('bi-star');
+                    }
+                });
+            });
+        });
+    </script>
+}

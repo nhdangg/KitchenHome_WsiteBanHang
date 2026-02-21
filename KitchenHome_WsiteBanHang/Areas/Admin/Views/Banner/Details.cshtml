@@ -1,0 +1,151 @@
+﻿@model KitchenHome_WsiteBanHang.Models.Banner
+
+@{
+    ViewData["Title"] = "Chi tiết Banner";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+
+    @* --- Header Section --- *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-primary text-uppercase mb-1">
+                <i class="bi bi-info-circle-fill me-2"></i>Chi tiết Banner
+            </h4>
+            <span class="text-muted small">Xem thông tin chi tiết và cấu hình hiển thị của banner</span>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @* --- Cột Trái: Hình ảnh Banner --- *@
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100 rounded-3 overflow-hidden">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="m-0 fw-bold text-primary"><i class="bi bi-image me-2"></i>Hình ảnh hiển thị</h6>
+                </div>
+
+                @* Phần hiển thị ảnh: Sử dụng nền caro (checkerboard) để dễ nhìn ảnh trong suốt *@
+                <div class="card-body p-0 d-flex align-items-center justify-content-center bg-light position-relative"
+                     style="min-height: 400px; background-image: linear-gradient(45deg, #e9ecef 25%, transparent 25%), linear-gradient(-45deg, #e9ecef 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e9ecef 75%), linear-gradient(-45deg, transparent 75%, #e9ecef 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;">
+
+                    @if (!string.IsNullOrEmpty(Model.Anh))
+                    {
+                        string imgUrl = Model.Anh;
+                        if (!imgUrl.StartsWith("http") && !imgUrl.StartsWith("/"))
+                        {
+                            imgUrl = Url.Content("~/Image/Banner/" + imgUrl);
+                        }
+
+                        <img src="@imgUrl"
+                             class="img-fluid shadow-lg rounded"
+                             alt="@Model.TieuDe"
+                             style="max-height: 350px; max-width: 95%; object-fit: contain;"
+                             onerror="this.src='/images/no-image.png'" />
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted opacity-50">
+                            <i class="bi bi-card-image display-1 mb-2"></i>
+                            <p class="mb-0">Không có hình ảnh</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* --- Cột Phải: Thông tin cấu hình --- *@
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100 rounded-3">
+                <div class="card-header bg-primary text-white py-3">
+                    <h6 class="m-0 fw-bold text-uppercase"><i class="bi bi-sliders me-2"></i>Thông tin cấu hình</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item px-0 d-flex justify-content-between align-items-center border-bottom-0 pb-1">
+                            <span class="text-muted small text-uppercase fw-bold">Tiêu đề</span>
+                        </li>
+                        <li class="list-group-item px-0 pt-0 pb-3 border-bottom">
+                            <h5 class="fw-bold text-dark mb-0">@Model.TieuDe</h5>
+                        </li>
+
+                        <li class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-bottom">
+                            <span class="text-muted">Thứ tự hiển thị</span>
+                            <span class="badge bg-light text-dark border fs-6">#@Model.ThuTu</span>
+                        </li>
+
+                        <li class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center border-bottom">
+                            <span class="text-muted">Trạng thái</span>
+                            @if (Model.IsActive == true)
+                            {
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Đang hiển thị
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary rounded-pill px-3">
+                                    <i class="bi bi-eye-slash-fill me-1"></i> Đang ẩn
+                                </span>
+                            }
+                        </li>
+
+                        <li class="list-group-item px-0 py-3 border-bottom-0">
+                            <span class="d-block text-muted mb-1">Link liên kết</span>
+                            @if (!string.IsNullOrEmpty(Model.Link))
+                            {
+                                <a href="@Model.Link" target="_blank" class="text-decoration-none d-block text-truncate text-primary bg-light p-2 rounded border">
+                                    <i class="bi bi-link-45deg me-1"></i> @Model.Link
+                                    <i class="bi bi-box-arrow-up-right ms-1 small text-muted"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic small bg-light p-2 rounded d-block border">Không có liên kết</span>
+                            }
+                        </li>
+                    </ul>
+
+                    @* --- Action Buttons --- *@
+                    <div class="d-grid gap-2 mt-auto">
+                        <a asp-action="Edit" asp-route-id="@Model.BannerId" class="btn btn-warning fw-bold text-dark shadow-sm">
+                            <i class="bi bi-pencil-square me-2"></i> Chỉnh sửa Banner
+                        </a>
+
+                        <button type="button" class="btn btn-outline-danger fw-bold" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="bi bi-trash me-2"></i> Xóa Banner này
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* --- Modal Xác nhận Xóa (An toàn & Chuyên nghiệp hơn confirm mặc định) --- *@
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title fw-bold" id="deleteModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Xác nhận xóa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3 text-danger opacity-25">
+                    <i class="bi bi-trash3-fill display-1"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Bạn có chắc chắn muốn xóa Banner này?</h5>
+                <p class="text-muted mb-0">Hành động này sẽ xóa vĩnh viễn banner <strong>"@Model.TieuDe"</strong> và không thể hoàn tác.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Hủy bỏ</button>
+                <form asp-action="Delete" asp-route-id="@Model.BannerId" method="post">
+                    <button type="submit" class="btn btn-danger px-4 fw-bold">Xóa ngay</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

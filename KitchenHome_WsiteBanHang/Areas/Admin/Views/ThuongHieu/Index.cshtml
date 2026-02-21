@@ -1,0 +1,248 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.ThuongHieu>
+
+@{
+    ViewData["Title"] = "Quản lý thương hiệu";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h3 class="fw-bold text-primary text-uppercase mb-0">
+            <i class="bi bi-award me-2"></i>Danh sách Thương hiệu
+        </h3>
+        <a asp-action="Create" class="btn btn-primary shadow-sm px-4">
+            <i class="bi bi-plus-lg me-1"></i> Thêm mới
+        </a>
+    </div>
+
+    @* --- BỘ LỌC VÀ TÌM KIẾM --- *@
+    <div class="card border-0 shadow-sm mb-4 rounded-3">
+        <div class="card-body p-3">
+            <form asp-action="Index" method="get" class="row g-3 align-items-center">
+
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="searchString" value="@ViewData["CurrentSearch"]"
+                               class="form-control bg-light border-start-0"
+                               placeholder="Nhập tên thương hiệu..." />
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <select name="countryFilter" class="form-select bg-light border-0 shadow-none">
+                        <option value="">-- Tất cả quốc gia --</option>
+                        @if (ViewBag.Countries != null)
+                        {
+                            foreach (var country in (List<string>)ViewBag.Countries)
+                            {
+                                if (ViewData["CurrentCountry"]?.ToString() == country)
+                                {
+                                    <option value="@country" selected>@country</option>
+                                }
+                                else
+                                {
+                                    <option value="@country">@country</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-filter me-1"></i> Lọc dữ liệu
+                    </button>
+                </div>
+
+                <div class="col-md-auto ms-auto">
+                    <a asp-action="Index" class="btn btn-outline-secondary border-0">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* --- HIỂN THỊ THÔNG BÁO --- *@
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 border-start border-success border-4" role="alert">
+            <i class="bi bi-check-circle me-2"></i> @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @* --- BẢNG DỮ LIỆU --- *@
+    <div class="card shadow-sm mb-4 border-0 rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small fw-bold text-uppercase">
+                        <tr>
+                            <th class="ps-4 py-3" width="5%">ID</th>
+                            <th width="25%">Tên thương hiệu</th>
+                            <th width="20%">Quốc gia</th>
+                            <th class="text-center" width="15%">Số lượng SP</th>
+                            <th class="text-center" width="15%">Trạng thái</th>
+                            <th class="text-end pe-4" width="20%">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 text-muted fw-bold">#@item.ThuongHieuId</td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@item.TenThuongHieu</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border fw-normal">
+                                            <i class="bi bi-geo-alt me-1 text-danger"></i>@(item.QuocGia ?? "N/A")
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info-subtle text-info px-3 rounded-pill">
+                                            @(item.SanPhams?.Count ?? 0) SP
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.DangHoatDong)
+                                        {
+                                            <span class="text-success" title="Đang hoạt động">
+                                                <i class="bi bi-check-circle-fill fs-5"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-secondary opacity-50" title="Ngừng hoạt động">
+                                                <i class="bi bi-x-circle-fill fs-5"></i>
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group shadow-sm rounded">
+                                            <a asp-action="Details" asp-route-id="@item.ThuongHieuId" class="btn btn-sm btn-white border" title="Chi tiết">
+                                                <i class="bi bi-eye text-info"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.ThuongHieuId" class="btn btn-sm btn-white border" title="Sửa">
+                                                <i class="bi bi-pencil-square text-warning"></i>
+                                            </a>
+                                            <form asp-action="Delete" asp-route-id="@item.ThuongHieuId" method="post" class="d-inline" onsubmit="return confirm('Xác nhận xóa thương hiệu @item.TenThuongHieu?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-white border" title="Xóa">
+                                                    <i class="bi bi-trash text-danger"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="bi bi-award fs-1 opacity-25 d-block mb-3"></i>
+                                        Không tìm thấy thương hiệu nào phù hợp.
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @* --- PHẦN PHÂN TRANG --- *@
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <div class="card-footer bg-white border-0 py-3">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-0">
+
+                                @* Nút Quay lại *@
+                                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link border-0 shadow-sm mx-1 rounded text-primary"
+                                       asp-action="Index"
+                                       asp-route-page="@(ViewBag.CurrentPage - 1)"
+                                       asp-route-searchString="@ViewData["CurrentSearch"]"
+                                       asp-route-countryFilter="@ViewData["CurrentCountry"]">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+
+                                @* Danh sách số trang *@
+                                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                {
+                                    <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                        <a class="page-link border-0 shadow-sm mx-1 rounded @(ViewBag.CurrentPage == i ? "" : "text-dark")"
+                                           asp-action="Index"
+                                           asp-route-page="@i"
+                                           asp-route-searchString="@ViewData["CurrentSearch"]"
+                                           asp-route-countryFilter="@ViewData["CurrentCountry"]">@i</a>
+                                    </li>
+                                }
+
+                                @* Nút Tiếp theo *@
+                                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                    <a class="page-link border-0 shadow-sm mx-1 rounded text-primary"
+                                       asp-action="Index"
+                                       asp-route-page="@(ViewBag.CurrentPage + 1)"
+                                       asp-route-searchString="@ViewData["CurrentSearch"]"
+                                       asp-route-countryFilter="@ViewData["CurrentCountry"]">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <div class="text-center mt-2 small text-muted">
+                            Trang @ViewBag.CurrentPage / @ViewBag.TotalPages
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ... (giữ lại các style cũ) ... */
+    .pagination .page-link {
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        color: white !important;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        background-color: #f8f9fa;
+        color: #6c757d !important;
+    }
+    .bg-info-subtle {
+        background-color: #e1f5fe !important;
+        color: #01579b !important;
+    }
+
+    .btn-white {
+        background-color: #fff;
+    }
+
+        .btn-white:hover {
+            background-color: #f8f9fa;
+        }
+
+    .table thead th {
+        font-size: 0.75rem;
+        letter-spacing: 0.05rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.4rem 0.6rem;
+    }
+</style>

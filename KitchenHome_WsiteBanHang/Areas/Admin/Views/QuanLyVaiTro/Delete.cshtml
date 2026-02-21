@@ -1,0 +1,64 @@
+﻿@model KitchenHome_WsiteBanHang.Models.VaiTro
+
+@{
+    ViewData["Title"] = "Xóa vai trò";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            @* --- KHUNG CARD CẢNH BÁO --- *@
+            <div class="card shadow border-0 border-top border-danger border-3 rounded-3">
+
+                @* --- HEADER --- *@
+                <div class="card-header bg-white py-3 text-center">
+                    <h5 class="mb-0 fw-bold text-danger text-uppercase">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Xác nhận xóa
+                    </h5>
+                </div>
+
+                @* --- BODY --- *@
+                <div class="card-body p-4 text-center">
+
+                    @* Icon thùng rác lớn *@
+                    <div class="mb-3">
+                        <i class="bi bi-trash3 text-danger display-1 opacity-75"></i>
+                    </div>
+
+                    @* Thông tin đối tượng đang xóa *@
+                    <h4 class="fw-bold text-dark mb-1">@Model.TenVaiTro</h4>
+                    <p class="text-muted font-monospace mb-4">
+                        <span class="badge bg-light text-secondary border">ID: @Model.MaVaiTro</span>
+                    </p>
+
+                    @* Cảnh báo *@
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-0 text-danger text-start small mb-4 rounded-3">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Lưu ý:</strong> Hành động này không thể hoàn tác. Vai trò này sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                    </div>
+
+                    @* --- FORM XÁC NHẬN --- *@
+                    <form asp-action="Delete" method="post">
+                        @* Input ẩn ID *@
+                        <input type="hidden" asp-for="VaiTroId" />
+
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            @* Nút Hủy *@
+                            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm fw-bold">
+                                <i class="bi bi-x-lg me-1"></i> Hủy bỏ
+                            </a>
+
+                            @* Nút Xóa *@
+                            <button type="submit" class="btn btn-danger px-4 shadow-sm fw-bold">
+                                <i class="bi bi-trash-fill me-1"></i> Xóa vĩnh viễn
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,76 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TrangNoiDung
+
+@{
+    ViewBag.Title = "Thêm trang mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
+<div class="container py-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0 fw-bold">Soạn thảo trang nội dung</h5>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Tiêu đề trang <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.TieuDe, new { @class = "form-control", id = "TieuDe", onkeyup = "generateSlug()", required = "required" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Slug (Link truy cập)</label>
+                        @Html.TextBoxFor(m => m.MaTrang, new { @class = "form-control", id = "Slug" })
+                        @Html.ValidationMessageFor(m => m.MaTrang, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nội dung chi tiết</label>
+                    @Html.TextAreaFor(m => m.NoiDung, new { @class = "form-control", id = "txtNoiDung" })
+                </div>
+
+                <div class="form-check mb-4">
+                    @Html.CheckBoxFor(m => m.DangHienThi, new { @class = "form-check-input", @checked = "checked" })
+                    <label class="form-check-label">Hiển thị ngay trên website</label>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Lưu trang</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // Kích hoạt CKEditor cho vùng nhập nội dung
+    CKEDITOR.replace('txtNoiDung');
+
+    // Hàm tạo Slug tự động (đã fix lỗi @@ cho Razor)
+    function generateSlug() {
+        let title = document.getElementById("TieuDe").value;
+        let slug = title.toLowerCase();
+        slug = slug.replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a');
+        slug = slug.replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi, 'e');
+        slug = slug.replace(/i|í|ì|ỉ|ĩ|ị/gi, 'i');
+        slug = slug.replace(/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/gi, 'o');
+        slug = slug.replace(/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/gi, 'u');
+        slug = slug.replace(/ý|ỳ|ỷ|ỹ|ỵ/gi, 'y');
+        slug = slug.replace(/đ/gi, 'd');
+        slug = slug.replace(/\`|\~|\!|@@|\#|\||\$|\%|\^|\&|\*|\(|\)|\+|\=|\,|\.|\/|\?|\>|\<|\'|\"|\:|\;|_/gi, '');
+        slug = slug.replace(/ /gi, "-");
+        slug = slug.replace(/\-\-\-\-\-/gi, '-');
+        slug = slug.replace(/\-\-\-\-/gi, '-');
+        slug = slug.replace(/\-\-\-/gi, '-');
+        slug = slug.replace(/\-\-/gi, '-');
+        slug = '@@' + slug + '@@';
+        slug = slug.replace(/@@\-|\-@@|@@/gi, '');
+        document.getElementById("Slug").value = slug;
+    }
+</script>

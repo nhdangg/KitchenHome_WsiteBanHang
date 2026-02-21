@@ -1,0 +1,30 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TaiKhoan
+
+@{
+    ViewData["Title"] = "Xóa tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<div class="container py-5 text-center">
+    <div class="card border-0 shadow-lg mx-auto" style="max-width: 500px; border-radius: 20px;">
+        <div class="card-body p-5">
+            <div class="text-danger mb-4">
+                <i class="fas fa-user-slash fa-5x"></i>
+            </div>
+            <h3 class="fw-bold">Bạn chắc chắn?</h3>
+            <p class="text-muted">Dữ liệu của tài khoản <strong>@Model.TenDangNhap</strong> sẽ bị xóa vĩnh viễn và không thể khôi phục.</p>
+
+            <div class="alert alert-warning border-0 small py-2 mt-3">
+                <i class="fas fa-exclamation-triangle me-1"></i> Các dữ liệu liên kết cũng sẽ bị ảnh hưởng.
+            </div>
+
+            <form asp-action="Delete" method="post" class="mt-4">
+                <input type="hidden" asp-for="TaiKhoanId" />
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-danger btn-lg rounded-pill fw-bold">Xác nhận Xóa</button>
+                    <a asp-action="Index" class="btn btn-light rounded-pill border">Hủy thao tác</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

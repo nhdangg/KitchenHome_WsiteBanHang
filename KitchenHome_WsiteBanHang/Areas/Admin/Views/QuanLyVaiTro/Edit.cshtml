@@ -1,0 +1,80 @@
+﻿@model KitchenHome_WsiteBanHang.Models.VaiTro
+
+@{
+    ViewData["Title"] = "Cập nhật vai trò";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            @* --- KHUNG CARD --- *@
+            <div class="card shadow border-0 border-top border-warning border-3 rounded-3">
+
+                @* --- HEADER CARD --- *@
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-warning text-uppercase">
+                        <i class="bi bi-pencil-square me-2"></i>Cập nhật thông tin vai trò
+                    </h5>
+                </div>
+
+                @* --- BODY CARD --- *@
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+
+                        @* Input ẩn ID *@
+                        <input type="hidden" asp-for="VaiTroId" />
+
+                        @* Hiển thị lỗi tổng quát *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small fst-italic"></div>
+
+                        @* 1. MÃ VAI TRÒ (READONLY) *@
+                        <div class="mb-3">
+                            <label asp-for="MaVaiTro" class="form-label fw-bold">Mã vai trò</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-lock-fill"></i></span>
+                                @* Thêm readonly và bg-light để báo hiệu không sửa được *@
+                                <input asp-for="MaVaiTro" class="form-control bg-light text-muted" readonly />
+                            </div>
+                            <div class="form-text text-muted small fst-italic">
+                                <i class="bi bi-info-circle me-1"></i> Mã vai trò là định danh hệ thống, không được phép thay đổi.
+                            </div>
+                        </div>
+
+                        @* 2. TÊN VAI TRÒ *@
+                        <div class="mb-4">
+                            <label asp-for="TenVaiTro" class="form-label fw-bold">Tên vai trò <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-tag"></i></span>
+                                <input asp-for="TenVaiTro" class="form-control" placeholder="Nhập tên hiển thị mới..." />
+                            </div>
+                            <span asp-validation-for="TenVaiTro" class="text-danger small"></span>
+                        </div>
+
+                        @* --- BUTTONS --- *@
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            @* Nút Quay lại *@
+                            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm">
+                                <i class="bi bi-arrow-left me-1"></i> Quay lại
+                            </a>
+
+                            @* Nút Cập nhật *@
+                            <button type="submit" class="btn btn-warning px-4 fw-bold shadow-sm">
+                                <i class="bi bi-check-lg me-1"></i> Cập nhật
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* --- SCRIPT VALIDATION CLIENT-SIDE --- *@
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,819 @@
+﻿@using KitchenHome_WsiteBanHang.Models
+@using KitchenHome_WsiteBanHang.Models.Class_phu
+@model KitchenHome_WsiteBanHang.Models.Class_phu.HomeView_TrangChu
+
+@{
+    ViewData["Title"] = "Trang Chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Lấy danh sách ID yêu thích để check active
+    var wishlistIds = ViewBag.WishlistIds as List<int> ?? new List<int>();
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+    /* ==================================================================
+           1. CSS GỐC (GIỮ NGUYÊN)
+           ================================================================== */
+    .hero-banner {
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: rgba(0, 0, 0, 0.4);
+        background-blend-mode: multiply;
+        min-height: 450px;
+        display: flex;
+        align-items: center;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .banner-title {
+        font-weight: 800;
+        line-height: 1.2;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .btn-banner {
+        background-color: #fff;
+        color: #212529;
+        font-weight: 700;
+        padding: 12px 30px;
+        border-radius: 30px;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .btn-banner:hover {
+            background-color: #0d6efd;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+    .carousel-indicators {
+        bottom: 15px;
+    }
+
+        .carousel-indicators button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 5px;
+        }
+
+    /* Product Card CSS */
+    :root {
+        --card-radius: 16px;
+        --soft-shadow-hover: 0 18px 45px rgba(16,24,40,.14);
+        --stroke: rgba(15,23,42,.08);
+    }
+
+    .product-card {
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        border: 1px solid var(--stroke);
+        background: #fff;
+        transition: transform .25s ease, box-shadow .25s ease;
+        box-shadow: 0 6px 18px rgba(16,24,40,.06);
+        height: 100%;
+    }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--soft-shadow-hover);
+            border-color: rgba(13,110,253,.18);
+        }
+
+    .product-media {
+        position: relative;
+        padding: 14px;
+        background: linear-gradient(180deg, #f8fafc 0%, #ffffff 60%);
+        overflow: hidden;
+    }
+
+    .product-img {
+        height: 230px;
+        width: 100%;
+        object-fit: cover;
+        border-radius: 14px;
+        background: #fff;
+        transition: transform .35s ease;
+        display: block;
+    }
+
+    .product-card:hover .product-img {
+        transform: scale(1.04);
+    }
+
+    .badge-sale {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 2;
+        padding: 7px 10px;
+        font-size: 12px;
+        font-weight: 800;
+        border-radius: 999px;
+        box-shadow: 0 10px 20px rgba(220,53,69,.20);
+    }
+
+    /* Action Buttons */
+    .product-actions {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        display: flex;
+        gap: 10px;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: all .2s ease;
+    }
+
+    .product-card:hover .product-actions {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .action-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(15,23,42,.08);
+        background: rgba(255,255,255,.95);
+        box-shadow: 0 10px 25px rgba(16,24,40,.12);
+        transition: transform .15s ease, background .15s ease;
+        text-decoration: none;
+        cursor: pointer;
+        color: #212529;
+    }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            background: #fff;
+        }
+
+    .product-body {
+        padding: 14px 14px 16px;
+    }
+
+    .product-title {
+        font-weight: 900;
+        font-size: 14px;
+        margin-bottom: 8px;
+        height: 36px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+        .product-title a {
+            color: #0f172a;
+            text-decoration: none;
+        }
+
+    .rating-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .rating-pill {
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #f1f5ff;
+        color: #1d4ed8;
+        border: 1px solid rgba(29,78,216,.12);
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        gap: 10px;
+        margin-top: 4px;
+    }
+
+    .price-now {
+        font-weight: 900;
+        font-size: 16px;
+        color: #dc2626;
+    }
+
+    .price-old {
+        font-size: 12px;
+        color: #94a3b8;
+        text-decoration: line-through;
+    }
+
+    .product-sku {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 6px;
+    }
+
+    /* --- [QUAN TRỌNG] CSS CHO NÚT WISHLIST ĐỂ TIM ĐỎ --- */
+    .btn-wishlist {
+        transition: all 0.2s ease;
+    }
+
+        .btn-wishlist.active {
+            border-color: #dc3545 !important;
+            background: #fff;
+        }
+
+            .btn-wishlist.active i {
+                color: #dc3545 !important; /* Bắt buộc màu đỏ */
+                font-weight: 900 !important;
+            }
+    @@keyframes heartBeat {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    .btn-wishlist.animating i {
+        animation: heartBeat 0.4s forwards;
+    }
+
+    /* ==================================================================
+           2. CSS BỔ SUNG CHO CÁC PHẦN MỚI
+           ================================================================== */
+    .policy-box {
+        padding: 20px;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: #fff;
+        transition: 0.3s;
+    }
+
+        .policy-box:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-color: #0d6efd;
+            transform: translateY(-3px);
+        }
+
+    .policy-icon {
+        font-size: 2rem;
+        color: #0d6efd;
+    }
+
+    .cat-card {
+        text-align: center;
+        padding: 20px;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        transition: all 0.3s;
+        background: #fff;
+        cursor: pointer;
+        height: 100%;
+    }
+
+        .cat-card:hover {
+            transform: translateY(-5px);
+            border-color: #0d6efd;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+    .cat-icon {
+        font-size: 2.5rem;
+        color: #0d6efd;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .testimonial-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        height: 100%;
+        border: 1px solid #eee;
+    }
+
+    .brand-card {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        cursor: default;
+        height: 100%;
+    }
+
+        .brand-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-color: #0d6efd;
+            background: #fff;
+        }
+
+    .brand-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+        color: #555;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 18px;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .brand-card:hover .brand-icon {
+        background: #0d6efd;
+        color: #fff;
+    }
+
+    .brand-info {
+        overflow: hidden;
+    }
+
+    .brand-name {
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+        font-size: 0.95rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .brand-country {
+        display: block;
+        font-size: 0.75rem;
+        color: #888;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .newsletter-wrapper {
+        background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+        box-shadow: 0 15px 40px rgba(13, 110, 253, 0.2);
+    }
+
+    .newsletter-icon-bg {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        font-size: 15rem;
+        color: rgba(255, 255, 255, 0.08);
+        transform: rotate(15deg);
+        pointer-events: none;
+    }
+
+    .newsletter-wrapper .input-group {
+        transition: all 0.3s ease;
+    }
+
+        .newsletter-wrapper .input-group:focus-within {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+        }
+
+    .btn-sub {
+        transition: all 0.3s ease;
+        color: #212529;
+    }
+
+        .btn-sub:hover {
+            background-color: #ffc107;
+            transform: translateX(3px);
+        }
+
+    .newsletter-wrapper ::placeholder {
+        color: #999;
+        font-size: 0.95rem;
+    }
+</style>
+
+<main>
+    <div class="container my-4">
+
+        @* --- 1. BANNER SLIDER --- *@
+        <div class="row g-3">
+            <div class="col-12">
+                @if (Model?.DanhSachBanner != null && Model.DanhSachBanner.Any())
+                {
+                    <div id="heroCarousel" class="carousel slide shadow-sm rounded-3 h-100" data-bs-ride="carousel" data-bs-interval="5000">
+                        <div class="carousel-indicators">
+                            @for (int i = 0; i < Model.DanhSachBanner.Count; i++)
+                            {
+                                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")"></button>
+                            }
+                        </div>
+                        <div class="carousel-inner rounded-3 h-100">
+                            @for (int i = 0; i < Model.DanhSachBanner.Count; i++)
+                            {
+                                var item = Model.DanhSachBanner[i];
+                                var imgUrl = item.Anh.StartsWith("http") ? item.Anh : Url.Content("~/IMAGE/Img_SanPham/" + item.Anh);
+                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                    <div class="hero-banner p-4 p-lg-5 h-100" style="background-image: url('@imgUrl');">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-lg-7">
+                                                    <h1 class="text-white display-4 banner-title mb-3">@item.TieuDe</h1>
+                                                    <p class="text-white fs-5 mb-4 opacity-90">@item.Text</p>
+                                                    @if (!string.IsNullOrEmpty(item.Link))
+                                                    {
+                                                        <a href="@item.Link" class="btn btn-banner">Xem ngay</a>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* --- 2. DỊCH VỤ / CAM KẾT --- *@
+        <div class="row g-3 mt-4">
+            <div class="col-6 col-md-3"><div class="policy-box"><i class="bi bi-truck policy-icon"></i><div><h6 class="fw-bold mb-0">Miễn phí ship</h6><small class="text-muted">Đơn từ 500k</small></div></div></div>
+            <div class="col-6 col-md-3"><div class="policy-box"><i class="bi bi-shield-check policy-icon text-success"></i><div><h6 class="fw-bold mb-0">Chính hãng 100%</h6><small class="text-muted">Bồi thường nếu fake</small></div></div></div>
+            <div class="col-6 col-md-3"><div class="policy-box"><i class="bi bi-arrow-repeat policy-icon text-warning"></i><div><h6 class="fw-bold mb-0">Đổi trả 30 ngày</h6><small class="text-muted">Lỗi do nhà SX</small></div></div></div>
+            <div class="col-6 col-md-3"><div class="policy-box"><i class="bi bi-headset policy-icon text-danger"></i><div><h6 class="fw-bold mb-0">Hỗ trợ 24/7</h6><small class="text-muted">Hotline: 1900 1234</small></div></div></div>
+        </div>
+
+        @* --- 3. DANH MỤC SẢN PHẨM --- *@
+        @if (Model?.DanhMucNoiBat != null && Model.DanhMucNoiBat.Any())
+        {
+            <section class="mt-5">
+                <div class="text-center mb-4"><h3 class="fw-bold text-uppercase">Danh Mục Nổi Bật</h3><div class="bg-primary mx-auto" style="width: 50px; height: 3px;"></div></div>
+                <div class="row g-3 justify-content-center">
+                    @foreach (var dm in Model.DanhMucNoiBat)
+                    {
+                        <div class="col-6 col-md-4 col-lg-2">
+                            <a asp-controller="SanPham" asp-action="Index" asp-route-category="@dm.Slug" class="text-decoration-none text-dark">
+                                <div class="cat-card">
+                                    <i class="bi bi-grid-3x3-gap-fill cat-icon"></i><h6 class="fw-bold mb-0">@dm.TenDanhMuc</h6>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </section>
+        }
+
+        @* --- 4. SẢN PHẨM BÁN CHẠY (CHỈ HIỂN THỊ 4) --- *@
+        @if (Model?.SanPhamBanChay != null && Model.SanPhamBanChay.Any())
+        {
+            <section class="mt-5">
+                <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold text-uppercase mb-0 text-warning"><i class="bi bi-fire"></i> Top Bán Chạy</h3>
+                    <a asp-controller="SanPham" asp-action="Index" class="text-decoration-none fw-bold small text-warning">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+                </div>
+                <div class="row g-4">
+                    @foreach (var sp in Model.SanPhamBanChay.Take(4))
+                    {
+                        var anhSP = !string.IsNullOrEmpty(sp.AnhDaiDien) && sp.AnhDaiDien.StartsWith("http") ? sp.AnhDaiDien : Url.Content("~/IMAGE/Img_SanPham/" + sp.AnhDaiDien);
+                        var variant = sp.BienTheSanPhams?.FirstOrDefault(bt => bt.DangHoatDong);
+                        decimal? giaGoc = variant?.GiaBan;
+
+                        // [CHECK YÊU THÍCH]
+                        bool isLiked = wishlistIds.Contains(sp.SanPhamId);
+
+                        var r = (Model != null && Model.Ratings != null && Model.Ratings.ContainsKey(sp.SanPhamId)) ? Model.Ratings[sp.SanPhamId] : new RatingInfo { AvgStar = 0, ReviewCount = 0 };
+                        double avg = r.AvgStar; int count = r.ReviewCount;
+
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="card h-100 product-card">
+                                <div class="product-media">
+                                    <span class="badge badge-sale bg-warning text-dark"><i class="bi bi-fire"></i> HOT</span>
+                                    <a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId">
+                                        <img src="@anhSP" class="product-img" alt="@sp.TenSanPham" />
+                                    </a>
+                                    <div class="product-actions">
+                                        <a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId" class="action-btn text-dark"><i class="bi bi-eye"></i></a>
+
+                                        @* NÚT TIM *@
+                                        <a href="javascript:void(0);" onclick="toggleWishlist(this, @sp.SanPhamId)" class="action-btn btn-wishlist @(isLiked ? "active" : "")" title="Yêu thích">
+                                            <i class="bi @(isLiked ? "bi-heart-fill" : "bi-heart")"></i>
+                                        </a>
+
+                                        <a href="@(variant != null ? Url.Action("Them", "GioHang", new { variantId = variant.BienTheId, returnUrl = Context.Request.Path }) : "#")" class="action-btn text-primary"><i class="bi bi-cart-plus"></i></a>
+                                    </div>
+                                </div>
+                                <div class="product-body text-center">
+                                    <div class="product-title"><a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId">@sp.TenSanPham</a></div>
+                                    <div class="rating-row">
+                                        <div class="rating-stars">@for (int k = 0; k < 5; k++) { if (k < Math.Floor(avg)) {
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    } else
+                                    {
+
+                                        <i class="bi bi-star text-warning"></i>
+                                    }
+                                }
+</div>
+                                <span class="rating-pill">@avg.ToString("0.0") • @count</span>
+                            </div>
+                            <div class="price-row">
+                                <span class="price-now">@string.Format("{0:N0} đ", giaGoc)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                }
+            </div>
+        </section>
+                }
+
+        @* --- 5. SẢN PHẨM NỔI BẬT --- *@
+        @if (Model?.DanhSachSanPham != null && Model.DanhSachSanPham.Any())
+        {
+            <section class="mt-5">
+                <div class="text-center mb-4"><h2 class="fw-bold text-uppercase">Sản Phẩm Nổi Bật</h2><div class="bg-primary mx-auto" style="width: 60px; height: 3px;"></div></div>
+                <div class="row g-4">
+                    @foreach (var sp in Model.DanhSachSanPham)
+                    {
+                        var anhSP = !string.IsNullOrEmpty(sp.AnhDaiDien) && sp.AnhDaiDien.StartsWith("http") ? sp.AnhDaiDien : Url.Content("~/IMAGE/Img_SanPham/" + sp.AnhDaiDien);
+                        var variant = sp.BienTheSanPhams?.FirstOrDefault(bt => bt.DangHoatDong && bt.GiaBan > 0);
+                        decimal? giaGoc = variant?.GiaBan;
+                        decimal? giaKM = (variant?.GiaKhuyenMai.HasValue == true && variant.GiaKhuyenMai > 0) ? variant.GiaKhuyenMai : (decimal?)null;
+                        bool coSale = giaKM.HasValue && giaGoc.HasValue && giaKM.Value < giaGoc.Value;
+                        bool isLiked = wishlistIds.Contains(sp.SanPhamId);
+
+                        var r = (Model != null && Model.Ratings != null && Model.Ratings.ContainsKey(sp.SanPhamId)) ? Model.Ratings[sp.SanPhamId] : new RatingInfo { AvgStar = 0, ReviewCount = 0 };
+                        double avg = r.AvgStar; int count = r.ReviewCount;
+
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="card h-100 product-card">
+                                <div class="product-media">
+                                    @if (coSale)
+                                    {
+                                        <span class="badge badge-sale bg-danger">-@((int)Math.Round((1 - (double)(giaKM.Value / giaGoc.Value)) * 100))%</span>
+                                    }
+                                    <img src="@anhSP" class="product-img" alt="@sp.TenSanPham" />
+                                    <div class="product-actions">
+                                        <a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId" class="action-btn text-dark"><i class="bi bi-eye"></i></a>
+                                        <a href="javascript:void(0);" onclick="toggleWishlist(this, @sp.SanPhamId)" class="action-btn btn-wishlist @(isLiked ? "active" : "")" title="Yêu thích">
+                                            <i class="bi @(isLiked ? "bi-heart-fill" : "bi-heart")"></i>
+                                        </a>
+                                        <a href="@(variant != null ? Url.Action("Them", "GioHang", new { variantId = variant.BienTheId, returnUrl = Context.Request.Path }) : "#")" class="action-btn text-primary"><i class="bi bi-cart-plus"></i></a>
+                                    </div>
+                                </div>
+                                <div class="product-body text-center">
+                                    <div class="product-title"><a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId">@sp.TenSanPham</a></div>
+                                    <div class="rating-row">
+                                        <div class="rating-stars">@for (int k = 0; k < 5; k++) { if (k < Math.Floor(avg)) {
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    } else
+                                    {
+
+                                        <i class="bi bi-star text-warning"></i>
+                                    }
+                                }
+</div>
+                                <span class="rating-pill">@avg.ToString("0.0") • @count</span>
+                            </div>
+                            <div class="price-row">
+                                @if (variant == null)
+                                {
+                                    <span class="text-muted small">Liên hệ</span>
+                                }
+                                else if (coSale)
+                                {
+
+                                    <span class="price-now">@string.Format("{0:N0} đ", giaKM)</span>
+                                    <span class="price-old">@string.Format("{0:N0} đ", giaGoc)</span>
+ }
+                                else
+                                {
+                                    <span class="price-now">@string.Format("{0:N0} đ", giaGoc)</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                }
+            </div>
+            <div class="text-center mt-4"><a asp-controller="SanPham" asp-action="Index" class="btn btn-outline-primary rounded-pill px-4">Xem tất cả sản phẩm</a></div>
+        </section>
+                }
+
+        @* --- 6. SẢN PHẨM GIẢM GIÁ (FLASH SALE) --- *@
+        @if (Model?.DanhSachGiamGia != null && Model.DanhSachGiamGia.Any())
+        {
+            <section class="mt-5">
+                <div class="text-center mb-4"><h2 class="fw-bold text-uppercase text-danger">Sản Phẩm Đang Giảm Giá</h2><div class="bg-danger mx-auto" style="width: 60px; height: 3px;"></div></div>
+                <div class="row g-4">
+                    @foreach (var sp in Model.DanhSachGiamGia)
+                    {
+                        var anhSP = !string.IsNullOrEmpty(sp.AnhDaiDien) && sp.AnhDaiDien.StartsWith("http") ? sp.AnhDaiDien : Url.Content("~/IMAGE/Img_SanPham/" + sp.AnhDaiDien);
+                        var variant = sp.BienTheSanPhams?.Where(bt => bt.DangHoatDong && bt.GiaBan > 0).OrderBy(bt => (bt.GiaKhuyenMai ?? bt.GiaBan)).FirstOrDefault();
+                        decimal? giaGoc = variant?.GiaBan;
+                        decimal? giaKM = (variant?.GiaKhuyenMai.HasValue == true && variant.GiaKhuyenMai > 0) ? variant.GiaKhuyenMai : (decimal?)null;
+                        bool coSale = giaKM.HasValue && giaGoc.HasValue && giaKM.Value < giaGoc.Value;
+                        bool isLiked = wishlistIds.Contains(sp.SanPhamId);
+
+                        var r = (Model != null && Model.Ratings != null && Model.Ratings.ContainsKey(sp.SanPhamId)) ? Model.Ratings[sp.SanPhamId] : new RatingInfo { AvgStar = 0, ReviewCount = 0 };
+                        double avg = r.AvgStar; int count = r.ReviewCount;
+
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="card h-100 product-card">
+                                <div class="product-media">
+                                    @if (coSale)
+                                    {
+                                        <span class="badge badge-sale bg-danger">-@((int)Math.Round((1 - (double)(giaKM.Value / giaGoc.Value)) * 100))%</span>
+                                    }
+                                    <img src="@anhSP" class="product-img" alt="@sp.TenSanPham" />
+                                    <div class="product-actions">
+                                        <a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId" class="action-btn text-dark"><i class="bi bi-eye"></i></a>
+                                        <a href="javascript:void(0);" onclick="toggleWishlist(this, @sp.SanPhamId)" class="action-btn btn-wishlist @(isLiked ? "active" : "")" title="Yêu thích">
+                                            <i class="bi @(isLiked ? "bi-heart-fill" : "bi-heart")"></i>
+                                        </a>
+                                        <a href="@(variant != null ? Url.Action("Them", "GioHang", new { variantId = variant.BienTheId, returnUrl = Context.Request.Path }) : "#")" class="action-btn text-primary"><i class="bi bi-cart-plus"></i></a>
+                                    </div>
+                                </div>
+                                <div class="product-body text-center">
+                                    <div class="product-title"><a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId">@sp.TenSanPham</a></div>
+                                    <div class="rating-row">
+                                        <div class="rating-stars">@for (int k = 0; k < 5; k++) { if (k < Math.Floor(avg)) {
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    } else
+                                    {
+
+                                        <i class="bi bi-star text-warning"></i>
+                                    }
+                                }
+</div>
+                                <span class="rating-pill">@avg.ToString("0.0") • @count</span>
+                            </div>
+                            <div class="price-row">
+                                @if (variant == null)
+                                {
+                                    <span class="text-muted small">Liên hệ</span>
+                                }
+                                else if (coSale)
+                                {
+
+                                    <span class="price-now">@string.Format("{0:N0} đ", giaKM)</span>
+                                    <span class="price-old">@string.Format("{0:N0} đ", giaGoc)</span>
+ }
+                                else
+                                {
+                                    <span class="price-now">@string.Format("{0:N0} đ", giaGoc)</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                }
+            </div>
+        </section>
+                }
+
+        @* --- 7. ĐÁNH GIÁ (TESTIMONIALS) --- *@
+        <div class="row g-4 mt-5">
+            <div class="col-lg-12">
+                <h4 class="fw-bold text-uppercase mb-4 border-start border-4 border-info ps-3">Khách Hàng Nói Gì?</h4>
+                <div class="row g-3">
+                    @if (Model?.DanhGiaTieuBieu != null)
+                    {
+                        @foreach (var dg in Model.DanhGiaTieuBieu.Take(3))
+                        {
+                            <div class="col-md-4">
+                                <div class="testimonial-box shadow-sm h-100">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 35px; height: 35px;">@(dg.KhachHang?.HoTen?.Substring(0, 1) ?? "K")</div>
+                                        <div class="ms-2">
+                                            <div class="fw-bold small">@dg.KhachHang?.HoTen</div>
+                                            <div class="text-warning" style="font-size: 0.7rem;">@for (int s = 0; s < 5; s++) {
+                                            <i class="bi bi-star-fill"></i>
+                                        }
+    </div>
+                                    </div>
+                                </div>
+                                <p class="small text-muted fst-italic mb-0">"@dg.NoiDung"</p>
+                            </div>
+                        </div>
+                    }
+                                        }
+                </div>
+            </div>
+        </div>
+
+        @* --- 8. ĐỐI TÁC THƯƠNG HIỆU --- *@
+        @if (Model?.ThuongHieuDoiTac != null && Model.ThuongHieuDoiTac.Any())
+        {
+            <section class="py-5 bg-white border-top">
+                <div class="container">
+                    <div class="text-center mb-4">
+                        <h4 class="fw-bold text-uppercase text-secondary" style="letter-spacing: 1px;">Đối Tác Chính Hãng</h4>
+                        <div class="bg-secondary mx-auto opacity-25" style="width: 40px; height: 2px;"></div>
+                    </div>
+                    <div class="row g-3 justify-content-center">
+                        @foreach (var th in Model.ThuongHieuDoiTac)
+                        {
+                            <div class="col-6 col-md-3 col-lg-2">
+                                <div class="brand-card" title="@th.TenThuongHieu - @th.QuocGia">
+                                    <div class="brand-icon">@(th.TenThuongHieu.Substring(0, 1).ToUpper())</div>
+                                    <div class="brand-info">
+                                        <h6 class="brand-name">@th.TenThuongHieu</h6>
+                                        <span class="brand-country">@th.QuocGia</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
+
+        @* --- 9. NEWSLETTER --- *@
+        <div class="container my-5">
+            <div class="newsletter-wrapper position-relative overflow-hidden rounded-4 p-5 text-center">
+                <i class="bi bi-envelope-open-heart newsletter-icon-bg"></i>
+                <div class="position-relative z-2">
+                    <h2 class="fw-bold text-white mb-2">Đăng Ký Nhận Tin Khuyến Mãi</h2>
+                    <p class="text-white-50 mb-4 fs-5">Nhận ngay <span class="text-warning fw-bold">Voucher 50k</span> cho đơn hàng đầu tiên của bạn!</p>
+                    <form id="newsletterForm" class="mx-auto" style="max-width: 550px;" onsubmit="submitNewsletter(event)">
+                        <div class="input-group p-1 bg-white rounded-pill shadow-sm">
+                            <span class="input-group-text border-0 bg-transparent ps-3 text-muted"><i class="bi bi-envelope"></i></span>
+                            <input type="email" id="newsletterEmail" name="email" class="form-control border-0 bg-transparent shadow-none" placeholder="Nhập địa chỉ email của bạn..." required>
+                            <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold m-1 shadow-sm btn-sub">Gửi Ngay <i class="bi bi-arrow-right ms-1"></i></button>
+                        </div>
+                        <div class="mt-3 text-white-50 small"><i class="bi bi-shield-check me-1"></i> Chúng tôi cam kết bảo mật thông tin của bạn.</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        function toggleWishlist(btn, productId) {
+            var icon = $(btn).find('i');
+            $.ajax({
+                url: '@Url.Action("CapNhat", "YeuThich")', type: 'POST', data: { id: productId },
+                success: function (res) {
+                    if (res.success) {
+                        if (res.isLiked) {
+                            $(btn).addClass('active');
+                            icon.removeClass('bi-heart').addClass('bi-heart-fill');
+                        } else {
+                            $(btn).removeClass('active');
+                            icon.removeClass('bi-heart-fill').addClass('bi-heart');
+                        }
+                    } else if (res.requireLogin && confirm(res.message)) {
+                        window.location.href = '@Url.Action("Index", "Home", new { area = "Login_Wsite" })?returnUrl=' + encodeURIComponent(window.location.href);
+                    }
+                }, error: function () { alert("Lỗi kết nối!"); }
+            });
+        }
+
+        function submitNewsletter(e) {
+            e.preventDefault();
+            var email = $('#newsletterEmail').val();
+            var btn = $('#newsletterForm button[type="submit"]');
+            var originalText = btn.html();
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang gửi...');
+            $.ajax({
+                url: '@Url.Action("SubscribeNewsletter", "Home")',
+                type: 'POST',
+                data: { email: email },
+                success: function (res) {
+                    alert(res.message);
+                    if (res.success) $('#newsletterEmail').val('');
+                },
+                error: function () { alert("Có lỗi xảy ra, vui lòng thử lại sau."); },
+                complete: function () { btn.prop('disabled', false).html(originalText); }
+            });
+        }
+    </script>
+}

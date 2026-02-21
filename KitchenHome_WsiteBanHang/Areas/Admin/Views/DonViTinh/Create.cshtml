@@ -1,0 +1,75 @@
+﻿@model KitchenHome_WsiteBanHang.Models.DonViTinh
+
+@{
+    ViewData["Title"] = "Thêm đơn vị tính";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            @* --- KHUNG CARD --- *@
+            <div class="card shadow border-0 rounded-3">
+
+                @* --- HEADER CARD --- *@
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold text-uppercase">
+                        <i class="bi bi-plus-circle-fill me-2"></i>Thêm đơn vị tính mới
+                    </h5>
+                </div>
+
+                @* --- BODY CARD --- *@
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+
+                        @* Hiển thị lỗi tổng quát (nếu có) *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small fst-italic"></div>
+
+                        @* 1. TÊN ĐƠN VỊ *@
+                        <div class="mb-3">
+                            <label asp-for="TenDonViTinh" class="form-label fw-bold">Tên đơn vị <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-tag"></i></span>
+                                <input asp-for="TenDonViTinh" class="form-control" placeholder="VD: Cái, Hộp, Chiếc, Kg..." />
+                            </div>
+                            <span asp-validation-for="TenDonViTinh" class="text-danger small"></span>
+                        </div>
+
+                        @* 2. KÝ HIỆU *@
+                        <div class="mb-4">
+                            <label asp-for="KyHieu" class="form-label fw-bold">Ký hiệu / Viết tắt</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-hash"></i></span>
+                                <input asp-for="KyHieu" class="form-control" placeholder="VD: pcs, box, kg..." />
+                            </div>
+                            <span asp-validation-for="KyHieu" class="text-danger small"></span>
+                            <div class="form-text text-muted small">
+                                Ký hiệu dùng để hiển thị ngắn gọn trên hóa đơn hoặc danh sách.
+                            </div>
+                        </div>
+
+                        @* --- BUTTONS --- *@
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            @* Nút Quay lại *@
+                            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm">
+                                <i class="bi bi-arrow-left me-1"></i> Quay lại
+                            </a>
+
+                            @* Nút Lưu *@
+                            <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm">
+                                <i class="bi bi-check-lg me-1"></i> Lưu lại
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* --- SCRIPT VALIDATION CLIENT-SIDE --- *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

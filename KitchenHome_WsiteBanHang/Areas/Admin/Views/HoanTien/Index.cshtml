@@ -1,0 +1,168 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.HoanTien>
+
+@{
+    ViewData["Title"] = "Quản lý Hoàn tiền";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+
+    @* --- HEADER --- *@
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center my-4 gap-3">
+        <h3 class="fw-bold text-primary text-uppercase mb-0">
+            <i class="bi bi-arrow-counterclockwise me-2"></i>Quản lý Hoàn tiền
+        </h3>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Tạo yêu cầu hoàn tiền
+        </a>
+    </div>
+
+    @* --- ALERT MESSAGES --- *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 border-start border-success border-4">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 border-start border-danger border-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* --- SEARCH & FILTER --- *@
+    <div class="card shadow-sm border-0 mb-4 bg-light">
+        <div class="card-body py-3">
+            <form asp-action="Index" method="get" class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <input type="text" name="searchString" value="@ViewBag.CurrentFilter" class="form-control" placeholder="Tìm theo Mã đơn hàng hoặc Lý do..." />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="trangThai" class="form-select">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="CHO_HOAN" selected="@(ViewBag.CurrentStatus == "CHO_HOAN")">Chờ hoàn tiền</option>
+                        <option value="DA_HOAN" selected="@(ViewBag.CurrentStatus == "DA_HOAN")">Đã hoàn tiền</option>
+                        <option value="THAT_BAI" selected="@(ViewBag.CurrentStatus == "THAT_BAI")">Thất bại</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-secondary w-100 fw-bold">
+                        <i class="bi bi-funnel-fill me-1"></i> Lọc dữ liệu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* --- TABLE --- *@
+    <div class="card shadow mb-4 border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-nowrap">
+                        <tr>
+                            <th class="ps-4 py-3">Mã Đơn Hàng</th>
+                            <th class="py-3">Lý do hoàn tiền</th>
+                            <th class="py-3 text-end">Số tiền hoàn</th>
+                            <th class="py-3 text-center">Trạng thái</th>
+                            <th class="py-3">Ngày tạo</th>
+                            <th class="text-center py-3" style="width: 150px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    @* Mã Đơn *@
+                                    <td class="ps-4 fw-bold">
+                                        <a asp-controller="DonHang" asp-action="Details" asp-route-id="@item.ThanhToan.DonHangId" class="text-decoration-none font-monospace text-primary">
+                                            @item.ThanhToan.DonHang.MaDonHang
+                                        </a>
+                                    </td>
+
+                                    @* Lý do *@
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 250px;" title="@item.LyDo">
+                                            @item.LyDo
+                                        </div>
+                                    </td>
+
+                                    @* Số tiền *@
+                                    <td class="text-end fw-bold text-danger">
+                                        @item.SoTienHoan.ToString("N0") ₫
+                                    </td>
+
+                                    @* Trạng thái *@
+                                    <td class="text-center">
+                                        @if (item.TrangThai == "DA_HOAN")
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">Đã hoàn</span>
+                                        }
+                                        else if (item.TrangThai == "THAT_BAI")
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3">Thất bại</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning rounded-pill px-3">Chờ xử lý</span>
+                                        }
+                                    </td>
+
+                                    @* Ngày tạo *@
+                                    <td class="small text-muted">
+                                        @item.NgayTao.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    @* Thao tác *@
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            @* Chi tiết *@
+                                            <a asp-action="Details" asp-route-id="@item.HoanTienId"
+                                               class="btn btn-outline-info btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                               style="width: 32px; height: 32px;" title="Xem chi tiết">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </a>
+
+                                            @* Sửa *@
+                                            <a asp-action="Edit" asp-route-id="@item.HoanTienId"
+                                               class="btn btn-outline-warning btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm text-dark"
+                                               style="width: 32px; height: 32px;" title="Cập nhật">
+                                                <i class="bi bi-pencil-fill" style="font-size: 0.8rem;"></i>
+                                            </a>
+
+                                            @* Xóa *@
+                                            <a asp-action="Delete" asp-route-id="@item.HoanTienId"
+                                               class="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                               style="width: 32px; height: 32px;" title="Xóa">
+                                                <i class="bi bi-trash-fill" style="font-size: 0.8rem;"></i>
+                                            </a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <div class="mb-3"><i class="bi bi-inbox display-1 opacity-25"></i></div>
+                                    <h5 class="fw-bold">Không tìm thấy yêu cầu hoàn tiền nào</h5>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

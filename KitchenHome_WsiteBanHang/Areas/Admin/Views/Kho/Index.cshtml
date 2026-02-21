@@ -1,0 +1,83 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.Kho>
+
+@{
+    ViewData["Title"] = "Danh sách Kho hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-primary text-uppercase mb-0">
+            <i class="bi bi-shop me-2"></i>Quản lý Kho hàng
+        </h3>
+        <p class="text-muted small mb-0">Hệ thống kho lưu trữ và điều phối hàng hóa</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary px-4 shadow-sm rounded-pill">
+        <i class="bi bi-plus-lg me-1"></i> Thêm kho mới
+    </a>
+</div>
+
+@if (TempData["AlertMessage"] != null)
+{
+    <div class="alert @TempData["AlertType"] alert-dismissible fade show border-0 shadow-sm" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i> @TempData["AlertMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0 rounded-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small fw-bold text-uppercase">
+                    <tr>
+                        <th class="ps-4 py-3">Mã Kho</th>
+                        <th>Tên Kho</th>
+                        <th>Địa chỉ</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">@item.MaKho</td>
+                            <td class="fw-bold text-primary">@item.TenKho</td>
+                            <td class="small text-muted">@item.DiaChi</td>
+                            <td class="text-center">
+                                @if (item.DangHoatDong)
+                                {
+                                    <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Hoạt động
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill">
+                                        <i class="bi bi-dash-circle me-1"></i> Ngừng hoạt động
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group btn-group-sm shadow-sm rounded overflow-hidden">
+                                    <a asp-action="Details" asp-route-id="@item.KhoId" class="btn btn-white border" title="Xem tồn kho">
+                                        <i class="bi bi-eye text-info"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.KhoId" class="btn btn-white border" title="Sửa">
+                                        <i class="bi bi-pencil-square text-warning"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.KhoId" method="post" class="d-inline" onsubmit="return confirm('Xóa kho: @item.TenKho?');">
+                                        <button type="submit" class="btn btn-white border" title="Xóa">
+                                            <i class="bi bi-trash text-danger"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

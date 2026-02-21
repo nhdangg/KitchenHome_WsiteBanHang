@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Đặt hàng thành công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5 text-center">
+    <div class="mb-4">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+    </div>
+    <h2 class="fw-bold text-success">Đặt hàng thành công!</h2>
+    <p class="lead mt-3">Cảm ơn bạn đã mua hàng tại KitchenHome.</p>
+
+    <div class="card d-inline-block p-4 mt-3 shadow-sm border-0 bg-light">
+        <p class="mb-1">Mã đơn hàng của bạn là:</p>
+        <h3 class="text-primary fw-bold m-0">@ViewBag.OrderId</h3>
+    </div>
+
+    <p class="text-muted mt-4">Chúng tôi sẽ liên hệ với bạn sớm nhất để xác nhận đơn hàng.</p>
+
+    <div class="mt-4">
+        <a href="/" class="btn btn-primary rounded-pill px-4 py-2 fw-bold">
+            <i class="bi bi-cart-plus me-2"></i>Tiếp tục mua sắm
+        </a>
+    </div>
+</div>

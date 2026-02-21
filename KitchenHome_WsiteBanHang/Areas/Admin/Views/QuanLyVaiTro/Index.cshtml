@@ -1,0 +1,108 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.VaiTro>
+
+@{
+    ViewData["Title"] = "Quản lý vai trò";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    @* --- HEADER --- *@
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h3 class="fw-bold text-primary text-uppercase">
+            <i class="bi bi-shield-lock-fill me-2"></i>Quản lý Vai trò
+        </h3>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Thêm vai trò mới
+        </a>
+    </div>
+
+    @* --- THÔNG BÁO LỖI/THÀNH CÔNG (NẾU CÓ) --- *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 border-start border-success border-4">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* --- BẢNG DỮ LIỆU --- *@
+    <div class="card shadow mb-4 border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3">Mã vai trò</th>
+                            <th class="py-3">Tên vai trò</th>
+                            <th class="py-3 text-center" width="250">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    @* Mã vai trò: Font đơn cách (monospace) để dễ nhìn *@
+                                    <td class="ps-4 fw-bold font-monospace text-primary">
+                                        @item.MaVaiTro
+                                    </td>
+
+                                    @* Tên vai trò *@
+                                    <td class="fw-bold text-dark">
+                                        @item.TenVaiTro
+                                    </td>
+
+                                  
+                                    @* Các nút thao tác *@
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            @* Nút Xem (Màu xanh dương nhạt - Info) *@
+                                            <a asp-action="Details" asp-route-id="@item.VaiTroId"
+                                               class="btn btn-outline-info btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                               style="width: 32px; height: 32px;"
+                                               title="Xem chi tiết">
+                                                <i class="bi bi-info-lg"></i>
+                                            </a>
+
+                                            @* Nút Sửa (Màu vàng - Warning) *@
+                                            <a asp-action="Edit" asp-route-id="@item.VaiTroId"
+                                               class="btn btn-outline-warning btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm text-dark"
+                                               style="width: 32px; height: 32px;"
+                                               title="Sửa thông tin">
+                                                <i class="bi bi-pencil-fill" style="font-size: 0.8rem;"></i>
+                                            </a>
+
+                                            @* Nút Xóa (Màu đỏ - Danger) *@
+                                            <a asp-action="Delete" asp-route-id="@item.VaiTroId"
+                                               class="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                               style="width: 32px; height: 32px;"
+                                               title="Xóa vai trò">
+                                                <i class="bi bi-trash-fill" style="font-size: 0.8rem;"></i>
+                                            </a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            @* Giao diện khi danh sách trống *@
+                            <tr>
+                                <td colspan="3" class="text-center py-5 text-muted">
+                                    <div class="mb-3">
+                                        <i class="bi bi-inbox display-1 text-secondary opacity-25"></i>
+                                    </div>
+                                    <h5 class="fw-bold">Chưa có vai trò nào</h5>
+                                    <p>Nhấn vào nút "Thêm vai trò mới" để bắt đầu.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

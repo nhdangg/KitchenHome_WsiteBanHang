@@ -1,0 +1,269 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TrangNoiDung
+
+@{
+    ViewData["Title"] = "Xem trước: " + Model.TieuDe;
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mb-3">
+    <div class="d-flex justify-content-between align-items-center bg-white p-3 shadow-sm rounded border">
+        <div>
+            <span class="text-muted fw-bold text-uppercase small"><i class="bi bi-eye"></i> Chế độ xem trước (Preview)</span>
+            <h5 class="mb-0 text-primary fw-bold mt-1">@Model.TieuDe</h5>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-secondary shadow-sm">
+                <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.TrangId" class="btn btn-warning shadow-sm">
+                <i class="bi bi-pencil-square"></i> Sửa nội dung
+            </a>
+
+            <form asp-action="Delete" asp-route-id="@Model.TrangId" method="post" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa trang này?');">
+                <button type="submit" class="btn btn-danger shadow-sm">
+                    <i class="bi bi-trash"></i> Xóa
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* --- CSS RIÊNG CHO TRANG BÀI VIẾT --- *@
+<style>
+    /* 1. HERO BANNER */
+    .page-hero {
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80');
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center;
+        height: 350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-bottom: -100px; /* Đè khối nội dung lên banner */
+        padding-bottom: 50px;
+        border-radius: 8px 8px 0 0;
+    }
+
+    /* 2. KHỐI NỘI DUNG CHÍNH */
+    .content-wrapper {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        padding: 60px;
+        position: relative;
+        z-index: 10;
+        margin-bottom: 50px;
+    }
+
+    /* 3. TÙY CHỈNH VĂN BẢN (Html.Raw) */
+    .article-body {
+        font-family: 'Segoe UI', sans-serif;
+        color: #444;
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+
+        /* Drop cap - Chữ cái đầu to */
+        .article-body > p:first-of-type::first-letter {
+            font-size: 3.5rem;
+            float: left;
+            margin-right: 15px;
+            line-height: 1;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        .article-body h2 {
+            color: #111;
+            font-weight: 800;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 20px;
+            border-left: 5px solid #0d6efd;
+        }
+
+        .article-body h3 {
+            color: #333;
+            font-weight: 700;
+            margin-top: 2rem;
+        }
+
+        .article-body blockquote {
+            background: #f8f9fa;
+            border-left: 5px solid #6c757d;
+            margin: 1.5em 0;
+            padding: 1.5em 20px;
+            font-style: italic;
+            color: #555;
+            font-size: 1.1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .article-body ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+            .article-body ul li {
+                position: relative;
+                padding-left: 30px;
+                margin-bottom: 10px;
+            }
+
+                .article-body ul li::before {
+                    content: "\F26A"; /* Mã icon check-circle của Bootstrap Icons */
+                    font-family: "bootstrap-icons";
+                    position: absolute;
+                    left: 0;
+                    color: #198754; /* Màu xanh lá */
+                    font-weight: bold;
+                }
+
+        .article-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 30px 0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+            .article-body img:hover {
+                transform: scale(1.02);
+            }
+
+    /* Animation fade in */
+    .fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .content-wrapper {
+            padding: 30px 20px;
+            margin-top: -50px;
+        }
+
+        .page-hero {
+            height: 250px;
+        }
+    }
+</style>
+
+<div class="container-fluid px-0">
+    @* Banner *@
+    <div class="page-hero">
+        <div class="text-center px-3">
+            <h1 class="display-5 fw-bold text-uppercase text-shadow">@Model.TieuDe</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center text-white-50 bg-transparent mb-0">
+                    <li class="breadcrumb-item"><span class="text-white text-decoration-none">Trang chủ</span></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">@Model.TieuDe</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    @* Nội dung chính *@
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <div class="content-wrapper fade-in-up">
+
+                    @* Meta data *@
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-2">
+                        <div class="d-flex align-items-center text-muted small">
+                            <i class="bi bi-calendar3 me-2 text-primary"></i>
+                            <span>Đăng ngày: @(Model.NgayTao.ToString("dd 'tháng' MM, yyyy") ?? "---")</span>
+                        </div>
+
+                        <div class="d-flex gap-3 align-items-center">
+                            @if (Model.NgayCapNhat.HasValue)
+                            {
+                                <div class="d-flex align-items-center text-warning small" title="Ngày cập nhật gần nhất">
+                                    <i class="bi bi-pencil-square me-2"></i>
+                                    <span>Cập nhật: @Model.NgayCapNhat.Value.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            }
+
+                            @if (!Model.DangHienThi)
+                            {
+                                <span class="badge bg-danger"><i class="bi bi-eye-slash-fill me-1"></i> ĐANG ẨN</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success"><i class="bi bi-eye-fill me-1"></i> ĐANG HIỂN THỊ</span>
+                            }
+                        </div>
+                    </div>
+
+                    @* Nội dung HTML Raw *@
+                    <article class="article-body">
+                        @if (!string.IsNullOrEmpty(Model.NoiDung))
+                        {
+                            @Html.Raw(Model.NoiDung)
+                        }
+                        else
+                        {
+                            <p class="text-muted text-center fst-italic py-5">
+                                (Chưa có nội dung hiển thị)
+                            </p>
+                        }
+                    </article>
+
+                    @* Footer bài viết (Demo) *@
+                    <div class="mt-5 pt-4 border-top text-center">
+                        <p class="fst-italic text-muted">Cảm ơn bạn đã tin tưởng và đồng hành cùng KitchenHome!</p>
+
+                        <div class="mt-4">
+                            <button class="btn btn-primary rounded-pill px-4 py-2 shadow-sm disabled">
+                                <i class="bi bi-bag-heart me-2"></i> Mua sắm ngay
+                            </button>
+                            <button class="btn btn-outline-secondary rounded-pill px-4 py-2 ms-2 disabled">
+                                Liên hệ hỗ trợ
+                            </button>
+                            <div class="small text-muted mt-2 fst-italic">(Nút demo giao diện người dùng)</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Hiệu ứng Fade In nhẹ nhàng khi load trang
+        document.addEventListener("DOMContentLoaded", function() {
+            var wrapper = document.querySelector('.content-wrapper');
+            if(wrapper){
+                wrapper.style.opacity = 0;
+                wrapper.style.transform = 'translateY(20px)';
+
+                setTimeout(function() {
+                    wrapper.style.transition = 'all 0.8s ease-out';
+                    wrapper.style.opacity = 1;
+                    wrapper.style.transform = 'translateY(0)';
+                }, 100);
+            }
+        });
+    </script>
+}

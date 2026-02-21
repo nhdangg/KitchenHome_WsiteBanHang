@@ -1,0 +1,120 @@
+﻿@model KitchenHome_WsiteBanHang.Models.NhatKyKho
+
+@{
+    ViewData["Title"] = "Chi tiết phiếu kho";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="text-muted text-uppercase small fw-bold">Chi tiết phiếu kho</span>
+            <h3 class="fw-bold text-primary">#@Model.MaNhatKy</h3>
+        </div>
+        <a asp-action="Index" class="btn btn-secondary shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="card shadow border-0 rounded-3">
+        @* Logic màu nền header dựa trên loại phiếu *@
+        <div class="card-header text-white fw-bold py-3 @(Model.LoaiPhatSinh == "NHAP" ? "bg-success" : (Model.LoaiPhatSinh == "XUAT" ? "bg-danger" : "bg-warning text-dark"))">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>
+                    @if (Model.LoaiPhatSinh == "NHAP")
+                    {
+                        <i class="bi bi-box-arrow-in-down me-2"></i>
+                    
+                        <span>PHIẾU NHẬP KHO</span>
+                    }
+                    else if (Model.LoaiPhatSinh == "XUAT")
+                    {
+                        <i class="bi bi-box-arrow-up me-2"></i>
+                    
+                        <span>PHIẾU XUẤT KHO</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-arrow-repeat me-2"></i>
+                    
+                        <span>ĐIỀU CHỈNH KHO</span>
+                    }
+                </span>
+                <span class="small opacity-75">Ngày tạo: @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row mb-4">
+                @* Cột trái: Thông tin Kho *@
+                <div class="col-md-6">
+                    <h6 class="text-muted text-uppercase small fw-bold">Kho thực hiện</h6>
+                    <div class="fs-5 fw-bold text-dark">
+                        @(Model.Kho != null ? Model.Kho.TenKho : "---")
+                    </div>
+                    <div class="text-muted small">
+                        @(Model.Kho != null ? Model.Kho.DiaChi : "")
+                    </div>
+                </div>
+
+                @* Cột phải: Tham chiếu *@
+                <div class="col-md-6 text-md-end">
+                    <h6 class="text-muted text-uppercase small fw-bold">Tham chiếu nguồn</h6>
+                    @if (!string.IsNullOrEmpty(Model.LoaiThamChieu))
+                    {
+                        <div class="fw-bold">@Model.LoaiThamChieu</div>
+                        <div class="small">ID: @(Model.ThamChieuId.HasValue? Model.ThamChieuId.ToString() : "---")</div>
+                    }
+                    else
+                    {
+                        <span class="fst-italic text-muted">Không có tham chiếu (Nhập tay)</span>
+                    }
+                </div>
+            </div>
+
+            <hr class="my-4 opacity-25" />
+
+            <h6 class="text-primary fw-bold mb-3"><i class="bi bi-box-seam me-2"></i> Thông tin hàng hóa</h6>
+            <div class="bg-light p-3 rounded border">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        @if (Model.BienThe != null)
+                        {
+                            <div class="fw-bold fs-5">@(Model.BienThe.SanPham?.TenSanPham ?? "Sản phẩm đã xóa")</div>
+                            <div class="text-muted">Phân loại: <span class="fw-bold text-dark">@Model.BienThe.TenBienThe</span></div>
+                            <div class="small text-secondary mt-1">SKU: <span class="font-monospace">@Model.BienThe.Sku</span></div>
+                        }
+                        else
+                        {
+                            <div class="text-danger fst-italic">Thông tin sản phẩm không tồn tại</div>
+                        }
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <div class="text-muted small">Số lượng:</div>
+                        <div class="display-6 fw-bold @(Model.LoaiPhatSinh == "XUAT" ? "text-danger" : "text-success")">
+                            @(Model.LoaiPhatSinh == "XUAT" ? "-" : "+")@Model.SoLuong
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label class="fw-bold text-muted small">Ghi chú / Lý do:</label>
+                <div class="p-3 bg-white border rounded mt-1 fst-italic text-secondary">
+                    @if (string.IsNullOrEmpty(Model.GhiChu))
+                    {
+                        <span class="opacity-50">Không có ghi chú</span>
+                    }
+                    else
+                    {
+                        @Model.GhiChu
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light text-end p-3 border-top-0">
+            <small class="text-muted me-2">Mã hệ thống: <span class="font-monospace">@Model.NhatKyKhoId</span></small>
+        </div>
+    </div>
+</div>

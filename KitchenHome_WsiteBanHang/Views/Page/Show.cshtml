@@ -1,0 +1,197 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TrangNoiDung
+
+@{
+    ViewBag.Title = Model.TieuDe;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* 1. HERO BANNER: Tạo ấn tượng đầu tiên */
+    .page-hero {
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80'); /* Ảnh nền bếp mặc định */
+        background-attachment: fixed; /* Hiệu ứng Parallax */
+        background-size: cover;
+        background-position: center;
+        height: 350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-bottom: -100px; /* Kỹ thuật đè khối nội dung lên banner */
+        padding-bottom: 50px;
+    }
+
+    /* 2. KHỐI NỘI DUNG CHÍNH */
+    .content-wrapper {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1); /* Đổ bóng sâu tạo chiều sâu */
+        padding: 60px;
+        position: relative;
+        z-index: 10; /* Đè lên banner */
+    }
+
+    /* 3. TÙY CHỈNH VĂN BẢN TỪ DATABASE (Html.Raw) */
+    .article-body {
+        font-family: 'Segoe UI', sans-serif; /* Hoặc font chữ bạn thích */
+        color: #444;
+        font-size: 1.15rem;
+        line-height: 1.9;
+    }
+
+        /* Drop cap: Chữ cái đầu tiên to */
+        .article-body > p:first-of-type::first-letter {
+            font-size: 3.5rem;
+            float: left;
+            margin-right: 15px;
+            line-height: 1;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+
+        .article-body h2 {
+            color: #111;
+            font-weight: 800;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 20px;
+            border-left: 5px solid #0d6efd; /* Đường kẻ xanh bên trái thẻ H2 */
+        }
+
+        .article-body h3 {
+            color: #333;
+            font-weight: 700;
+            margin-top: 2rem;
+        }
+
+        /* Trích dẫn (Blockquote) */
+        .article-body blockquote {
+            background: #f9f9f9;
+            border-left: 5px solid #ccc;
+            margin: 1.5em 10px;
+            padding: 1.5em 20px;
+            font-style: italic;
+            color: #555;
+            font-size: 1.2rem;
+        }
+
+        /* Danh sách */
+        .article-body ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+            .article-body ul li {
+                position: relative;
+                padding-left: 30px;
+                margin-bottom: 10px;
+            }
+
+                .article-body ul li::before {
+                    content: "\f26b"; /* Icon check của FontAwesome/Bootstrap Icon */
+                    font-family: bootstrap-icons !important;
+                    position: absolute;
+                    left: 0;
+                    color: #198754; /* Màu xanh lá */
+                    font-weight: bold;
+                }
+
+        /* Hình ảnh trong bài viết */
+        .article-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 30px 0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+
+            .article-body img:hover {
+                transform: scale(1.02); /* Phóng to nhẹ khi di chuột */
+            }
+
+    /* Responsive cho mobile */
+    @@media (max-width: 768px) {
+        .content-wrapper {
+            padding: 30px 20px;
+            margin-top: -50px;
+        }
+
+        .page-hero {
+            height: 250px;
+        }
+
+        .article-body {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="page-hero">
+    <div class="text-center">
+        <h1 class="display-4 fw-bold text-uppercase tracking-wider">@Model.TieuDe</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center text-white-50 bg-transparent mb-0">
+                <li class="breadcrumb-item"><a href="/" class="text-white text-decoration-none">Trang chủ</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">@Model.TieuDe</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="content-wrapper fade-in-up">
+
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                    <div class="d-flex align-items-center text-muted small">
+                        <i class="bi bi-calendar3 me-2 text-primary"></i>
+                        <span>Đăng ngày: @Model.NgayTao.ToString("dd 'tháng' MM, yyyy")</span>
+                    </div>
+                    @if (Model.NgayCapNhat.HasValue)
+                    {
+                        <div class="d-flex align-items-center text-warning small">
+                            <i class="bi bi-pencil-square me-2"></i>
+                            <span>Cập nhật: @Model.NgayCapNhat.Value.ToString("dd/MM/yyyy")</span>
+                        </div>
+                    }
+                </div>
+
+                <article class="article-body">
+                    @Html.Raw(Model.NoiDung)
+                </article>
+
+                <div class="mt-5 pt-4 border-top text-center">
+                    <p class="fst-italic text-muted">Cảm ơn bạn đã tin tưởng và đồng hành cùng KitchenHome!</p>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Signature_sample.svg/1200px-Signature_sample.svg.png" alt="Signature" style="height: 50px; opacity: 0.6;">
+
+                    <div class="mt-4">
+                        <a href="@Url.Action("Index", "SanPham")" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm">
+                            <i class="bi bi-bag-heart me-2"></i> Mua sắm ngay
+                        </a>
+                        <a href="@Url.Action("Contact", "Home")" class="btn btn-outline-secondary rounded-pill px-4 py-2 ms-2">
+                            Liên hệ hỗ trợ
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var wrapper = document.querySelector('.content-wrapper');
+        wrapper.style.opacity = 0;
+        wrapper.style.transform = 'translateY(20px)';
+        wrapper.style.transition = 'all 0.8s ease-out';
+
+        setTimeout(function() {
+            wrapper.style.opacity = 1;
+            wrapper.style.transform = 'translateY(0)';
+        }, 100);
+    });
+</script>

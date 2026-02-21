@@ -1,0 +1,77 @@
+﻿@model KitchenHome_WsiteBanHang.Models.ThanhToan
+
+@{
+    ViewData["Title"] = "Tạo thanh toán mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold text-uppercase"><i class="bi bi-plus-circle-fill me-2"></i>Tạo giao dịch mới</h5>
+                </div>
+                <div class="card-body p-4">
+
+                    @* --- [MỚI] KHỐI HIỂN THỊ THÔNG BÁO TỪ CONTROLLER --- *@
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mb-3 border-0 border-start border-danger border-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post">
+
+                        @* Hiển thị lỗi Validation của Model *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small fst-italic"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="DonHangId" class="form-label fw-bold">Chọn Đơn hàng <span class="text-danger">*</span></label>
+                            <select asp-for="DonHangId" class="form-select" asp-items="ViewBag.DonHangId"></select>
+                            <span asp-validation-for="DonHangId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PhuongThucId" class="form-label fw-bold">Phương thức</label>
+                                <select asp-for="PhuongThucId" class="form-select" asp-items="ViewBag.PhuongThucId"></select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SoTien" class="form-label fw-bold">Số tiền (VNĐ) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input asp-for="SoTien" class="form-control text-end fw-bold" type="number" step="1000" placeholder="0" />
+                                    <span class="input-group-text">₫</span>
+                                </div>
+                                <span asp-validation-for="SoTien" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MaGiaoDich" class="form-label fw-bold">Mã giao dịch (Nếu có)</label>
+                            <input asp-for="MaGiaoDich" class="form-control" placeholder="VD: GD12345678" />
+                            <div class="form-text small">Mã tham chiếu từ ngân hàng hoặc ví điện tử.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="TrangThai" class="form-label fw-bold">Trạng thái thanh toán</label>
+                            <select asp-for="TrangThai" class="form-select fw-bold text-primary" asp-items="ViewBag.TrangThaiList"></select>
+                            <span asp-validation-for="TrangThai" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm">Quay lại</a>
+                            <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm"><i class="bi bi-save me-1"></i> Lưu giao dịch</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

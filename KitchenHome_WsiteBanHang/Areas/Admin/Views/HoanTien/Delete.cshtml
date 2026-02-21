@@ -1,0 +1,38 @@
+﻿@model KitchenHome_WsiteBanHang.Models.HoanTien
+
+@{
+    ViewData["Title"] = "Xóa hoàn tiền";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow border-0 border-top border-danger border-3 rounded-3">
+                <div class="card-header bg-white py-3 text-center">
+                    <h5 class="mb-0 fw-bold text-danger text-uppercase"><i class="bi bi-trash3-fill me-2"></i>Xác nhận xóa</h5>
+                </div>
+                <div class="card-body p-4 text-center">
+
+                    <div class="mb-3"><i class="bi bi-exclamation-circle text-danger display-1 opacity-75"></i></div>
+
+                    <h5 class="text-dark mb-2">Bạn có chắc chắn muốn xóa yêu cầu hoàn tiền này?</h5>
+
+                    <div class="bg-light p-3 rounded mb-4 text-start">
+                        <div class="mb-1"><strong>Mã đơn:</strong> @Model.ThanhToan.DonHang.MaDonHang</div>
+                        <div class="mb-1"><strong>Số tiền:</strong> <span class="text-danger fw-bold">@Model.SoTienHoan.ToString("N0") ₫</span></div>
+                        <div><strong>Lý do:</strong> @Model.LyDo</div>
+                    </div>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="HoanTienId" />
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm fw-bold">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-danger px-4 shadow-sm fw-bold">Xóa vĩnh viễn</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

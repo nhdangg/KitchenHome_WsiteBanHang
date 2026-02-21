@@ -1,0 +1,99 @@
+﻿@model KitchenHome_WsiteBanHang.Models.DanhMuc
+
+@{
+    ViewData["Title"] = "Cập nhật danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="max-width: 800px">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-warning text-uppercase">Cập nhật danh mục</h3>
+    </div>
+
+    <div class="card shadow border-0 border-top border-warning border-3">
+        <div class="card-body">
+            @* --- FORM BẮT ĐẦU --- *@
+            <form asp-action="Edit" method="post">
+                @* AntiForgeryToken tự động *@
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                @* Input ẩn *@
+                <input type="hidden" asp-for="DanhMucId" />
+                <input type="hidden" asp-for="NgayTao" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="TenDanhMuc" class="form-label fw-bold">Tên danh mục <span class="text-danger">*</span></label>
+                        <input asp-for="TenDanhMuc" class="form-control" id="TenDanhMuc" onkeyup="generateSlug()" required />
+                        <span asp-validation-for="TenDanhMuc" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Slug" class="form-label fw-bold">Slug (URL) <span class="text-danger">*</span></label>
+                        <input asp-for="Slug" class="form-control" id="Slug" />
+                        <span asp-validation-for="Slug" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Danh mục cha</label>
+                        @* Lưu ý: Controller cần truyền ViewBag.DanhMucChaId = new SelectList(...) 
+                           Nếu ViewBag có tên khác, hãy sửa lại giá trị trong asp-items 
+                        *@
+                        <select asp-for="DanhMucChaId" class="form-select" asp-items="ViewBag.DanhMucChaId">
+                            <option value="">-- Là danh mục gốc --</option>
+                        </select>
+                        <div class="form-text">Không chọn nếu đây là danh mục cao nhất.</div>
+                        <span asp-validation-for="DanhMucChaId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ThuTu" class="form-label fw-bold">Thứ tự hiển thị</label>
+                        <input asp-for="ThuTu" class="form-control" type="number" />
+                        <span asp-validation-for="ThuTu" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" asp-for="DangHoatDong" />
+                    <label class="form-check-label user-select-none" asp-for="DangHoatDong">Đang hoạt động</label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-warning"><i class="bi bi-check-lg"></i> Cập nhật</button>
+                    <a asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                </div>
+            </form>
+            @* --- FORM KẾT THÚC --- *@
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function generateSlug() {
+            let title = document.getElementById("TenDanhMuc").value;
+            let slug = title.toLowerCase();
+            slug = slug.replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a');
+            slug = slug.replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi, 'e');
+            slug = slug.replace(/i|í|ì|ỉ|ĩ|ị/gi, 'i');
+            slug = slug.replace(/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/gi, 'o');
+            slug = slug.replace(/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/gi, 'u');
+            slug = slug.replace(/ý|ỳ|ỷ|ỹ|ỵ/gi, 'y');
+            slug = slug.replace(/đ/gi, 'd');
+            slug = slug.replace(/\`|\~|\!|@@|\#|\||\$|\%|\^|\&|\*|\(|\)|\+|\=|\,|\.|\/|\?|\>|\<|\'|\"|\:|\;|_/gi, '');
+            slug = slug.replace(/ /gi, "-");
+            slug = slug.replace(/\-\-\-\-\-/gi, '-');
+            slug = slug.replace(/\-\-\-\-/gi, '-');
+            slug = slug.replace(/\-\-\-/gi, '-');
+            slug = slug.replace(/\-\-/gi, '-');
+            slug = '@@' + slug + '@@';
+            slug = slug.replace(/@@\-|\-@@|@@/gi, '');
+            document.getElementById("Slug").value = slug;
+        }
+    </script>
+}

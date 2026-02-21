@@ -1,0 +1,85 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.DonHang>
+
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <h2 class="text-uppercase fw-bold mb-4 border-bottom pb-2">Lịch sử mua hàng</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            Bạn chưa có đơn hàng nào. <a href="/" class="fw-bold">Mua sắm ngay!</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-primary">#@item.MaDonHang</td>
+                            <td>@item.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="fw-bold text-danger">@item.TongTien.ToString("N0") đ</td>
+                            <td>
+                                @* Helper hiển thị badge trạng thái *@
+                                @switch (item.TrangThai)
+                                {
+                                    case "CHO_XAC_NHAN":
+                                        <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                        break;
+                                    case "DA_XAC_NHAN":
+                                    case "DANG_DONG_GOI":
+                                        <span class="badge bg-info text-dark">Đang xử lý</span>
+                                        break;
+                                    case "DANG_GIAO":
+                                        <span class="badge bg-primary">Đang giao hàng</span>
+                                        break;
+                                    case "DA_GIAO":
+                                    case "HOAN_TAT":
+                                        <span class="badge bg-success">Hoàn tất</span>
+                                        break;
+                                    case "HUY":
+                                        <span class="badge bg-danger">Đã hủy</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@item.TrangThai</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="ChiTiet" asp-route-id="@item.DonHangId" class="btn btn-outline-primary btn-sm rounded-pill">
+                                    Xem chi tiết
+                                </a>
+
+                                <a asp-controller="LichSuThanhToan"
+                                   asp-action="Index"
+                                   asp-route-id="@item.DonHangId"
+                                   class="btn btn-outline-success btn-sm rounded-pill ms-1">
+                                    Lịch sử thanh toán
+                                </a>
+
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+

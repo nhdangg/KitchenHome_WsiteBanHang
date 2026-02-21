@@ -1,0 +1,167 @@
+﻿@model KitchenHome_WsiteBanHang.Models.SanPham
+
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+    Layout = "~/Areas/Quan_Ly/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-info text-uppercase"><i class="bi bi-info-circle me-2"></i>Chi tiết sản phẩm</h3>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.SanPhamId" class="btn btn-warning text-dark shadow-sm">
+            <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
+        </a>
+        <a asp-action="Index" class="btn btn-secondary ms-2 shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    @* --- CỘT TRÁI: THÔNG TIN CHUNG --- *@
+    <div class="col-md-4">
+        <div class="card shadow mb-4 border-0 rounded-3">
+            <div class="card-header bg-primary text-white fw-bold py-3">
+                <i class="bi bi-card-list me-2"></i> Thông tin chung
+            </div>
+            <div class="card-body text-center p-4">
+                @* Logic hiển thị ảnh *@
+                @{
+                    string imgUrl = "https://via.placeholder.com/300x300?text=No+Image";
+                    if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+                    {
+                        imgUrl = Url.Content("~/Image/Image_SanPham/" + Model.AnhDaiDien);
+                    }
+                }
+                <img src="@imgUrl"
+                     alt="@Model.TenSanPham"
+                     class="img-thumbnail mb-3 shadow-sm rounded"
+                     style="max-height: 250px; width: auto; object-fit: contain;"
+                     onerror="this.src='https://via.placeholder.com/300x300?text=Error'" />
+
+                <h5 class="fw-bold text-primary mb-1">@Model.TenSanPham</h5>
+                <p class="text-muted font-monospace small">Mã SP: <strong>@Model.MaSanPham</strong></p>
+
+                <hr class="my-3 opacity-25" />
+
+                <div class="text-start px-2">
+                    <p class="mb-2"><strong>Danh mục:</strong> <span class="text-dark">@(Model.DanhMuc?.TenDanhMuc ?? "---")</span></p>
+                    <p class="mb-2"><strong>Thương hiệu:</strong> <span class="text-dark">@(Model.ThuongHieu?.TenThuongHieu ?? "---")</span></p>
+                    <p class="mb-2"><strong>Đơn vị tính:</strong> <span class="text-dark">@(Model.DonViTinh?.TenDonViTinh ?? "---")</span></p>
+                    <p class="mb-2">
+                        <strong>Trạng thái:</strong>
+                        @if (Model.DangHoatDong)
+                        {
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success ms-1">Đang hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary ms-1">Ngừng hoạt động</span>
+                        }
+                    </p>
+                    <p class="mb-2">
+                        <strong>Hiện trang chủ:</strong>
+                        @if (Model.HienThiTrangChu)
+                        {
+                            <i class="bi bi-check-circle-fill text-success ms-1"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-x-circle-fill text-secondary ms-1"></i>
+                        }
+                    </p>
+                    <p class="mb-0 text-muted small"><i class="bi bi-calendar3 me-1"></i> Ngày tạo: @Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- CỘT PHẢI: MÔ TẢ & BIẾN THỂ --- *@
+    <div class="col-md-8">
+        @* Card Mô tả *@
+        <div class="card shadow mb-4 border-0 rounded-3">
+            <div class="card-header bg-white fw-bold py-3 border-bottom">
+                <i class="bi bi-file-text me-2 text-primary"></i> Mô tả chi tiết
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <strong class="text-muted text-uppercase small d-block mb-1">Mô tả ngắn</strong>
+                    <div class="p-3 bg-light rounded border text-muted fst-italic">
+                        @(string.IsNullOrEmpty(Model.MoTaNgan) ? "Không có mô tả ngắn" : Model.MoTaNgan)
+                    </div>
+                </div>
+                <div>
+                    <strong class="text-muted text-uppercase small d-block mb-1">Nội dung chi tiết</strong>
+                    <div class="border p-3 bg-white rounded" style="min-height: 150px;">
+                        @if (!string.IsNullOrEmpty(Model.MoTaChiTiet))
+                        {
+                            @Html.Raw(Model.MoTaChiTiet)
+                        }
+                        else
+                        {
+                            <span class="text-muted opacity-50">Chưa cập nhật nội dung chi tiết.</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Card Biến thể *@
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <span class="fw-bold text-dark"><i class="bi bi-list-ul me-2 text-primary"></i> Danh sách biến thể (SKU)</span>
+                <a asp-controller="BienTheSanPham" asp-action="Index" asp-route-sanPhamId="@Model.SanPhamId" class="btn btn-sm btn-outline-primary shadow-sm">
+                    <i class="bi bi-gear-fill me-1"></i> Quản lý biến thể
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">SKU</th>
+                                <th>Tên biến thể</th>
+                                <th>Giá nhập</th>
+                                <th>Giá bán</th>
+                                <th class="text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.BienTheSanPhams != null && Model.BienTheSanPhams.Any())
+                            {
+                                foreach (var sku in Model.BienTheSanPhams)
+                                {
+                                    <tr>
+                                        <td class="ps-4 fw-bold font-monospace text-primary">@sku.Sku</td>
+                                        <td>@sku.TenBienThe</td>
+                                        <td class="text-muted">@sku.GiaNhapThamChieu.ToString("N0")</td>
+                                        <td class="text-danger fw-bold">@sku.GiaBan.ToString("N0")</td>
+                                        <td class="text-center">
+                                            @if (sku.DangHoatDong)
+                                            {
+                                                <i class="bi bi-check-circle-fill text-success" title="Đang bán"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-x-circle-fill text-secondary" title="Ngừng bán"></i>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="p-4 text-center text-muted">
+                                        <i class="bi bi-inbox display-4 d-block mb-2 opacity-25"></i>
+                                        Sản phẩm này chưa có biến thể nào.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

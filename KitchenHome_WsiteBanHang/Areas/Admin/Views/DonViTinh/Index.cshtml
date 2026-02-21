@@ -1,0 +1,113 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.DonViTinh>
+
+@{
+    ViewData["Title"] = "Quản lý Đơn vị tính";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    @* --- HEADER --- *@
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h3 class="fw-bold text-primary text-uppercase">
+            <i class="bi bi-rulers me-2"></i>Quản lý Đơn vị tính
+        </h3>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Thêm mới
+        </a>
+    </div>
+
+    @* --- THÔNG BÁO (Alerts) --- *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 border-start border-success border-4">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 border-start border-danger border-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* --- BẢNG DỮ LIỆU --- *@
+    <div class="card shadow mb-4 border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3" style="width: 80px;">#</th>
+                            <th class="py-3">Tên đơn vị</th>
+                            <th class="py-3">Ký hiệu / Viết tắt</th>
+                            <th class="text-center py-3" style="width: 150px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            int stt = 1;
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    @* STT *@
+                                    <td class="ps-4 text-muted font-monospace">@stt</td>
+
+                                    @* Tên đơn vị *@
+                                    <td>
+                                        <span class="fw-bold text-dark">@item.TenDonViTinh</span>
+                                    </td>
+
+                                    @* Ký hiệu *@
+                                    <td>
+                                        <span class="badge bg-light text-secondary border font-monospace px-2 py-1">
+                                            @item.KyHieu
+                                        </span>
+                                    </td>
+
+                                    @* Thao tác (Nút tròn đồng bộ) *@
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            @* Nút Sửa *@
+                                            <a asp-action="Edit" asp-route-id="@item.DonViTinhId"
+                                               class="btn btn-outline-warning btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm text-dark"
+                                               style="width: 32px; height: 32px;"
+                                               title="Sửa">
+                                                <i class="bi bi-pencil-fill" style="font-size: 0.8rem;"></i>
+                                            </a>
+
+                                            @* Nút Xóa *@
+                                            <a asp-action="Delete" asp-route-id="@item.DonViTinhId"
+                                               class="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                               style="width: 32px; height: 32px;"
+                                               title="Xóa"
+                                               onclick="return confirm('Bạn có chắc muốn xóa đơn vị tính: @item.TenDonViTinh?');">
+                                                <i class="bi bi-trash-fill" style="font-size: 0.8rem;"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                stt++;
+                            }
+                        }
+                        else
+                        {
+                            @* Empty State *@
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <div class="mb-3">
+                                        <i class="bi bi-rulers display-1 text-secondary opacity-25"></i>
+                                    </div>
+                                    <h5 class="fw-bold">Chưa có dữ liệu</h5>
+                                    <p class="small">Danh sách đơn vị tính hiện đang trống.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

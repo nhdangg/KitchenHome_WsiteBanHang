@@ -1,0 +1,106 @@
+﻿@model KitchenHome_WsiteBanHang.Models.NhatKyCongThanhToan
+
+@{
+    ViewData["Title"] = "Chi tiết Log Thanh Toán";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Chi tiết Nhật ký Cổng thanh toán</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a asp-action="Index">Danh sách Log</a></li>
+        <li class="breadcrumb-item active">Chi tiết Log #@Model.NhatKyId</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-xl-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Thông tin giao dịch
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tr>
+                            <th style="width: 40%">Cổng:</th>
+                            <td><span class="badge bg-primary">@Model.CongThanhToan</span></td>
+                        </tr>
+                        <tr>
+                            <th>Mã kết quả:</th>
+                            <td><span class="badge @(Model.MaKetQua == "00" || Model.MaKetQua == "Success" ? "bg-success" : "bg-danger")">@Model.MaKetQua</span></td>
+                        </tr>
+                        <tr>
+                            <th>Ngày tạo:</th>
+                            <td>@Model.NgayTao.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                        </tr>
+                        <tr>
+                            <th>Đơn hàng:</th>
+                            <td>
+                                <a asp-controller="DonHang" asp-action="Details" asp-route-id="@Model.ThanhToan.DonHangId">
+                                    #@Model.ThanhToan.DonHang.MaDonHang
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Số tiền:</th>
+                            <td class="text-danger fw-bold">@Model.ThanhToan.SoTien.ToString("#,##0") VNĐ</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-code me-1"></i>
+                        Dữ liệu phản hồi từ Gateway (JSON Raw)
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard()">
+                        <i class="fas fa-copy"></i> Sao chép
+                    </button>
+                </div>
+                <div class="card-body py-0">
+                    <pre id="jsonContent" class="bg-light p-3 mt-2" style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
+                    <code class="language-json">@Model.DuLieuNhan</code>
+                    </pre>
+                </div>
+                <div class="card-footer text-muted small">
+                    Ghi chú: Đây là dữ liệu gốc được cổng thanh toán gửi về hệ thống.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        // Làm đẹp hiển thị JSON
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const codeElement = document.querySelector('#jsonContent code');
+            try {
+                const obj = JSON.parse(codeElement.textContent);
+                codeElement.textContent = JSON.stringify(obj, null, 4);
+            } catch (e) {
+                // Không phải JSON hoặc lỗi định dạng thì giữ nguyên
+            }
+            hljs.highlightAll();
+        });
+
+        function copyToClipboard() {
+            const text = document.getElementById("jsonContent").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Đã sao chép dữ liệu vào bộ nhớ tạm!");
+            });
+        }
+    </script>
+}

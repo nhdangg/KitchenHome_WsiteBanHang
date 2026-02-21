@@ -1,0 +1,54 @@
+﻿@model KitchenHome_WsiteBanHang.Models.ThuongHieu
+
+@{
+    ViewData["Title"] = "Chi tiết thương hiệu";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card shadow border-0 rounded-3">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2"></i>Chi tiết Thương Hiệu</h5>
+            <a asp-action="Edit" asp-route-id="@Model.ThuongHieuId" class="btn btn-sm btn-light text-info fw-bold shadow-sm">
+                <i class="bi bi-pencil me-1"></i> Sửa
+            </a>
+        </div>
+        <div class="card-body p-4">
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-muted">ID:</dt>
+                <dd class="col-sm-8 fw-bold font-monospace text-secondary">@Model.ThuongHieuId</dd>
+
+                <dt class="col-sm-4 text-muted">Tên thương hiệu:</dt>
+                <dd class="col-sm-8 fs-5 text-primary fw-bold">@Model.TenThuongHieu</dd>
+
+                <dt class="col-sm-4 text-muted">Quốc gia:</dt>
+                <dd class="col-sm-8">@(Model.QuocGia ?? "Không xác định")</dd>
+
+                <dt class="col-sm-4 text-muted">Trạng thái:</dt>
+                <dd class="col-sm-8">
+                    @if (Model.DangHoatDong)
+                    {
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success">Đang hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary">Ngừng hoạt động</span>
+                    }
+                </dd>
+
+                <hr class="my-4 opacity-25">
+
+                <dt class="col-sm-4 text-muted">Thống kê:</dt>
+                <dd class="col-sm-8">
+                    @* Đếm trực tiếp từ Model nếu đã Include, hoặc dùng ViewBag nếu Controller truyền qua *@
+                    Đang có <strong class="text-danger fs-5">@(Model.SanPhams?.Count ?? ViewBag.SoLuongSanPham ?? 0)</strong> sản phẩm thuộc thương hiệu này.
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer bg-light text-end p-3 border-top-0">
+            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm">
+                <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+            </a>
+        </div>
+    </div>
+</div>

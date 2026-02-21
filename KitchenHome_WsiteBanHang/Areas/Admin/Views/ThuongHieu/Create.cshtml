@@ -1,0 +1,63 @@
+﻿@model KitchenHome_WsiteBanHang.Models.ThuongHieu
+
+@{
+    ViewData["Title"] = "Thêm thương hiệu mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card shadow border-0 rounded-3">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-award me-2"></i>Thêm Thương Hiệu</h5>
+        </div>
+        <div class="card-body p-4">
+
+            @* --- FORM BẮT ĐẦU --- *@
+            <form asp-action="Create" method="post">
+
+                @* AntiForgeryToken tự động *@
+
+                @* Hiển thị lỗi tổng quát nếu có *@
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="TenThuongHieu" class="form-label fw-bold">Tên thương hiệu <span class="text-danger">*</span></label>
+                    <input asp-for="TenThuongHieu" class="form-control" placeholder="Nhập tên thương hiệu..." required />
+                    <span asp-validation-for="TenThuongHieu" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="QuocGia" class="form-label fw-bold">Quốc gia xuất xứ</label>
+                    <input asp-for="QuocGia" class="form-control" placeholder="VD: Việt Nam, Đức, Nhật..." />
+                    <span asp-validation-for="QuocGia" class="text-danger small"></span>
+                </div>
+
+                <div class="form-check mb-4 ps-5">
+                    @* Thêm checked để mặc định chọn *@
+                    <input class="form-check-input scale-125" type="checkbox" asp-for="DangHoatDong" checked />
+                    <label class="form-check-label fw-bold ms-2 user-select-none" asp-for="DangHoatDong">Kích hoạt ngay</label>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary px-4">Quay lại</a>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">
+                        <i class="bi bi-save me-1"></i> Lưu lại
+                    </button>
+                </div>
+            </form>
+            @* --- FORM KẾT THÚC --- *@
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <style>
+        .scale-125 {
+            transform: scale(1.25);
+        }
+    </style>
+}

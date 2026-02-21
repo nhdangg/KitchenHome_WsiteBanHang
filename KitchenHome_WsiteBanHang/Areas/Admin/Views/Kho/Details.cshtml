@@ -1,0 +1,162 @@
+﻿@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model KitchenHome_WsiteBanHang.Models.Kho
+
+@{
+    ViewData["Title"] = "Chi tiết kho: " + Model.TenKho;
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var pagedList = ViewBag.DanhSachTonKho as IPagedList<KitchenHome_WsiteBanHang.Models.TonKho>;
+}
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">@Model.TenKho</h3>
+        <p class="text-muted mb-0">
+            <span class="badge bg-primary-subtle text-primary me-2">ID: @Model.MaKho</span>
+            <i class="bi bi-geo-alt me-1"></i> @Model.DiaChi
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Index" class="btn btn-outline-secondary px-3 rounded-pill btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+        <a asp-action="Edit" asp-route-id="@Model.KhoId" class="btn btn-warning px-3 rounded-pill btn-sm fw-bold text-dark">
+            <i class="bi bi-pencil me-1"></i> Sửa kho
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+            <div class="card-header bg-dark text-white py-3 fw-bold small text-uppercase">
+                <i class="bi bi-info-circle me-2"></i>Quản lý vận hành
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <label class="text-muted small fw-bold d-block mb-1">TRẠNG THÁI</label>
+                    @if (Model.DangHoatDong)
+                    {
+                        <div class="text-success fw-bold d-flex align-items-center">
+                            <i class="bi bi-dot fs-1"></i> Đang hoạt động
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-danger fw-bold d-flex align-items-center">
+                            <i class="bi bi-dot fs-1"></i> Tạm ngừng
+                        </div>
+                    }
+                </div>
+                <div class="d-grid gap-2">
+                    <a asp-controller="NhatKyKho" asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Nhập / Xuất kho
+                    </a>
+                   <a asp-action="ExportToExcel" asp-route-id="@Model.KhoId" class="btn btn-outline-success btn-sm border-dashed mt-2 w-100 fw-bold">
+                        <i class="bi bi-file-earmark-excel-fill me-1"></i> Xuất Excel Báo Cáo
+                   </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 border-bottom">
+                <form asp-action="Details" method="get" class="row g-2 align-items-center">
+                    <input type="hidden" name="id" value="@Model.KhoId" />
+                    <div class="col-md-6">
+                        <h5 class="fw-bold text-dark mb-0">Hàng tồn trong kho</h5>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                            <input type="text" name="searchString" value="@ViewBag.CurrentFilter" class="form-control border-start-0 bg-light" placeholder="Tên SP hoặc SKU..." />
+                            <button type="submit" class="btn btn-primary px-3">Tìm</button>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter as string))
+                    {
+                        <div class="col-md-1 text-end">
+                            <a asp-action="Details" asp-route-id="@Model.KhoId" class="btn btn-sm btn-light text-danger"><i class="bi bi-x-lg"></i></a>
+                        </div>
+                    }
+                </form>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-muted small fw-bold">
+                            <tr>
+                                <th class="ps-4 py-3">Thông tin Sản phẩm</th>
+                                <th>SKU</th>
+                                <th class="text-center">Tổng Tồn</th>
+                                <th class="text-center">Giữ chỗ</th>
+                                <th class="text-center">Khả dụng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (pagedList != null && pagedList.Any())
+                            {
+                                foreach (var item in pagedList)
+                                {
+                                    var khaDung = item.SoLuongTon - item.SoLuongGiuCho;
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold text-dark">@item.BienThe.SanPham.TenSanPham</div>
+                                            <small class="text-muted">@item.BienThe.TenBienThe</small>
+                                        </td>
+                                        <td><code class="small text-primary">@item.BienThe.Sku</code></td>
+                                        <td class="text-center fw-bold @(item.SoLuongTon <= item.MucDatHangLai ? "text-danger" : "text-dark")">
+                                            @item.SoLuongTon.ToString("N0")
+                                            @if(item.SoLuongTon <= item.MucDatHangLai) { 
+                                                <i class="bi bi-exclamation-triangle-fill ms-1 small" title="Sắp hết hàng"></i> 
+                                            }
+                                        </td>
+                                        <td class="text-center text-muted">@item.SoLuongGiuCho.ToString("N0")</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success px-3 py-2 rounded-pill">@khaDung.ToString("N0")</span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @if (pagedList != null && pagedList.PageCount > 1)
+            {
+                <div class="card-footer bg-white border-top py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Trang @pagedList.PageNumber / @pagedList.PageCount</small>
+                        <div class="pagination-container">
+                            @Html.PagedListPager(pagedList, page => Url.Action("Details", 
+                                new { id = Model.KhoId, page, searchString = ViewBag.CurrentFilter }),
+                                new PagedListRenderOptions {
+                                    DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+                                    DisplayLinkToLastPage = PagedListDisplayMode.Never,
+                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                    ContainerDivClasses = new[] { "pagination pagination-sm mb-0" },
+                                    UlElementClasses = new[] { "pagination pagination-sm mb-0" },
+                                    LiElementClasses = new[] { "page-item" },
+                                    PageClasses = new[] { "page-link shadow-none" }
+                                })
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS đồng bộ Pagination với Bootstrap 5 */
+    .pagination .page-item.active .page-link { background-color: #0d6efd; border-color: #0d6efd; color: white; }
+    .pagination .page-link { color: #333; border: 1px solid #dee2e6; margin: 0 2px; border-radius: 4px; }
+    .btn-white { background: #fff; border: 1px solid #dee2e6; }
+    .btn-white:hover { background: #f8f9fa; }
+    .border-dashed { border-style: dashed !important; }
+</style>

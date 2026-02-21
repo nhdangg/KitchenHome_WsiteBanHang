@@ -1,0 +1,391 @@
+﻿@model KitchenHome_WsiteBanHang.Models.SanPham
+@using KitchenHome_WsiteBanHang.Models
+
+@{
+    ViewData["Title"] = Model.TenSanPham;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // ===== ẢNH SẢN PHẨM =====
+    var mainImage = string.IsNullOrEmpty(Model.AnhDaiDien)
+        ? Url.Content("~/IMAGE/no-image.png")
+        : (Model.AnhDaiDien.StartsWith("http")
+            ? Model.AnhDaiDien
+            : Url.Content("~/IMAGE/Img_SanPham/" + Model.AnhDaiDien));
+
+    var variants = Model.BienTheSanPhams?
+        .Where(x => x.DangHoatDong && x.GiaBan > 0)
+        .OrderBy(x => x.GiaBan)
+        .ToList() ?? new List<BienTheSanPham>();
+
+    var defaultVariant = variants.FirstOrDefault();
+
+    var galleryImages = variants
+        .SelectMany(v => (v.HinhAnhSanPhams ?? new List<HinhAnhSanPham>())
+            .OrderByDescending(h => h.LaChinh)
+            .ThenBy(h => h.ThuTu)
+            .Select(h => new
+            {
+                Image = h.DuongDan.StartsWith("http")
+                    ? h.DuongDan
+                    : Url.Content("~/IMAGE/Img_SanPham/" + h.DuongDan),
+                VariantId = v.BienTheId
+            }))
+        .ToList();
+
+    var currentUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+<style>
+    .main-swiper {
+        width: 100%;
+        height: 420px;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #f8f9fa;
+    }
+
+        .main-swiper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s ease;
+        }
+
+        .main-swiper:hover img {
+            transform: scale(1.1);
+        }
+
+    .thumb-swiper {
+        margin-top: 12px;
+    }
+
+        .thumb-swiper img {
+            height: 90px;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+            opacity: .6;
+        }
+
+    .swiper-slide-thumb-active img {
+        opacity: 1;
+        border: 2px solid #0d6efd;
+    }
+
+    .variant-btn.active {
+        border-color: #0d6efd;
+        background: #e7f1ff;
+        color: #0d6efd;
+        font-weight: 600;
+    }
+
+    .price-tag {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #dc3545;
+    }
+
+    .price-old {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-left: 10px;
+    }
+
+    @@media (max-width: 768px) {
+        .main-swiper
+
+    {
+        height: 300px;
+    }
+
+    .thumb-swiper img {
+        height: 70px;
+    }
+
+    }
+</style>
+
+<div class="container my-5">
+
+    <!-- BREADCRUMB -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="#">@Model.DanhMuc?.TenDanhMuc</a></li>
+            <li class="breadcrumb-item active">@Model.TenSanPham</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+
+        <!-- ================== CỘT TRÁI : ẢNH ================== -->
+        <div class="col-md-6">
+
+            <div class="swiper main-swiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <img src="@mainImage" />
+                    </div>
+
+                    @foreach (var img in galleryImages)
+                    {
+                        <div class="swiper-slide" data-variant="@img.VariantId">
+                            <img src="@img.Image" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="swiper thumb-swiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <img src="@mainImage" />
+                    </div>
+
+                    @foreach (var img in galleryImages)
+                    {
+                        <div class="swiper-slide" data-variant="@img.VariantId">
+                            <img src="@img.Image" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================== CỘT PHẢI : THÔNG TIN (GIỮ NGUYÊN) ================== -->
+        <div class="col-md-6">
+            <h1 class="fw-bold mb-3">@Model.TenSanPham</h1>
+
+            <div class="mb-3">
+                <span class="text-warning">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-half"></i>
+                </span>
+                <small class="text-muted">(Đã bán: 100+)</small>
+            </div>
+
+            <div class="mb-4">
+                @if (defaultVariant?.GiaKhuyenMai > 0)
+                {
+                    <span class="price-tag" id="display-price">@defaultVariant.GiaKhuyenMai.Value.ToString("N0") đ</span>
+                    <span class="price-old" id="display-old-price">@defaultVariant.GiaBan.ToString("N0") đ</span>
+                }
+                else
+                {
+                    <span class="price-tag" id="display-price">@defaultVariant?.GiaBan.ToString("N0") đ</span>
+                    <span class="price-old d-none" id="display-old-price"></span>
+                }
+            </div>
+
+            <hr />
+
+            <!-- VARIANT -->
+            <div class="mb-4">
+                <label class="fw-bold mb-2 d-block">Chọn loại:</label>
+                @foreach (var v in variants)
+                {
+                    var gia = v.GiaKhuyenMai > 0 ? v.GiaKhuyenMai.Value : v.GiaBan;
+                    <button type="button"
+                            class="btn btn-outline-secondary me-2 mb-2 variant-btn @(v == defaultVariant ? "active" : "")"
+                            onclick="selectVariant(this); changeGalleryByVariant(@v.BienTheId)"
+                            data-id="@v.BienTheId"
+                            data-price="@gia"
+                            data-old="@v.GiaBan">
+                        @(string.IsNullOrEmpty(v.TenBienThe) ? v.Sku : v.TenBienThe)
+                    </button>
+                }
+            </div>
+
+            <!-- SỐ LƯỢNG -->
+            <div class="mb-4" style="width:140px">
+                <label class="fw-bold mb-2 d-block">Số lượng:</label>
+                <div class="input-group">
+                    <button class="btn btn-outline-secondary" onclick="updateQty(-1)">-</button>
+                    <input type="number" id="qty" class="form-control text-center" value="1" min="1">
+                    <button class="btn btn-outline-secondary" onclick="updateQty(1)">+</button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-lg w-100 rounded-pill">
+                <i class="bi bi-cart-plus me-2"></i> Thêm vào giỏ hàng
+            </button>
+
+            <div class="mt-4 bg-light p-3 rounded">
+                <p class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Bảo hành chính hãng</p>
+                <p class="mb-0"><i class="bi bi-check-circle-fill text-success me-2"></i>Giao hàng toàn quốc</p>
+            </div>
+        </div>
+    </div>
+</div>
+<hr class="my-5" />
+
+<div class="row">
+    <div class="col-md-7">
+        <h3 class="fw-bold mb-4">Đánh giá từ khách hàng</h3>
+
+        @if (ViewBag.DanhSachDanhGia != null && ((List<DanhGiaSanPham>)ViewBag.DanhSachDanhGia).Any())
+        {
+            <div class="list-group list-group-flush shadow-sm rounded">
+                @foreach (var dg in (List<DanhGiaSanPham>)ViewBag.DanhSachDanhGia)
+                {
+                    <div class="list-group-item py-4 border-bottom">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-shrink-0">
+                                @* <img src="~/IMAGE/user-avatar.png" class="rounded-circle border" width="50" height="50" alt="User"> *@
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-0 fw-bold">@dg.KhachHang?.HoTen</h6>
+                                <div class="text-warning small">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi bi-star@(i <= dg.SoSao ? "-fill" : "")"></i>
+                                    }
+                                    <span class="ms-2 text-muted fw-normal">@dg.NgayTao.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-5 ps-2">
+                            @if (!string.IsNullOrEmpty(dg.TieuDe))
+                            {
+                                <p class="fw-bold mb-1">@dg.TieuDe</p>
+                            }
+                            <p class="mb-0 text-secondary">@dg.NoiDung</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 bg-light rounded border border-dashed">
+                <i class="bi bi-chat-dots fs-1 text-muted"></i>
+                <p class="text-muted mt-2 mb-0">Chưa có đánh giá nào cho sản phẩm này.</p>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+            <div class="card-body p-4">
+                <h4 class="fw-bold mb-3">Gửi đánh giá của bạn</h4>
+
+                @if (Context.Session.GetInt32("USER_ID") != null)
+                {
+                    <form asp-action="GuiDanhGia" asp-controller="Home" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="SanPhamId" value="@Model.SanPhamId" />
+
+                        <div class="mb-3">
+                            <label class="form-label d-block">Mức độ hài lòng:</label>
+                            <div class="rating-stars fs-3 text-secondary" style="cursor: pointer;">
+                                <i class="bi bi-star" data-value="1"></i>
+                                <i class="bi bi-star" data-value="2"></i>
+                                <i class="bi bi-star" data-value="3"></i>
+                                <i class="bi bi-star" data-value="4"></i>
+                                <i class="bi bi-star" data-value="5"></i>
+                            </div>
+                            <input type="hidden" name="SoSao" id="inputSoSao" value="5" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tiêu đề (tùy chọn):</label>
+                            <input type="text" name="TieuDe" class="form-control" placeholder="Tóm tắt cảm nhận của bạn">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nội dung chi tiết:</label>
+                            <textarea name="NoiDung" class="form-control" rows="4" required placeholder="Sản phẩm dùng rất tốt, đóng gói kỹ..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill">
+                            Gửi đánh giá ngay
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <p class="text-muted mb-3">Bạn cần đăng nhập để đánh giá sản phẩm này</p>
+                        <a asp-area="Login_Wsite" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary rounded-pill px-4">Đăng nhập ngay</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rating-stars .bi-star-fill {
+        color: #ffc107;
+    }
+
+    .rating-stars .bi-star:hover {
+        color: #ffc107;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+    // --- KHỞI TẠO SWIPER (Giữ nguyên của bạn) ---
+    const thumbSwiper = new Swiper('.thumb-swiper', {
+        spaceBetween: 10,
+        slidesPerView: 4,
+        freeMode: true,
+        watchSlidesProgress: true
+    });
+
+    const mainSwiper = new Swiper('.main-swiper', {
+        effect: 'fade',
+        thumbs: { swiper: thumbSwiper }
+    });
+
+    function changeGalleryByVariant(variantId) {
+        document.querySelectorAll('.main-swiper .swiper-slide').forEach((s, i) => {
+            if (s.dataset.variant == variantId) mainSwiper.slideTo(i);
+        });
+    }
+
+    function selectVariant(btn) {
+        document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('display-price').innerText = Number(btn.dataset.price).toLocaleString('vi-VN') + ' đ';
+    }
+
+    function updateQty(v) {
+        let i = document.getElementById('qty');
+        i.value = Math.max(1, parseInt(i.value) + v);
+    }
+
+    // --- LOGIC CHỌN SAO (MỚI) ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('.rating-stars i');
+        const inputSoSao = document.getElementById('inputSoSao');
+
+        function updateStars(value) {
+            stars.forEach(s => {
+                const sValue = s.getAttribute('data-value');
+                if (sValue <= value) {
+                    s.classList.replace('bi-star', 'bi-star-fill');
+                } else {
+                    s.classList.replace('bi-star-fill', 'bi-star');
+                }
+            });
+            inputSoSao.value = value;
+        }
+
+        // Mặc định chọn 5 sao
+        updateStars(5);
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                updateStars(this.getAttribute('data-value'));
+            });
+        });
+    });
+</script>

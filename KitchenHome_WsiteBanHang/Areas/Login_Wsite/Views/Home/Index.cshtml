@@ -1,0 +1,192 @@
+﻿@model KitchenHome_WsiteBanHang.Areas.Login_Wsite.Models.LoginVM
+@{
+    ViewBag.Title = "Đăng nhập hệ thống";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    /* (Giữ nguyên phần CSS cũ của bạn vì nó vẫn hoạt động tốt) */
+    .login-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .login-wrap {
+        width: 100%;
+        max-width: 450px;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        animation: slideUp 0.5s ease-out;
+        border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    @@keyframes slideUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .login-title {
+        font-weight: 800;
+        color: #2c3e50;
+        font-size: 1.8rem;
+    }
+
+    .login-sub {
+        color: #95a5a6;
+        font-size: 0.9rem;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        color: #6c757d;
+    }
+
+    .form-control {
+        background-color: #f8f9fa;
+        border-left: none;
+        border-radius: 0 12px 12px 0;
+        padding: 12px;
+        font-size: 0.95rem;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            background-color: #fff;
+            box-shadow: none;
+            border-color: #dee2e6;
+        }
+
+    .input-group:focus-within .input-group-text {
+        background-color: #fff;
+        color: #0d6efd;
+        border-color: #dee2e6;
+    }
+
+    .input-group:focus-within .form-control {
+        border-color: #dee2e6;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    }
+
+    .btn-login {
+        font-weight: 700;
+        padding: 12px;
+        border-radius: 12px;
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        border: none;
+        color: white;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 147, 176, 0.3);
+            background: linear-gradient(45deg, #1c7a94, #5bc0de);
+            color: white;
+        }
+
+    .forgot-link {
+        font-size: 0.9rem;
+        color: #6c757d;
+        transition: color 0.2s;
+    }
+
+        .forgot-link:hover {
+            color: #2193b0;
+        }
+</style>
+
+<div class="login-container">
+    <div class="login-wrap">
+        <div class="login-header">
+            <div class="mb-3">
+                <span class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block">
+                    <i class="bi bi-person-circle fs-1"></i>
+                </span>
+            </div>
+            <h3 class="login-title">Chào mừng trở lại!</h3>
+            <div class="login-sub">Đăng nhập để tiếp tục mua sắm</div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 small"></div>
+
+        <form asp-area="Login_Wsite" asp-controller="Home" asp-action="Index" method="post" autocomplete="off">
+
+            <input type="hidden" asp-for="ReturnUrl" />
+
+            <div class="mb-4">
+                <label class="form-label fw-bold small text-muted">Tên đăng nhập</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input asp-for="TenDangNhap" class="form-control" placeholder="Nhập tên đăng nhập" />
+                </div>
+                <span asp-validation-for="TenDangNhap" class="text-danger small mt-1"></span>
+            </div>
+
+            <div class="mb-4">
+                <div class="d-flex justify-content-between">
+                    <label class="form-label fw-bold small text-muted">Mật khẩu</label>
+                    <a href="#" class="text-decoration-none forgot-link">Quên mật khẩu?</a>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input asp-for="MatKhau" type="password" class="form-control" placeholder="Nhập mật khẩu" id="password-field" />
+
+                    <button class="btn btn-outline-secondary border-start-0 border-end-0 border-top-0 border-bottom-0"
+                            type="button"
+                            onclick="toggleLoginPassword()"
+                            style="border-radius: 0 12px 12px 0; border: 1px solid #dee2e6; border-left:none;">
+                        <i class="bi bi-eye" id="toggle-icon"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="MatKhau" class="text-danger small mt-1"></span>
+            </div>
+
+            <button class="btn btn-primary w-100 btn-login mb-4" type="submit">
+                Đăng nhập ngay
+            </button>
+
+            <div class="text-center">
+                <span class="text-muted small">Bạn chưa có tài khoản?</span>
+                <a href="#" class="text-decoration-none fw-bold ms-1" style="color: #2193b0;">Đăng ký miễn phí</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleLoginPassword() {
+        var passwordField = document.getElementById("password-field");
+        var toggleIcon = document.getElementById("toggle-icon");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.classList.remove("bi-eye");
+            toggleIcon.classList.add("bi-eye-slash");
+        } else {
+            passwordField.type = "password";
+            toggleIcon.classList.remove("bi-eye-slash");
+            toggleIcon.classList.add("bi-eye");
+        }
+    }
+</script>

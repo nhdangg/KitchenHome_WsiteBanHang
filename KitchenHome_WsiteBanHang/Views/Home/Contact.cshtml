@@ -1,0 +1,234 @@
+﻿@* 1. Khai báo Model nhận dữ liệu từ Controller *@
+@model KitchenHome_WsiteBanHang.Models.Class_phu.ContactViewModel
+
+@{
+    ViewBag.Title = "Liên hệ với chúng tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@* --- STYLE GIỮ NGUYÊN (Để đảm bảo giao diện đẹp như bạn muốn) --- *@
+<style>
+    .contact-header {
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80');
+        background-size: cover;
+        background-position: center;
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        margin-bottom: 3rem;
+    }
+
+    .contact-info-box {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+        .contact-info-box:hover {
+            transform: translateY(-5px);
+        }
+
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        background: #e7f1ff;
+        color: #0d6efd;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 15px;
+    }
+
+    .form-control, .form-select {
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+    }
+
+        .form-control:focus {
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+            border-color: #0d6efd;
+        }
+
+    .map-container iframe {
+        width: 100%;
+        height: 300px;
+        border-radius: 12px;
+        border: 0;
+    }
+</style>
+
+<div class="container my-4">
+    <div class="contact-header shadow-sm">
+        <div class="text-center text-white">
+            <h1 class="fw-bold display-5">Liên Hệ Hỗ Trợ</h1>
+            <p class="lead mb-0">Chúng tôi luôn sẵn sàng lắng nghe bạn 24/7</p>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        @* --- CỘT TRÁI: THÔNG TIN LIÊN HỆ --- *@
+        <div class="col-lg-5">
+            <div class="contact-info-box">
+                <h3 class="fw-bold mb-4">Thông tin liên hệ</h3>
+
+                <div class="d-flex align-items-start mb-4">
+                    <div class="icon-box">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Địa chỉ cửa hàng</h6>
+                        <p class="text-muted mb-0">123 Đường Nguyễn Trãi, Quận Thanh Xuân, Hà Nội</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start mb-4">
+                    <div class="icon-box">
+                        <i class="bi bi-telephone-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Hotline hỗ trợ</h6>
+                        <p class="text-muted mb-0">0988.888.888 (8:00 - 21:00)</p>
+                        <p class="text-muted mb-0">024.3333.4444 (Kỹ thuật)</p>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start mb-4">
+                    <div class="icon-box">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Email</h6>
+                        <p class="text-muted mb-0">support@kitchenhome.vn</p>
+                        <p class="text-muted mb-0">sales@kitchenhome.vn</p>
+                    </div>
+                </div>
+
+                <hr class="my-4 text-muted">
+
+                <div class="map-container">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-map me-2"></i>Bản đồ chỉ đường</h6>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.696197471207!2d105.80419331533215!3d20.999806593970363!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135acbd0c6f5f39%3A0x6b777659f7b4c489!2zMTIzIMSQxrDhu51uZyBOZ3V54buFbiBUcsOjaSwgVGhhbmggWHXDom4sIEjDoCBOaOG7mWk!5e0!3m2!1svi!2s!4v1647852345678!5m2!1svi!2s"
+                            allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+
+        @* --- CỘT PHẢI: FORM GỬI TIN NHẮN (ĐÃ UPDATE ASP-FOR) --- *@
+        <div class="col-lg-7">
+            <div class="contact-info-box">
+                <h3 class="fw-bold mb-3">Gửi thắc mắc cho chúng tôi</h3>
+                <p class="text-muted mb-4">Nếu bạn có câu hỏi về sản phẩm, đơn hàng hoặc hợp tác, vui lòng điền vào biểu mẫu dưới đây.</p>
+
+                @* Hiển thị thông báo trạng thái *@
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-@ViewBag.Status alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="bi @(ViewBag.Status == "success" ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") me-2"></i>
+                        @ViewBag.Message
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @* FORM LIÊN HỆ *@
+                <form asp-action="Contact" asp-controller="Home" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Họ và tên <span class="text-danger">*</span></label>
+                            @* Tự động điền tên từ Model nếu đã đăng nhập *@
+                            <input asp-for="HoTen" class="form-control" placeholder="Nhập họ tên của bạn" required />
+                            <span asp-validation-for="HoTen" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Số điện thoại <span class="text-danger">*</span></label>
+                            <input asp-for="SoDienThoai" class="form-control" placeholder="Nhập số điện thoại" required />
+                            <span asp-validation-for="SoDienThoai" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold small">Email (Nếu có)</label>
+                            @* Tự động điền Email từ Model *@
+                            <input asp-for="Email" class="form-control" placeholder="example@gmail.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold small">Chủ đề cần hỗ trợ</label>
+                            <select asp-for="ChuDe" class="form-select">
+                                <option value="Tư vấn sản phẩm">Tư vấn sản phẩm</option>
+                                <option value="Kiểm tra đơn hàng">Kiểm tra đơn hàng</option>
+                                <option value="Bảo hành / Đổi trả">Bảo hành / Đổi trả</option>
+                                <option value="Khiếu nại dịch vụ">Khiếu nại dịch vụ</option>
+                                <option value="Hợp tác kinh doanh">Hợp tác kinh doanh</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold small">Nội dung tin nhắn <span class="text-danger">*</span></label>
+                            <textarea asp-for="NoiDung" class="form-control" rows="5" placeholder="Viết nội dung cần hỗ trợ..." required></textarea>
+                            <span asp-validation-for="NoiDung" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            @using Microsoft.AspNetCore.Http
+                            @inject IHttpContextAccessor HttpContextAccessor
+
+                            @* Kiểm tra Session thay vì User.Identity *@
+                            @if (HttpContextAccessor.HttpContext.Session.GetString("USER_ID") != null)
+                            {
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow hover-lift">
+                                    <i class="bi bi-send-fill me-2"></i> Gửi tin nhắn
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="d-grid gap-2">
+                                    <a href="/Login_Wsite/Home/Index?returnUrl=/Home/Contact" class="btn btn-warning btn-lg rounded-pill fw-bold shadow text-white">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i> Đăng nhập để gửi tin nhắn
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @* --- CỘT DƯỚI: CAM KẾT DỊCH VỤ --- *@
+    <div class="row mt-5 g-4 text-center">
+        <div class="col-md-4">
+            <div class="p-4 bg-light rounded-3 h-100 shadow-sm border border-light">
+                <i class="bi bi-clock-history fs-1 text-primary mb-3 d-block"></i>
+                <h5 class="fw-bold">Phản hồi nhanh chóng</h5>
+                <p class="text-muted small mb-0">Chúng tôi cam kết phản hồi tin nhắn của bạn trong vòng 30 phút (giờ hành chính).</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-light rounded-3 h-100 shadow-sm border border-light">
+                <i class="bi bi-shield-check fs-1 text-primary mb-3 d-block"></i>
+                <h5 class="fw-bold">Bảo mật thông tin</h5>
+                <p class="text-muted small mb-0">Mọi thông tin cá nhân và nội dung tin nhắn của bạn đều được bảo mật tuyệt đối.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-light rounded-3 h-100 shadow-sm border border-light">
+                <i class="bi bi-people-fill fs-1 text-primary mb-3 d-block"></i>
+                <h5 class="fw-bold">Đội ngũ tận tâm</h5>
+                <p class="text-muted small mb-0">Nhân viên được đào tạo chuyên nghiệp, luôn sẵn sàng giải quyết mọi vấn đề của khách hàng.</p>
+            </div>
+        </div>
+    </div>
+</div>

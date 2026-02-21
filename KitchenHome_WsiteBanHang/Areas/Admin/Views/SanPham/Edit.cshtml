@@ -1,0 +1,147 @@
+﻿@model KitchenHome_WsiteBanHang.Models.SanPham
+
+@{
+    ViewData["Title"] = "Cập nhật sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-warning text-uppercase"><i class="bi bi-pencil-square me-2"></i>Cập nhật sản phẩm</h3>
+    <a asp-action="Index" class="btn btn-secondary shadow-sm">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="card shadow border-0 rounded-3">
+    <div class="card-body p-4">
+
+        @* Form Upload file cần enctype *@
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+            @* AntiForgeryToken tự động *@
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 border-start border-danger border-4 shadow-sm"></div>
+
+            @* Các trường ẩn giữ giá trị cũ *@
+            <input type="hidden" asp-for="SanPhamId" />
+            <input type="hidden" asp-for="AnhDaiDien" />
+            <input type="hidden" asp-for="NgayTao" />
+
+            @* Nếu muốn giữ Mã sản phẩm không đổi thì thêm hidden, input disable chỉ để hiển thị *@
+            @* <input type="hidden" asp-for="MaSanPham" /> *@
+
+            <div class="row">
+                @* --- CỘT TRÁI: THÔNG TIN --- *@
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label asp-for="TenSanPham" class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
+                        <input asp-for="TenSanPham" class="form-control" required />
+                        <span asp-validation-for="TenSanPham" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="MaSanPham" class="form-label fw-bold">Mã sản phẩm</label>
+                            @* Thường mã SP không cho sửa, dùng readonly *@
+                            <input asp-for="MaSanPham" class="form-control bg-light" readonly />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DonViTinhId" class="form-label fw-bold">Đơn vị tính</label>
+                            <select asp-for="DonViTinhId" class="form-select" asp-items="ViewBag.DonViTinhId"></select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DanhMucId" class="form-label fw-bold">Danh mục</label>
+                            <select asp-for="DanhMucId" class="form-select" asp-items="ViewBag.DanhMucId"></select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ThuongHieuId" class="form-label fw-bold">Thương hiệu</label>
+                            <select asp-for="ThuongHieuId" class="form-select" asp-items="ViewBag.ThuongHieuId"></select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MoTaNgan" class="form-label fw-bold">Mô tả ngắn</label>
+                        <textarea asp-for="MoTaNgan" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MoTaChiTiet" class="form-label fw-bold">Mô tả chi tiết</label>
+                        <textarea asp-for="MoTaChiTiet" class="form-control" rows="8"></textarea>
+                    </div>
+                </div>
+
+                @* --- CỘT PHẢI: ẢNH & CẤU HÌNH --- *@
+                <div class="col-md-4">
+                    @* Card Ảnh *@
+                    <div class="card bg-light border-0 mb-3 rounded-3">
+                        <div class="card-body">
+                            <label class="form-label fw-bold mb-2">Ảnh đại diện</label>
+                            <input type="file" name="ImageFile" class="form-control mb-2" onchange="previewImage(this)" accept="image/*" />
+
+                            <div class="text-center bg-white p-2 border rounded shadow-sm position-relative" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                @{
+                                    string imgUrl = "/images/no-image.png";
+                                    if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+                                    {
+                                        imgUrl = Url.Content("~/Image/Image_SanPham/" + Model.AnhDaiDien);
+                                    }
+                                }
+                                <img id="preview" src="@imgUrl" class="img-fluid" style="max-height: 200px; object-fit: contain;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Card Cấu hình *@
+                    <div class="card bg-light border-0 rounded-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3 text-uppercase text-secondary">Cài đặt hiển thị</h6>
+
+                            <div class="form-check form-switch mb-3 ps-5">
+                                <input class="form-check-input scale-125" type="checkbox" asp-for="DangHoatDong" />
+                                <label class="form-check-label fw-bold ms-2" asp-for="DangHoatDong">Đang hoạt động</label>
+                            </div>
+
+                            <div class="form-check form-switch mb-3 ps-5">
+                                <input class="form-check-input scale-125" type="checkbox" asp-for="HienThiTrangChu" />
+                                <label class="form-check-label fw-bold ms-2" asp-for="HienThiTrangChu">Hiện trang chủ</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-warning btn-lg shadow-sm fw-bold text-dark">
+                            <i class="bi bi-check-circle-fill me-2"></i> Cập nhật
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function previewImage(input) {
+            var preview = document.getElementById('preview');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+
+    <style>
+        .scale-125 {
+            transform: scale(1.25);
+        }
+    </style>
+}

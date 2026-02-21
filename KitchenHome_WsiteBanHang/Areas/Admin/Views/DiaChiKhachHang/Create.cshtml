@@ -1,0 +1,83 @@
+﻿@model KitchenHome_WsiteBanHang.Models.DiaChiKhachHang
+
+@{
+    ViewData["Title"] = "Thêm địa chỉ mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold text-uppercase">
+                        <i class="bi bi-plus-circle me-2"></i>Thêm địa chỉ cho: @ViewBag.TenKhachHang
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="KhachHangId" />
+
+                        @* --- HIỂN THỊ LỖI NẾU CÓ --- *@
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="TenNguoiNhan" class="form-label fw-bold">Người nhận <span class="text-danger">*</span></label>
+                                <input asp-for="TenNguoiNhan" class="form-control" placeholder="VD: Anh Nam" />
+                                <span asp-validation-for="TenNguoiNhan" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="SdtnguoiNhan" class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
+                                <input asp-for="SdtnguoiNhan" class="form-control" placeholder="09xxxx" />
+                                <span asp-validation-for="SdtnguoiNhan" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TinhThanh" class="form-label fw-bold">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+                            <input asp-for="TinhThanh" class="form-control" placeholder="VD: Hà Nội" />
+                            <span asp-validation-for="TinhThanh" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="QuanHuyen" class="form-label fw-bold">Quận / Huyện</label>
+                                <input asp-for="QuanHuyen" class="form-control" placeholder="VD: Cầu Giấy" />
+                                <span asp-validation-for="QuanHuyen" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PhuongXa" class="form-label fw-bold">Phường / Xã</label>
+                                <input asp-for="PhuongXa" class="form-control" placeholder="VD: Dịch Vọng" />
+                                <span asp-validation-for="PhuongXa" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DiaChiCuThe" class="form-label fw-bold">Địa chỉ cụ thể (Số nhà, đường)</label>
+                            <input asp-for="DiaChiCuThe" class="form-control" placeholder="VD: Số 123 đường ABC" />
+                            <span asp-validation-for="DiaChiCuThe" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" asp-for="MacDinh" />
+                            <label class="form-check-label fw-bold text-primary" asp-for="MacDinh">
+                                Đặt làm địa chỉ mặc định
+                            </label>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-controller="KhachHang" asp-action="Details" asp-route-id="@Model.KhachHangId" class="btn btn-secondary">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-success px-4 fw-bold">Lưu địa chỉ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* --- SCRIPT VALIDATION CLIENT SIDE --- *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

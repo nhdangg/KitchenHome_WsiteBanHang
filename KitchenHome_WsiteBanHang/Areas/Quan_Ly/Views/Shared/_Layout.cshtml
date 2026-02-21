@@ -1,0 +1,329 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Quản trị hệ thống</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+
+
+
+    <style>
+        body {
+            overflow-x: hidden;
+            background-color: #f8f9fa;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        #wrapper {
+            display: flex;
+            width: 100%;
+            transition: all 0.25s ease;
+        }
+
+        /* --- SIDEBAR --- */
+        #sidebar-wrapper {
+            min-height: 100vh;
+            width: 250px;
+            background-color: #212529;
+            color: white;
+            transition: margin 0.25s ease-out;
+            flex-shrink: 0; /* Ngăn sidebar bị co lại */
+        }
+
+        /* --- LOGIC THU/PHÓNG MENU --- */
+        #sidebar-wrapper {
+            margin-left: 0;
+        }
+
+        #wrapper.toggled #sidebar-wrapper {
+            margin-left: -250px;
+        }
+
+        @@media (max-width: 768px) {
+            #sidebar-wrapper {
+                margin-left: -250px;
+                position: fixed;
+                height: 100%;
+                z-index: 1000;
+            }
+
+            #wrapper.toggled #sidebar-wrapper {
+                margin-left: 0;
+            }
+
+            #overlay {
+                display: none;
+                position: fixed;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+                top: 0;
+                left: 0;
+            }
+
+            #wrapper.toggled #overlay {
+                display: block;
+            }
+        }
+
+        /* --- STYLING MENU --- */
+        .sidebar-heading {
+            padding: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            background-color: #1a1e21;
+            border-bottom: 1px solid #454d55;
+            color: #fff;
+        }
+
+        .list-group-item {
+            background-color: transparent;
+            color: #d1d1d1;
+            border: none;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+            .list-group-item:hover {
+                background-color: #343a40;
+                color: #fff;
+            }
+
+            .list-group-item.active {
+                background-color: #0d6efd;
+                color: white;
+                font-weight: 600;
+                border-left: 4px solid #fff; /* Điểm nhấn active */
+            }
+
+        .menu-label {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #6c757d;
+            margin: 1.5rem 0 0.5rem 1.2rem;
+        }
+
+        /* --- CONTENT --- */
+        #page-content-wrapper {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow: hidden; /* Tránh thanh cuộn ngang không mong muốn */
+        }
+
+        .navbar-admin {
+            box-shadow: 0 2px 4px rgba(0,0,0,.08);
+            background: white;
+        }
+
+        .admin-content {
+            padding: 20px;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="wrapper">
+        <div id="overlay"></div>
+
+        <div id="sidebar-wrapper">
+            <div class="sidebar-heading text-uppercase">
+                <i class="bi bi-shield-lock-fill me-2"></i> Quản Lý Panel
+            </div>
+
+            <div class="list-group list-group-flush my-3">
+                <a asp-area="Quan_Ly" asp-controller="Home" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "Home" ? "active" : "")">
+                    <i class="bi bi-speedometer2 me-3"></i> Tổng quan
+                </a>
+
+                <div class="menu-label">Sản phẩm & Danh mục</div>
+                <a asp-area="Quan_Ly" asp-controller="SanPham" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "SanPham" ? "active" : "")">
+                    <i class="bi bi-box-seam me-3"></i> Sản phẩm
+                </a>
+                @* <a asp-area="Admin" asp-controller="DanhMuc" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "DanhMuc" ? "active" : "")">
+                    <i class="bi bi-tags me-3"></i> Danh mục
+                </a>
+                <a asp-area="Admin" asp-controller="ThuongHieu" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "ThuongHieu" ? "active" : "")">
+                    <i class="bi bi-award me-3"></i> Thương hiệu
+                </a>
+                <a asp-area="Admin" asp-controller="DonViTinh" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "DonViTinh" ? "active" : "")">
+                    <i class="bi bi-ruler me-3"></i> Đơn vị tính
+                </a>
+
+                <div class="menu-label">Bán hàng & Khách hàng</div>
+                <a asp-area="Admin" asp-controller="DonHang" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "DonHang" ? "active" : "")">
+                    <i class="bi bi-cart-check me-3"></i> Đơn hàng
+                </a>
+                <a asp-area="Admin" asp-controller="KhachHang" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "KhachHang" ? "active" : "")">
+                    <i class="bi bi-people me-3"></i> Khách hàng
+                </a>
+                <a asp-area="Admin" asp-controller="DanhGiaSanPham" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "DanhGiaSanPham" ? "active" : "")">
+                    <i class="bi bi-star me-3"></i> Đánh giá sản phẩm
+                </a>
+                <a asp-area="Admin" asp-controller="MaGiamGia" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "MaGiamGia" ? "active" : "")">
+                    <i class="bi bi-ticket-perforated me-3"></i> Mã Giảm Giá
+                </a>
+
+                <div class="menu-label">Kho vận & Đổi trả</div>
+                <a asp-area="Admin" asp-controller="Kho" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "Kho" ? "active" : "")">
+                    <i class="bi bi-shop me-3"></i> Quản lý Kho
+                </a>
+                <a asp-area="Admin" asp-controller="NhatKyKho" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "NhatKyKho" ? "active" : "")">
+                    <i class="bi bi-clipboard-data me-3"></i> Nhật ký kho
+                </a>
+                <a asp-area="Admin" asp-controller="TraHang" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "TraHang" ? "active" : "")">
+                    <i class="bi bi-box-arrow-in-left me-3"></i> Trả hàng
+                </a>
+                <a asp-area="Admin" asp-controller="HoanTien" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["controller"]?.ToString() == "HoanTien" ? "active" : "")">
+                    <i class="bi bi-arrow-counterclockwise me-3"></i> Quản lý Hoàn tiền
+                </a>
+
+                <div class="menu-label">Giao diện & Nội dung</div>
+                <a asp-area="Admin" asp-controller="Banner" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "Banner" ? "active" : "")">
+                    <i class="bi bi-images me-3"></i> Quản lý Banner
+                </a>
+                <a asp-area="Admin" asp-controller="TrangNoiDung" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "TrangNoiDung" ? "active" : "")">
+                    <i class="bi bi-journal-text me-3"></i> Trang tĩnh
+                </a>
+
+                <div class="menu-label">Cấu hình & Bảo mật</div>
+                <a asp-area="Admin" asp-controller="ThanhToan" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "ThanhToan" ? "active" : "")">
+                    <i class="bi bi-cash-stack me-3"></i> Giao dịch Thanh Toán
+                </a>
+                <a asp-area="Admin" asp-controller="PhuongThucThanhToan" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "PhuongThucThanhToan" ? "active" : "")">
+                    <i class="bi bi-credit-card-2-front me-3"></i> Phương thức thanh toán
+                </a>
+                <a asp-area="Admin" asp-controller="TaiKhoan" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "TaiKhoan" ? "active" : "")">
+                    <i class="bi bi-person-lock me-3"></i> Quản lý tài khoản
+                </a>
+                <a asp-area="Admin" asp-controller="QuanLyVaiTro" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "VaiTro" ? "active" : "")">
+                    <i class="bi bi-shield-lock me-3"></i> Vai trò & Quyền
+                </a>
+                <a asp-area="Admin" asp-controller="NhatKyHeThong" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "NhatKyHeThong" ? "active" : "")">
+                    <i class="bi bi-terminal me-3"></i> Nhật ký hệ thống
+                </a>
+                <a asp-area="Admin" asp-controller="NhatKyCongThanhToan" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "NhatKyCongThanhToan" ? "active" : "")">
+                    <i class="bi bi-credit-card me-3"></i> Nhật ký cổng thanh toán
+                </a> *@
+
+                <div class="mt-4 border-top pt-2">
+                    <a asp-area="ADMIN" asp-controller="CauHinh" asp-action="Index"
+                       class="list-group-item list-group-item-action @(ViewBag.Active == "CauHinh" ? "active" : "")">
+                        <i class="bi bi-gear me-3"></i> Cấu hình hệ thống
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light navbar-admin px-4 py-3 border-bottom">
+                <div class="d-flex align-items-center w-100 justify-content-between">
+                    <button class="btn btn-outline-secondary border-0" id="menu-toggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+
+                    <div class="dropdown ms-auto">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center text-dark text-decoration-none" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:35px; height:35px; font-weight:bold">
+                                @(User.Identity.IsAuthenticated? User.Identity.Name?.Substring(0, 1).ToUpper() : "A")
+                            </div>
+                            <span class="fw-bold d-none d-sm-inline">
+                                @(User.Identity.IsAuthenticated? User.Identity.Name : "Administrator")
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                            <li>
+                                <a class="dropdown-item py-2" asp-area="Admin" asp-controller="InformationADMIN" asp-action="Index">
+                                    <i class="bi bi-person me-2"></i> Hồ sơ cá nhân
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item py-2 text-danger" asp-area="Login_Wsite" asp-controller="Home" asp-action="Logout">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="container-fluid admin-content">
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 border-start border-success border-4" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Message"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 border-start border-danger border-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @RenderBody()
+            </div>
+
+            <footer class="text-center py-3 text-muted mt-auto border-top bg-white">
+                <small>&copy; @DateTime.Now.Year - Hệ thống quản lý bán hàng</small>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Xử lý toggle menu
+            $("#menu-toggle").click(function (e) {
+                e.preventDefault();
+                $("#wrapper").toggleClass("toggled");
+            });
+
+            // Xử lý click overlay trên mobile
+            $("#overlay").click(function () {
+                $("#wrapper").removeClass("toggled");
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,13 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TraHang
+
+<h2>Xóa trả hàng</h2>
+
+<div class="alert alert-danger">
+    Bạn có chắc muốn xóa trả hàng <b>@Model.MaTraHang</b>?
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="TraHangId" />
+    <button class="btn btn-danger">Xóa</button>
+    <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+</form>

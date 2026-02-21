@@ -1,0 +1,114 @@
+﻿@using KitchenHome_WsiteBanHang.Models
+@model TaiKhoan
+
+@{
+    ViewBag.Title = "Thông tin tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var kh = ViewBag.KhachHangInfo as KhachHang;
+}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0 text-center p-4">
+                <div class="mb-3">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                         alt="Avatar" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px;">
+                </div>
+
+                <h4 class="fw-bold mb-3">@Model.TenDangNhap</h4>
+
+                <div class="text-start bg-light p-3 rounded small">
+
+                    <div class="d-flex justify-content-between mb-2 border-bottom pb-2">
+                        <span class="text-muted"><i class="bi bi-calendar-plus me-1"></i> Ngày tạo:</span>
+                        <span class="fw-bold">
+                            @Model.NgayTao.ToString("dd/MM/yyyy")
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 border-bottom pb-2">
+                        <span class="text-muted"><i class="bi bi-pencil-square me-1"></i> Cập nhật:</span>
+                        <span class="fw-bold text-primary">
+                            @(Model.NgayCapNhat.HasValue? Model.NgayCapNhat.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa cập nhật")
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted"><i class="bi bi-clock-history me-1"></i> Login cuối:</span>
+                        <span class="fw-bold text-success">
+                            @(Model.LanDangNhapCuoi.HasValue? Model.LanDangNhapCuoi.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa đăng nhập")
+                        </span>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <a href="@Url.Action("LogOut", "Login", new { area = "Login_Wsite" })" class="btn btn-outline-danger">
+                        <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-person-lines-fill me-2"></i>Hồ Sơ Cá Nhân</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Họ và tên</label>
+                                <input type="text" class="form-control"
+                                       value="@(kh != null ? kh.HoTen : "Chưa cập nhật")" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Giới tính</label>
+                                <input type="text" class="form-control"
+                                       value="@(kh != null ? kh.GioiTinh : "")" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Số điện thoại</label>
+                                <input type="text" class="form-control"
+                                       value="@(kh != null ? kh.SoDienThoai : Model.SoDienThoai)" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Ngày sinh</label>
+                                <input type="text" class="form-control"
+                                       value="@(kh != null && kh.NgaySinh.HasValue ? kh.NgaySinh.Value.ToString("dd/MM/yyyy") : "")" readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">Email liên hệ</label>
+                            <input type="text" class="form-control"
+                                   value="@(kh != null ? kh.Email : Model.Email)" readonly>
+                        </div>
+
+                        @if (kh == null)
+                        {
+                            <div class="alert alert-warning small">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                Hồ sơ khách hàng chưa đầy đủ.
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <a href="@Url.Action("DoiMatKhau")" class="btn btn-outline-danger">
+                                <i class="bi bi-key me-1"></i> Đổi mật khẩu
+                            </a>
+                            <a href="@Url.Action("CapNhat")" class="btn btn-primary px-4">
+                                <i class="bi bi-pencil-square me-1"></i> Cập nhật hồ sơ
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

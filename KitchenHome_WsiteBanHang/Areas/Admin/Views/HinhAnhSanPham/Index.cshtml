@@ -1,0 +1,17 @@
+﻿@model IEnumerable<HinhAnhSanPham>
+@using KitchenHome_WsiteBanHang.Models
+
+@{
+    var bt = ViewBag.BienThe as BienTheSanPham;
+}
+
+<a asp-controller="SanPham"
+   asp-action="BienThe"
+   asp-route-sanPhamId="@bt.SanPhamId">
+    ← Về danh sách SKU
+</a>
+
+<h4 class="mt-3">
+    Ảnh biến thể:
+    <strong>@bt.Sku</strong>
+</h4>

@@ -1,0 +1,256 @@
+﻿@model KitchenHome_WsiteBanHang.Models.KhachHang
+
+@{
+    ViewData["Title"] = "Hồ sơ khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4">
+    @* --- HEADER --- *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-primary text-uppercase mb-0">
+                <i class="bi bi-person-lines-fill me-2"></i>Chi tiết khách hàng
+            </h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Admin</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index">Khách hàng</a></li>
+                    <li class="breadcrumb-item active">@Model.HoTen</li>
+                </ol>
+            </nav>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm px-3 rounded-pill shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @* --- CỘT TRÁI (7 phần) --- *@
+        <div class="col-lg-7">
+            
+            @* 1. THÔNG TIN CÁ NHÂN *@
+            <div class="card shadow-sm border-0 mb-4 rounded-3">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold text-dark">
+                        <i class="bi bi-person-vcard text-primary me-2"></i>Thông tin cá nhân
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted small fw-bold">MÃ KHÁCH HÀNG:</div>
+                        <div class="col-sm-8 fw-bold text-dark">#@Model.MaKhachHang</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted small fw-bold">HỌ VÀ TÊN:</div>
+                        <div class="col-sm-8">@Model.HoTen</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted small fw-bold">SỐ ĐIỆN THOẠI:</div>
+                        <div class="col-sm-8">
+                            <span class="badge bg-primary-subtle text-primary px-3 fw-bold">@Model.SoDienThoai</span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted small fw-bold">EMAIL:</div>
+                        <div class="col-sm-8 text-primary">@(Model.Email ?? "Chưa cập nhật")</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted small fw-bold">GIỚI TÍNH / NGÀY SINH:</div>
+                        <div class="col-sm-8">
+                            <span class="text-dark">@(Model.GioiTinh ?? "---")</span> 
+                            <span class="text-muted mx-2">|</span> 
+                            <span class="text-dark">@(Model.NgaySinh.HasValue ? Model.NgaySinh.Value.ToString("dd/MM/yyyy") : "---")</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 text-muted small fw-bold">GHI CHÚ:</div>
+                        <div class="col-sm-8 fst-italic text-muted small">
+                            @(Model.GhiChu ?? "Không có ghi chú nào cho khách hàng này.")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* 2. SỔ ĐỊA CHỈ GIAO HÀNG (Đã tích hợp chức năng Thêm/Sửa/Xóa) *@
+            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 fw-bold text-dark">
+                        <i class="bi bi-geo-alt text-danger me-2"></i>Sổ địa chỉ giao hàng
+                    </h5>
+                    @* Nút Thêm mới gọi sang DiaChiKhachHangController *@
+                    <a asp-controller="DiaChiKhachHang" asp-action="Create" asp-route-khachHangId="@Model.KhachHangId" 
+                       class="btn btn-sm btn-primary shadow-sm">
+                        <i class="bi bi-plus-lg me-1"></i> Thêm địa chỉ
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.DiaChiKhachHangs != null && Model.DiaChiKhachHangs.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var dc in Model.DiaChiKhachHangs.OrderByDescending(x => x.MacDinh))
+                            {
+                                <div class="list-group-item p-4">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        @* Thông tin địa chỉ *@
+                                        <div>
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="fw-bold text-dark fs-6 me-2">@dc.TenNguoiNhan</span>
+                                                <span class="text-muted border-start ps-2 small">@dc.SdtnguoiNhan</span>
+                                                @if (dc.MacDinh)
+                                                {
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill ms-2 px-2">
+                                                        Mặc định
+                                                    </span>
+                                                }
+                                            </div>
+                                            <div class="text-secondary small mb-1">
+                                                <i class="bi bi-geo-alt-fill me-1 text-danger opacity-75"></i>
+                                                @dc.DiaChiCuThe
+                                            </div>
+                                            <div class="text-secondary small ps-3">
+                                                @dc.PhuongXa, @dc.QuanHuyen, @dc.TinhThanh
+                                            </div>
+                                        </div>
+
+                                        @* Nút thao tác (Sửa / Xóa) *@
+                                        <div class="d-flex gap-2">
+                                            @* Sửa *@
+                                            <a asp-controller="DiaChiKhachHang" asp-action="Edit" asp-route-id="@dc.DiaChiId" 
+                                               class="btn btn-outline-warning btn-sm border-0 bg-warning-subtle text-warning-emphasis" title="Cập nhật">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </a>
+
+                                            @* Xóa *@
+                                            <form asp-controller="DiaChiKhachHang" asp-action="Delete" asp-route-id="@dc.DiaChiId" 
+                                                  method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa địa chỉ này không?');">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm border-0 bg-danger-subtle text-danger-emphasis" title="Xóa">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-map fs-1 text-muted opacity-25"></i>
+                            <p class="text-muted mt-2">Khách hàng chưa lưu địa chỉ nào.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* --- CỘT PHẢI (5 phần) --- *@
+        <div class="col-lg-5">
+            
+            @* 1. TÀI KHOẢN ĐĂNG NHẬP *@
+            <div class="card shadow-sm border-0 rounded-3 border-top border-warning border-4 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold text-dark">
+                        <i class="bi bi-shield-lock text-warning me-2"></i>Tài khoản đăng nhập
+                    </h5>
+                </div>
+                <div class="card-body p-4 text-center">
+                    @if (Model.TaiKhoan != null)
+                    {
+                        <div class="mb-4">
+                            <img src="https://ui-avatars.com/api/?name=@Model.TaiKhoan.TenDangNhap&background=0D6EFD&color=fff&bold=true" 
+                                 class="rounded-circle shadow-sm border border-3 border-white" width="100" alt="avatar" />
+                            <h4 class="mt-3 fw-bold mb-1">@Model.TaiKhoan.TenDangNhap</h4>
+                            @if (Model.TaiKhoan.DangHoatDong)
+                            {
+                                <span class="badge bg-success-subtle text-success px-3 rounded-pill">Đang hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger-subtle text-danger px-3 rounded-pill">Đã khóa</span>
+                            }
+                        </div>
+
+                        <div class="text-start bg-light rounded-3 p-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Mã tài khoản:</span>
+                                <span class="fw-bold">#@Model.TaiKhoanId</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Xác minh Email:</span>
+                                <span>
+                                    @if (Model.TaiKhoan.EmailDaXacMinh)
+                                    {
+                                        <i class="bi bi-patch-check-fill text-info"></i> <small class="text-info">Đã xác minh</small>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-patch-exclamation text-muted"></i> <small class="text-muted">Chưa xác minh</small>
+                                    }
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Ngày đăng ký:</span>
+                                <span class="small">@Model.TaiKhoan.NgayTao.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted small">Đăng nhập cuối:</span>
+                                <span class="small text-danger fw-medium">
+                                    @(Model.TaiKhoan.LanDangNhapCuoi.HasValue ? Model.TaiKhoan.LanDangNhapCuoi.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")
+                                </span>
+                            </div>
+                        </div>
+
+                        @* Nếu có controller TaiKhoan thì link tới *@
+                        @* <div class="d-grid gap-2 mt-4">
+                            <a href="#" class="btn btn-outline-warning btn-sm border-2 fw-bold">
+                                <i class="bi bi-pencil me-2"></i>Chỉnh sửa tài khoản
+                            </a>
+                        </div> *@
+                    }
+                    else
+                    {
+                        <div class="py-5">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-person-x fs-1 text-muted"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark">Khách vãng lai</h6>
+                            <p class="text-muted small px-4">Khách hàng này chưa thực hiện đăng ký tài khoản thành viên trên hệ thống.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            @* 2. LỊCH SỬ MUA HÀNG *@
+            <div class="card shadow-sm border-0 rounded-3 mt-4">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="flex-shrink-0 bg-primary-subtle p-3 rounded-3">
+                        <i class="bi bi-bag-check text-primary fs-3"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="text-muted small mb-0">Lịch sử mua hàng</h6>
+                        @* Nếu có Relation DonHangs trong Model KhachHang thì đếm *@
+                        <div class="fw-bold text-dark fs-5">
+                            @(Model.DonHangs != null ? Model.DonHangs.Count : 0) Đơn hàng
+                        </div>
+                    </div>
+                    @* Link đến danh sách đơn hàng lọc theo khách này *@
+                    <a asp-controller="DonHang" asp-action="Index" asp-route-searchString="@Model.MaKhachHang" class="btn btn-sm btn-light rounded-pill">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS đồng bộ với giao diện chung */
+    .bg-primary-subtle { background-color: #e7f1ff !important; color: #0d6efd !important; }
+    .bg-success-subtle { background-color: #e8f5e9 !important; color: #2e7d32 !important; }
+    .bg-warning-subtle { background-color: #fff3cd !important; color: #856404 !important; }
+    .bg-danger-subtle { background-color: #ffebee !important; color: #c62828 !important; }
+    .list-group-item:last-child { border-bottom: 0; }
+    .breadcrumb-item + .breadcrumb-item::before { content: "›"; font-size: 1.2rem; line-height: 1; vertical-align: middle; }
+</style>

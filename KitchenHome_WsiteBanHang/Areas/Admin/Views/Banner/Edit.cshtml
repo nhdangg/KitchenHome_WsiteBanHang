@@ -1,0 +1,158 @@
+﻿@model KitchenHome_WsiteBanHang.Models.Banner
+
+@{
+    ViewData["Title"] = "Cập nhật Banner";
+    // Đảm bảo dùng đúng Layout Admin
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 py-4" style="max-width: 800px;">
+
+    @* --- Header --- *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary text-uppercase"><i class="bi bi-pencil-square me-2"></i>Cập nhật Banner</h4>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="card shadow border-0 rounded-3">
+        <div class="card-header bg-primary text-white py-3">
+            <h6 class="mb-0 fw-bold text-uppercase">Thông tin chỉnh sửa</h6>
+        </div>
+        <div class="card-body p-4">
+
+            @* --- FORM BẮT ĐẦU --- *@
+            <form asp-action="Edit" asp-controller="Banner" method="post" enctype="multipart/form-data">
+
+                @* AntiForgeryToken tự động *@
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 border-start border-danger border-4 shadow-sm"></div>
+
+                @* --- QUAN TRỌNG: Input ẩn để giữ ID và tên ảnh cũ --- *@
+                <input type="hidden" asp-for="BannerId" />
+                <input type="hidden" asp-for="Anh" />
+
+                @* 1. Tiêu đề *@
+                <div class="mb-3">
+                    <label asp-for="TieuDe" class="form-label fw-bold">Tiêu đề Banner</label>
+                    <input asp-for="TieuDe" class="form-control" placeholder="Nhập tiêu đề banner..." />
+                    <span asp-validation-for="TieuDe" class="text-danger small"></span>
+                </div>
+
+                @* 2. Hình ảnh (Giao diện nâng cấp) *@
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Hình ảnh</label>
+
+                    <div class="row g-3">
+                        @* --- ẢNH HIỆN TẠI (Đã nâng cấp style giống Details) --- *@
+                        <div class="col-md-5">
+                            <label class="small text-muted mb-2 fw-bold">Ảnh hiện tại:</label>
+
+                            @* Nền caro chuyên nghiệp *@
+                            <div class="border rounded d-flex align-items-center justify-content-center position-relative overflow-hidden"
+                                 style="min-height: 200px; background-image: linear-gradient(45deg, #e9ecef 25%, transparent 25%), linear-gradient(-45deg, #e9ecef 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e9ecef 75%), linear-gradient(-45deg, transparent 75%, #e9ecef 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; background-color: #fff;">
+
+                                @if (!string.IsNullOrEmpty(Model.Anh))
+                                {
+                                    string imgUrl = Model.Anh;
+                                    // Logic xử lý đường dẫn ảnh (http hoặc local)
+                                    if (!imgUrl.StartsWith("http") && !imgUrl.StartsWith("/"))
+                                    {
+                                        imgUrl = Url.Content("~/Image/Banner/" + imgUrl);
+                                    }
+
+                                    <img src="@imgUrl"
+                                         class="img-fluid shadow rounded"
+                                         style="max-height: 180px; max-width: 95%; object-fit: contain;"
+                                         onerror="this.src='/images/no-image.png'" />
+                                }
+                                else
+                                {
+                                    <div class="text-center text-muted opacity-50">
+                                        <i class="bi bi-image display-6 mb-1"></i>
+                                        <span class="d-block small fst-italic">Chưa có ảnh</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @* --- UPLOAD ẢNH MỚI --- *@
+                        <div class="col-md-7 d-flex flex-column">
+                            <label class="small text-muted mb-2 fw-bold">Chọn ảnh mới (Nếu muốn thay đổi):</label>
+                            <input type="file" name="ImageFile" class="form-control mb-2" accept="image/*" onchange="previewImage(this)" />
+                            <span class="text-danger small" data-valmsg-for="ImageFile" data-valmsg-replace="true"></span>
+
+                            @* Preview ảnh mới *@
+                            <div class="mt-auto d-none border rounded bg-light p-2 text-center" id="new-img-preview-container">
+                                <p class="small text-success fw-bold mb-1"><i class="bi bi-arrow-right-circle me-1"></i> Ảnh mới sẽ thay thế:</p>
+                                <img id="preview" src="#" alt="Preview" class="img-fluid rounded shadow-sm bg-white" style="max-height: 120px;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* 3. Link liên kết *@
+                <div class="mb-3">
+                    <label asp-for="Link" class="form-label fw-bold">Link liên kết (URL)</label>
+                    <input asp-for="Link" class="form-control" placeholder="Ví dụ: /san-pham/khuyen-mai" />
+                    <span asp-validation-for="Link" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+                    @* 4. Thứ tự *@
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ThuTu" class="form-label fw-bold">Thứ tự hiển thị</label>
+                        <input asp-for="ThuTu" class="form-control" type="number" min="0" />
+                        <span asp-validation-for="ThuTu" class="text-danger small"></span>
+                    </div>
+
+                    @* 5. Trạng thái *@
+                    <div class="col-md-6 mb-3 d-flex align-items-end pb-2">
+                        <div class="form-check form-switch fs-5 ps-5">
+                            <input class="form-check-input" type="checkbox" asp-for="IsActive" id="isActiveSwitch">
+                            <label class="form-check-label fw-bold user-select-none fs-6" for="isActiveSwitch">Đang hiển thị</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4 text-muted opacity-25" />
+
+                @* --- Buttons --- *@
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary px-4">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-warning px-4 fw-bold shadow-sm text-dark">
+                        <i class="bi bi-check-circle-fill me-2"></i> Lưu thay đổi
+                    </button>
+                </div>
+
+            </form>
+            @* --- FORM KẾT THÚC --- *@
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function previewImage(input) {
+            var preview = document.getElementById('preview');
+            var container = document.getElementById('new-img-preview-container');
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    container.classList.remove('d-none'); // Hiện khung preview
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '#';
+                container.classList.add('d-none'); // Ẩn nếu hủy chọn
+            }
+        }
+    </script>
+}

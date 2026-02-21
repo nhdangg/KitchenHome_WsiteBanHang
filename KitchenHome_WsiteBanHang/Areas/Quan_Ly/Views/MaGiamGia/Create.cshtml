@@ -1,0 +1,92 @@
+﻿@model KitchenHome_WsiteBanHang.Models.MaGiamGia
+
+@{
+    ViewData["Title"] = "Tạo mã giảm giá";
+    Layout = "~/Areas/Quan_Ly/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-3" style="max-width: 800px">
+    <div class="card shadow border-0">
+        <div class="card-header bg-success text-white fw-bold">
+            <i class="bi bi-plus-circle"></i> Tạo Voucher Mới
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="Code" class="fw-bold">Mã Code (Ví dụ: SALE50) <span class="text-danger">*</span></label>
+                        <input asp-for="Code" class="form-control text-uppercase fw-bold border-success" placeholder="Nhập mã..." required />
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-8">
+                        <label asp-for="TenMa" class="fw-bold">Tên chương trình <span class="text-danger">*</span></label>
+                        <input asp-for="TenMa" class="form-control" placeholder="VD: Giảm giá ngày tết" required />
+                        <span asp-validation-for="TenMa" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3 bg-light p-3 rounded mx-0">
+                    <div class="col-md-4">
+                        <label asp-for="LoaiGiam" class="fw-bold">Loại giảm</label>
+                        <select asp-for="LoaiGiam" class="form-select">
+                            <option value="PHAN_TRAM">Theo % (Phần trăm)</option>
+                            <option value="SO_TIEN">Theo tiền mặt (VND)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="GiaTriGiam" class="fw-bold">Giá trị giảm <span class="text-danger">*</span></label>
+                        <input asp-for="GiaTriGiam" class="form-control fw-bold text-danger" type="number" required />
+                        <span asp-validation-for="GiaTriGiam" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="GiamToiDa" class="fw-bold">Giảm tối đa (Nếu là %)</label>
+                        <input asp-for="GiamToiDa" class="form-control" type="number" placeholder="VD: 50000" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="DonHangToiThieu" class="fw-bold">Đơn hàng tối thiểu</label>
+                        <input asp-for="DonHangToiThieu" class="form-control" type="number" value="0" />
+                        <small class="text-muted">Nhập 0 nếu không yêu cầu.</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="GioiHanLuotDung" class="fw-bold">Tổng lượt dùng</label>
+                        <input asp-for="GioiHanLuotDung" class="form-control" type="number" />
+                        <small class="text-muted">Bỏ trống = Vô hạn.</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="GioiHanMoiKhach" class="fw-bold">Lượt/Khách</label>
+                        <input asp-for="GioiHanMoiKhach" class="form-control" type="number" value="1" />
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="BatDau" class="fw-bold">Bắt đầu</label>
+                        <input asp-for="BatDau" class="form-control" type="datetime-local" required />
+                        <span asp-validation-for="BatDau" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="KetThuc" class="fw-bold">Kết thúc</label>
+                        <input asp-for="KetThuc" class="form-control" type="datetime-local" required />
+                        <span asp-validation-for="KetThuc" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Lưu Mã</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

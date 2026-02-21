@@ -1,0 +1,75 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TrangNoiDung
+
+@{
+    ViewData["Title"] = "Sửa trang nội dung";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@* CDN CKEditor *@
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+
+<div class="container py-4">
+    <div class="card shadow border-0 border-top border-warning border-3 rounded-3">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 fw-bold text-warning">
+                <i class="bi bi-pencil-square me-2"></i>Cập nhật trang: <span class="text-dark">@Model.TieuDe</span>
+            </h5>
+        </div>
+        <div class="card-body p-4">
+
+            @* --- FORM BẮT ĐẦU --- *@
+            <form asp-action="Edit" method="post">
+
+                @* Hiển thị lỗi tổng quát *@
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                @* Các trường ẩn giữ nguyên giá trị cũ *@
+                <input type="hidden" asp-for="TrangId" />
+                <input type="hidden" asp-for="NgayTao" />
+                <input type="hidden" asp-for="MaTrang" /> @* Slug không nên đổi khi sửa *@
+
+                <div class="mb-3">
+                    <label asp-for="TieuDe" class="form-label fw-bold">Tiêu đề trang <span class="text-danger">*</span></label>
+                    <input asp-for="TieuDe" class="form-control" required />
+                    <span asp-validation-for="TieuDe" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NoiDung" class="form-label fw-bold">Nội dung chi tiết</label>
+                    <textarea asp-for="NoiDung" class="form-control" id="txtNoiDung" rows="10"></textarea>
+                    <span asp-validation-for="NoiDung" class="text-danger small"></span>
+                </div>
+
+                <div class="form-check mb-4 ps-5">
+                    <input class="form-check-input scale-125" type="checkbox" asp-for="DangHienThi" />
+                    <label class="form-check-label fw-bold ms-2 user-select-none" asp-for="DangHienThi">Hiển thị ngay</label>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary px-4">Quay lại</a>
+                    <button type="submit" class="btn btn-warning px-4 fw-bold shadow-sm">
+                        <i class="bi bi-check-lg me-1"></i> Cập nhật
+                    </button>
+                </div>
+            </form>
+            @* --- FORM KẾT THÚC --- *@
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Kích hoạt CKEditor
+        CKEDITOR.replace('txtNoiDung');
+    </script>
+
+    <style>
+        .scale-125 {
+            transform: scale(1.25);
+        }
+    </style>
+}

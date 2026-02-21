@@ -1,0 +1,34 @@
+﻿@model KitchenHome_WsiteBanHang.Models.PhuongThucThanhToan
+
+@{
+    ViewData["Title"] = "Thêm phương thức thanh toán";
+}
+
+<h4 class="fw-bold text-primary mb-3">Thêm phương thức thanh toán</h4>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="MaPhuongThuc" class="form-label">Mã phương thức</label>
+        <input asp-for="MaPhuongThuc" class="form-control" />
+        <span asp-validation-for="MaPhuongThuc" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TenPhuongThuc" class="form-label">Tên phương thức</label>
+        <input asp-for="TenPhuongThuc" class="form-control" />
+        <span asp-validation-for="TenPhuongThuc" class="text-danger"></span>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-success">
+            Lưu
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">
+            Quay lại
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

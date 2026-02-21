@@ -1,0 +1,70 @@
+﻿@model KitchenHome_WsiteBanHang.Models.DanhMuc
+
+@{
+    ViewData["Title"] = "Chi tiết danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="max-width: 700px">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-info">Chi tiết danh mục</h3>
+
+        @* Nút Sửa dùng Tag Helper *@
+        <a asp-action="Edit" asp-route-id="@Model.DanhMucId" class="btn btn-warning shadow-sm">
+            <i class="bi bi-pencil-square"></i> Sửa danh mục này
+        </a>
+    </div>
+
+    <div class="card shadow border-0 rounded-3">
+        <div class="card-body p-4">
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-muted">Tên danh mục:</dt>
+                <dd class="col-sm-8 fw-bold text-primary">@Model.TenDanhMuc</dd>
+
+                <dt class="col-sm-4 text-muted">Slug (URL):</dt>
+                <dd class="col-sm-8 text-break">@Model.Slug</dd>
+
+                <dt class="col-sm-4 text-muted">Danh mục cha:</dt>
+                <dd class="col-sm-8">
+                    @* Lưu ý: Đổi DanhMuc2 -> DanhMucCha theo Model Core mới *@
+                    @if (Model.DanhMucCha != null)
+                    {
+                        <span class="badge bg-light text-dark border">
+                            <i class="bi bi-arrow-return-right me-1"></i> @Model.DanhMucCha.TenDanhMuc
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="text-muted fst-italic">-- Là danh mục gốc --</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4 text-muted">Thứ tự hiển thị:</dt>
+                <dd class="col-sm-8 fw-bold">@Model.ThuTu</dd>
+
+                <dt class="col-sm-4 text-muted">Trạng thái:</dt>
+                <dd class="col-sm-8">
+                    @if (Model.DangHoatDong)
+                    {
+                        <span class="badge bg-success">Đang hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Ngừng hoạt động</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4 text-muted">Ngày tạo:</dt>
+                <dd class="col-sm-8">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+
+            <hr class="my-4 text-muted opacity-25" />
+
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Quay lại danh sách
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+﻿@model KitchenHome_WsiteBanHang.Models.VaiTro
+
+@{
+    ViewData["Title"] = "Thêm vai trò mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            @* --- KHUNG CARD --- *@
+            <div class="card shadow border-0 rounded-3">
+
+                @* --- HEADER CARD --- *@
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold text-uppercase">
+                        <i class="bi bi-person-plus-fill me-2"></i>Thêm vai trò mới
+                    </h5>
+                </div>
+
+                @* --- BODY CARD --- *@
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+
+                        @* Hiển thị lỗi tổng quát (nếu có) *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small fst-italic"></div>
+
+                        @* 1. MÃ VAI TRÒ *@
+                        <div class="mb-3">
+                            <label asp-for="MaVaiTro" class="form-label fw-bold">Mã vai trò <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                                <input asp-for="MaVaiTro" class="form-control" placeholder="VD: ADMIN, STAFF, MANAGER..." />
+                            </div>
+                            <span asp-validation-for="MaVaiTro" class="text-danger small"></span>
+                            <div class="form-text text-muted small">
+                                Mã viết liền, không dấu, viết hoa (Dùng để kiểm tra quyền trong code).
+                            </div>
+                        </div>
+
+                        @* 2. TÊN VAI TRÒ *@
+                        <div class="mb-4">
+                            <label asp-for="TenVaiTro" class="form-label fw-bold">Tên vai trò <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-tag"></i></span>
+                                <input asp-for="TenVaiTro" class="form-control" placeholder="VD: Quản trị viên hệ thống" />
+                            </div>
+                            <span asp-validation-for="TenVaiTro" class="text-danger small"></span>
+                        </div>
+
+                        @* --- BUTTONS --- *@
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            @* Nút Quay lại *@
+                            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm">
+                                <i class="bi bi-arrow-left me-1"></i> Quay lại
+                            </a>
+
+                            @* Nút Lưu *@
+                            <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm">
+                                <i class="bi bi-check-lg me-1"></i> Lưu lại
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* --- SCRIPT VALIDATION CLIENT-SIDE --- *@
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

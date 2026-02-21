@@ -1,0 +1,38 @@
+﻿@model KitchenHome_WsiteBanHang.Models.ThanhToan
+
+@{
+    ViewData["Title"] = "Xóa thanh toán";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow border-0 border-top border-danger border-3 rounded-3">
+                <div class="card-header bg-white py-3 text-center">
+                    <h5 class="mb-0 fw-bold text-danger text-uppercase"><i class="bi bi-exclamation-triangle-fill me-2"></i>Xác nhận xóa</h5>
+                </div>
+                <div class="card-body p-4 text-center">
+
+                    <div class="mb-3"><i class="bi bi-trash3 text-danger display-1 opacity-75"></i></div>
+
+                    <h5 class="text-dark mb-1">Giao dịch cho đơn: <strong>@Model.DonHang.MaDonHang</strong></h5>
+                    <p class="text-success fw-bold fs-4 mb-3">@Model.SoTien.ToString("N0") ₫</p>
+
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-0 text-danger text-start small mb-4 rounded-3">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Cảnh báo:</strong> Việc xóa dữ liệu thanh toán có thể ảnh hưởng đến đối soát doanh thu. Bạn chỉ nên xóa các giao dịch tạo nhầm hoặc rác.
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="ThanhToanId" />
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm fw-bold">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-danger px-4 shadow-sm fw-bold"><i class="bi bi-trash-fill me-1"></i> Xóa vĩnh viễn</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

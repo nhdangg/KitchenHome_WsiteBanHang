@@ -1,0 +1,115 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.BienTheSanPham>
+
+@{
+    ViewData["Title"] = "Quản lý biến thể";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    // Ép kiểu ViewBag.SanPham để dùng tên và mã hiển thị
+    var sp = ViewBag.SanPham as KitchenHome_WsiteBanHang.Models.SanPham;
+}
+
+<div class="mb-3">
+    @* Nút quay lại trang danh sách sản phẩm *@
+    <a asp-action="Index" class="text-decoration-none text-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Về danh sách sản phẩm
+    </a>
+</div>
+
+<div class="card shadow border-top border-3 border-primary rounded-3">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="fw-bold text-primary mb-0">
+                <i class="bi bi-box-seam me-2"></i>@sp?.TenSanPham
+            </h4>
+            <small class="text-muted font-monospace"><i class="bi bi-upc-scan me-1"></i>Mã gốc: @sp?.MaSanPham</small>
+        </div>
+
+        @* Nút thêm biến thể mới *@
+        <a asp-action="CreateBienThe" asp-route-sanPhamId="@sp?.SanPhamId" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Thêm biến thể mới
+        </a>
+    </div>
+
+    <div class="card-body p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">SKU</th>
+                            <th>Tên biến thể (Màu/Size)</th>
+                            <th>Giá nhập</th>
+                            <th>Giá bán</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold font-monospace text-primary ps-3">@item.Sku</td>
+                                <td>
+                                    <span class="fw-bold text-dark">@item.TenBienThe</span>
+                                </td>
+                                <td class="text-muted">@item.GiaNhapThamChieu.ToString("N0")</td>
+                                <td class="text-danger fw-bold fs-6">@item.GiaBan.ToString("N0")</td>
+                                <td class="text-center">
+                                    @if (item.DangHoatDong)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary">Hidden</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+
+                                        @* Nút Sửa SKU *@
+                                        <a asp-action="EditBienThe"
+                                           asp-route-id="@item.BienTheId"
+                                           class="btn btn-sm btn-primary rounded-circle shadow-sm"
+                                           title="Sửa">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        @* Nút Xóa SKU *@
+                                        <a asp-action="DeleteBienThe"
+                                           asp-route-id="@item.BienTheId"
+                                           class="btn btn-sm btn-danger rounded-circle shadow-sm"
+                                           title="Xóa"
+                                           onclick="return confirm('Bạn có chắc muốn xóa SKU này? Hành động này không thể hoàn tác.');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+
+                                        @* ✅ NÚT QUẢN LÝ ẢNH BIẾN THỂ *@
+                                        <a asp-area="Admin"
+                                           asp-controller="HinhAnhSanPham"
+                                           asp-action="Index"
+                                           asp-route-bienTheId="@item.BienTheId"
+                                           class="btn btn-sm btn-warning rounded-circle shadow-sm"
+                                           title="Quản lý ảnh SKU">
+                                            <i class="bi bi-images"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted opacity-75">
+                <i class="bi bi-box fs-1 d-block mb-2"></i>
+                <p>Sản phẩm này chưa có biến thể nào.</p>
+            </div>
+        }
+    </div>
+</div>

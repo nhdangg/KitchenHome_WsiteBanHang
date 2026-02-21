@@ -1,0 +1,122 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TaiKhoan
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary text-uppercase mb-0">
+            <i class="bi bi-person-badge-fill me-2"></i>Hồ sơ cá nhân
+        </h3>
+    </div>
+
+    @if (TempData["AlertMessage"] != null)
+    {
+        <div class="alert @TempData["AlertType"] alert-dismissible fade show shadow-sm border-0" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i> @TempData["AlertMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="card-title mb-0 fw-bold text-dark">
+                        <i class="bi bi-info-square me-2 text-primary"></i>Thông tin tài khoản
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-area="Admin" asp-controller="InformationADMIN" asp-action="CapNhat" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">TÊN ĐĂNG NHẬP</label>
+                            <input type="text" class="form-control bg-light" asp-for="TenDangNhap" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">EMAIL</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                <input type="email" asp-for="Email" class="form-control" required placeholder="example@mail.com" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">SỐ ĐIỆN THOẠI</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                                <input type="text" asp-for="SoDienThoai" class="form-control" placeholder="Nhập số điện thoại..." />
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                <i class="bi bi-save me-2"></i>Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="card-title mb-0 fw-bold text-dark">
+                        <i class="bi bi-shield-lock me-2 text-warning"></i>Đổi mật khẩu
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-area="Admin" asp-controller="InformationADMIN" asp-action="DoiMatKhau" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">MẬT KHẨU HIỆN TẠI</label>
+                            <input type="password" name="MatKhauCu" class="form-control" required placeholder="••••••••" />
+                        </div>
+
+                        <hr class="my-4 opacity-50">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">MẬT KHẨU MỚI</label>
+                            <input type="password" name="MatKhauMoi" class="form-control" required placeholder="Tối thiểu 6 ký tự" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">XÁC NHẬN MẬT KHẨU MỚI</label>
+                            <input type="password" name="XacNhanMatKhau" class="form-control" required placeholder="Nhập lại mật khẩu mới" />
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-warning px-4 shadow-sm">
+                                <i class="bi bi-key me-2"></i>Đổi mật khẩu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: none;
+    }
+
+    .input-group-text {
+        border-right: none;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+    }
+    /* Đảm bảo đồng bộ bo góc với card */
+    .rounded-3 {
+        border-radius: 0.5rem !important;
+    }
+</style>

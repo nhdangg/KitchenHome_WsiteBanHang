@@ -1,0 +1,97 @@
+﻿@model KitchenHome_WsiteBanHang.Areas.Quan_Ly.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Quan_Ly/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row mb-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 p-3">
+            <h6>Tổng đơn hàng</h6>
+            <h3 class="text-primary">@Model.TongDonHang</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 p-3">
+            <h6>Tổng khách hàng</h6>
+            <h3 class="text-success">@Model.TongKhachHang</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 p-3">
+            <h6>Tổng sản phẩm</h6>
+            <h3 class="text-warning">@Model.TongSanPham</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 p-3">
+            <h6>Tổng doanh thu</h6>
+            <h3 class="text-danger">@Model.TongDoanhThu.ToString("N0") đ</h3>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <b>Top 5 sản phẩm bán chạy</b>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TopSanPham)
+                        {
+                            <tr>
+                                <td>@item.TenSanPham</td>
+                                <td>@item.TongSoLuong</td>
+                                <td>@item.TongTien.ToString("N0") đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <b>Doanh thu 7 ngày gần nhất</b>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.DoanhThu7Ngay)
+                        {
+                            <tr>
+                                <td>@item.Ngay.ToString("dd/MM/yyyy")</td>
+                                <td>@item.DoanhThu.ToString("N0") đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

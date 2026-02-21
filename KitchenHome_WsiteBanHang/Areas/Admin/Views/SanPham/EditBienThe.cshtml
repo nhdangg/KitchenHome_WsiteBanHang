@@ -1,0 +1,92 @@
+﻿@model KitchenHome_WsiteBanHang.Models.BienTheSanPham
+
+@{
+    ViewData["Title"] = "Cập nhật biến thể";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="max-width: 800px">
+    <h3 class="fw-bold text-warning mb-3">
+        <i class="bi bi-pencil-square"></i> Cập nhật biến thể: <span class="text-dark">@ViewBag.TenSanPham</span>
+    </h3>
+
+    <div class="card shadow border-warning">
+        <div class="card-body p-4">
+
+            @* --- FORM BẮT ĐẦU --- *@
+            <form asp-action="Edit" method="post">
+
+                @* AntiForgeryToken tự động *@
+
+                @* Các trường ẩn *@
+                <input type="hidden" asp-for="BienTheId" />
+                <input type="hidden" asp-for="SanPhamId" />
+                <input type="hidden" asp-for="NgayTao" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Sku" class="form-label fw-bold">Mã SKU <span class="text-danger">*</span></label>
+                        <input asp-for="Sku" class="form-control" required />
+                        <span asp-validation-for="Sku" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="MaVach" class="form-label fw-bold">Mã vạch (Barcode)</label>
+                        <input asp-for="MaVach" class="form-control" placeholder="Để trống sẽ tự lấy theo SKU" />
+                        <span asp-validation-for="MaVach" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TenBienThe" class="form-label fw-bold">Tên biến thể (Màu sắc / Kích thước)</label>
+                    <input asp-for="TenBienThe" class="form-control" placeholder="VD: Màu đỏ - Size L" />
+                    <span asp-validation-for="TenBienThe" class="text-danger small"></span>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="GiaNhapThamChieu" class="form-label fw-bold">Giá nhập</label>
+                        <input asp-for="GiaNhapThamChieu" class="form-control" type="number" min="0" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="GiaBan" class="form-label fw-bold">Giá bán <span class="text-danger">*</span></label>
+                        <input asp-for="GiaBan" class="form-control" type="number" min="0" required />
+                        <span asp-validation-for="GiaBan" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="GiaKhuyenMai" class="form-label fw-bold text-success">Giá khuyến mãi</label>
+                        <input asp-for="GiaKhuyenMai" class="form-control" type="number" min="0" placeholder="Bỏ trống nếu không sale" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="SoLuongToiThieu" class="form-label fw-bold">Số lượng tối thiểu</label>
+                        <input asp-for="SoLuongToiThieu" class="form-control" type="number" min="1" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="TrongLuongGram" class="form-label fw-bold">Trọng lượng (gram)</label>
+                        <input asp-for="TrongLuongGram" class="form-control" type="number" min="0" />
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" asp-for="DangHoatDong" />
+                    <label class="form-check-label user-select-none" asp-for="DangHoatDong">Đang kinh doanh (Hiển thị)</label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-warning"><i class="bi bi-check-lg"></i> Cập nhật</button>
+                    @* Nút Hủy bỏ quay lại trang danh sách biến thể *@
+                    <a asp-action="BienThe" asp-route-sanPhamId="@Model.SanPhamId" class="btn btn-secondary">Hủy bỏ</a>
+                </div>
+            </form>
+            @* --- FORM KẾT THÚC --- *@
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

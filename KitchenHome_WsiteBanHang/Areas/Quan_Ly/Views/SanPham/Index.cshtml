@@ -1,0 +1,188 @@
+﻿@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<KitchenHome_WsiteBanHang.Models.SanPham>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    Layout = "~/Areas/Quan_Ly/Views/Shared/_Layout.cshtml";
+}
+
+@* CSS cho phân trang *@
+<style>
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination {
+        display: flex;
+        padding-left: 0;
+        list-style: none;
+        gap: 5px;
+    }
+
+        .pagination li a, .pagination li span {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .pagination li.active span {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        .pagination li.disabled span {
+            color: #ccc;
+            background-color: #f8f9fa;
+        }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold text-primary text-uppercase"><i class="bi bi-box-seam me-2"></i>Danh sách sản phẩm</h3>
+    <a asp-action="Create" class="btn btn-success shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Thêm mới
+    </a>
+</div>
+
+@* --- FORM TÌM KIẾM --- *@
+<div class="card mb-3 border-0 shadow-sm bg-light">
+    <div class="card-body py-3">
+        <form asp-action="Index" method="get" class="row g-2 align-items-center">
+            <div class="col-auto">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" name="searchString" value="@ViewBag.CurrentFilter" class="form-control border-start-0" placeholder="Tìm tên hoặc mã SP...">
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* --- BẢNG DỮ LIỆU --- *@
+<div class="card shadow border-0 rounded-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" width="10%">Ảnh</th>
+                        <th>Tên sản phẩm / Mã</th>
+                        <th>Danh mục</th>
+                        <th class="text-center">Biến thể (SKU)</th>
+                        <th class="text-center" width="15%">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            // ===== LOGIC ẢNH THÔNG MINH =====
+                            string imgUrl = item.AnhDaiDien;
+
+                            if (string.IsNullOrEmpty(imgUrl))
+                            {
+                                imgUrl = Url.Content("~/images/no-image.png");
+                            }
+                            else if (!imgUrl.StartsWith("http"))
+                            {
+                                imgUrl = Url.Content("~/Image/Image_SanPham/" + imgUrl);
+                            }
+
+                            <tr>
+                                <td class="text-center">
+                                    <img src="@imgUrl"
+                                         alt="@item.TenSanPham"
+                                         class="img-thumbnail shadow-sm"
+                                         style="width:60px; height:60px; object-fit:cover;"
+                                         onerror="this.onerror=null;this.src='/images/no-image.png';" />
+                                </td>
+
+                                <td>
+                                    <div class="fw-bold text-dark">@item.TenSanPham</div>
+                                    <small class="text-muted font-monospace">
+                                        <i class="bi bi-upc-scan me-1"></i>@item.MaSanPham
+                                    </small>
+                                </td>
+
+                                <td>
+                                    @if (item.DanhMuc != null)
+                                    {
+                                        <span class="badge bg-light text-dark border">
+                                            @item.DanhMuc.TenDanhMuc
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-center">
+                                    <a asp-action="BienThe"
+                                       asp-route-sanPhamId="@item.SanPhamId"
+                                       class="btn btn-sm btn-outline-info position-relative shadow-sm">
+                                        <i class="bi bi-list-ul me-1"></i> Quản lý SKU
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            @(item.BienTheSanPhams?.Count ?? 0)
+                                        </span>
+                                    </a>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a asp-action="Edit" asp-route-id="@item.SanPhamId"
+                                           class="btn btn-sm btn-primary rounded-circle shadow-sm">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        <a asp-action="Details" asp-route-id="@item.SanPhamId"
+                                           class="btn btn-sm btn-secondary rounded-circle shadow-sm">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <a asp-action="Delete" asp-route-id="@item.SanPhamId"
+                                           class="btn btn-sm btn-danger rounded-circle shadow-sm"
+                                           onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox display-4 d-block mb-3 opacity-25"></i>
+                                Không tìm thấy sản phẩm nào.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @* --- PHÂN TRANG (X.PagedList) --- *@
+        <div class="d-flex flex-column align-items-center my-3">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.CurrentFilter }),
+            new PagedListRenderOptions
+            {
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" },
+                ContainerDivClasses = new string[] { "pagination-container" },
+                UlElementClasses = new string[] { "pagination" }
+            })
+
+            <div class="text-muted small mt-2">
+                Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+            </div>
+        </div>
+    </div>
+</div>

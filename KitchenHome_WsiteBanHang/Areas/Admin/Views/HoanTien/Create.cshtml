@@ -1,0 +1,92 @@
+﻿@model KitchenHome_WsiteBanHang.Models.HoanTien
+
+@{
+    ViewData["Title"] = "Tạo yêu cầu hoàn tiền";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            @* --- KHUNG CARD --- *@
+            <div class="card shadow border-0 rounded-3">
+
+                @* --- HEADER --- *@
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold text-uppercase">
+                        <i class="bi bi-plus-circle-fill me-2"></i>Tạo yêu cầu hoàn tiền
+                    </h5>
+                </div>
+
+                @* --- BODY --- *@
+                <div class="card-body p-4">
+
+                    @* Hiển thị thông báo lỗi từ Controller (VD: Hoàn quá số tiền gốc) *@
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mb-3 border-0 border-start border-danger border-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post">
+
+                        @* Lỗi validate model *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small fst-italic"></div>
+
+                        @* 1. CHỌN GIAO DỊCH GỐC *@
+                        <div class="mb-3">
+                            <label asp-for="ThanhToanId" class="form-label fw-bold">Chọn Giao dịch (Đơn hàng) <span class="text-danger">*</span></label>
+                            <select asp-for="ThanhToanId" class="form-select" asp-items="ViewBag.ThanhToanId"></select>
+                            <div class="form-text small text-muted">
+                                <i class="bi bi-info-circle me-1"></i> Chỉ hiển thị các giao dịch thanh toán đã <strong>Thành công</strong>.
+                            </div>
+                            <span asp-validation-for="ThanhToanId" class="text-danger small"></span>
+                        </div>
+
+                        @* 2. SỐ TIỀN HOÀN *@
+                        <div class="mb-3">
+                            <label asp-for="SoTienHoan" class="form-label fw-bold">Số tiền hoàn (VNĐ) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="SoTienHoan" class="form-control text-end fw-bold" type="number" step="1000" min="0" placeholder="VD: 50000" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <span asp-validation-for="SoTienHoan" class="text-danger small"></span>
+                        </div>
+
+                        @* 3. LÝ DO *@
+                        <div class="mb-3">
+                            <label asp-for="LyDo" class="form-label fw-bold">Lý do hoàn tiền</label>
+                            <textarea asp-for="LyDo" class="form-control" rows="3" placeholder="VD: Sản phẩm lỗi, khách đổi ý, hoàn phí ship..."></textarea>
+                            <span asp-validation-for="LyDo" class="text-danger small"></span>
+                        </div>
+
+                        @* 4. TRẠNG THÁI *@
+                        <div class="mb-4">
+                            <label asp-for="TrangThai" class="form-label fw-bold">Trạng thái xử lý</label>
+                            <select asp-for="TrangThai" class="form-select fw-bold text-primary" asp-items="ViewBag.TrangThaiList"></select>
+                            <span asp-validation-for="TrangThai" class="text-danger small"></span>
+                        </div>
+
+                        @* --- BUTTONS --- *@
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a asp-action="Index" class="btn btn-secondary px-4 shadow-sm">
+                                <i class="bi bi-arrow-left me-1"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm">
+                                <i class="bi bi-save me-1"></i> Lưu yêu cầu
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

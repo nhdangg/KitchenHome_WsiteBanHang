@@ -1,0 +1,43 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TraHang
+
+<div class="container-fluid px-4">
+    <h2 class="mt-4">Chỉnh sửa yêu cầu trả hàng</h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Edit">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="TraHangId" />
+                <input type="hidden" asp-for="MaTraHang" />
+                <input type="hidden" asp-for="DonHangId" />
+                <input type="hidden" asp-for="NgayTao" />
+                <input type="hidden" asp-for="TrangThai" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Lý do trả hàng</label>
+                        <textarea asp-for="LyDo" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="LyDo" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Số tiền dự kiến hoàn</label>
+                        <input asp-for="SoTienDuKienHoan" class="form-control" type="number" />
+                        <span asp-validation-for="SoTienDuKienHoan" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary px-4">Lưu thay đổi</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

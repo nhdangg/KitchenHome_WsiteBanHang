@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "Đổi mật khẩu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-danger text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-shield-lock me-2"></i>Đổi Mật Khẩu</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("DoiMatKhau", "ThongTinTaiKhoan", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mật khẩu hiện tại</label>
+                            <div class="input-group">
+                                <input type="password" name="MatKhauCu" id="MatKhauCu" class="form-control" required />
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('MatKhauCu', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mật khẩu mới</label>
+                            <div class="input-group">
+                                <input type="password" name="MatKhauMoi" id="MatKhauMoi" class="form-control" required minlength="6" />
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('MatKhauMoi', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Tối thiểu 6 ký tự</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Xác nhận mật khẩu mới</label>
+                            <div class="input-group">
+                                <input type="password" name="XacNhanMatKhau" id="XacNhanMatKhau" class="form-control" required />
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('XacNhanMatKhau', this)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-danger">Xác nhận đổi mật khẩu</button>
+                            <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Hủy bỏ</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword(inputId, btn) {
+        var input = document.getElementById(inputId);
+        var icon = btn.querySelector("i");
+
+        if (input.type === "password") {
+            input.type = "text"; // Hiện mật khẩu
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash"); // Đổi icon thành mắt gạch chéo
+        } else {
+            input.type = "password"; // Ẩn mật khẩu
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye"); // Đổi icon về mắt thường
+        }
+    }
+</script>
