@@ -28,9 +28,9 @@ public partial class TonKho
 
     [ForeignKey("BienTheId")]
     [InverseProperty("TonKhos")]
-    public virtual BienTheSanPham BienThe { get; set; } = null!;
+    public virtual BienTheSanPham ? BienThe { get; set; }
 
     [ForeignKey("KhoId")]
     [InverseProperty("TonKhos")]
-    public virtual Kho Kho { get; set; } = null!;
+    public virtual Kho ? Kho { get; set; }
 }

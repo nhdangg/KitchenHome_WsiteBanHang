@@ -66,6 +66,7 @@ namespace WsiteBanHang_GiaDung.Areas.Admin.Controllers
         {
             var khachHang = _context.KhachHangs
                 .Include(k => k.TaiKhoan)
+                .Include(k => k.DonHangs)
                 .Include(k => k.DiaChiKhachHangs)
                 .FirstOrDefault(k => k.KhachHangId == id);
 

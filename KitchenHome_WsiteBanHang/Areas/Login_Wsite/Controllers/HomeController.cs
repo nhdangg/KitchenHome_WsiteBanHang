@@ -74,26 +74,26 @@ namespace KitchenHome_WsiteBanHang.Areas.Login_Wsite.Controllers
             // ================== KIỂM TRA MẬT KHẨU ==================
             bool loginOK = false;
 
-            // 👉 1️⃣ TÀI KHOẢN ĐÃ NÂNG CẤP BCrypt
+            // ================= 1️⃣ Nếu đã là BCrypt =================
             if (!string.IsNullOrEmpty(u.MatKhauHash) && u.MatKhauHash.StartsWith("$2"))
             {
                 loginOK = BCrypt.Net.BCrypt.Verify(vm.MatKhau, u.MatKhauHash);
             }
             else
             {
-                // 👉 2️⃣ TRƯỜNG HỢP DB LƯU MẬT KHẨU THUẦN = "12345"
-                if (u.MatKhauHash == "12345" && vm.MatKhau == "12345")
+                // ================= 2️⃣ Nếu mật khẩu lưu THUẦN (plain text) =================
+                if (!string.IsNullOrEmpty(u.MatKhauHash) && u.MatKhauHash == vm.MatKhau)
                 {
                     loginOK = true;
 
-                    // 🔁 NÂNG CẤP NGAY → BCrypt
+                    // 🔁 Nâng cấp ngay sang BCrypt
                     u.MatKhauHash = BCrypt.Net.BCrypt.HashPassword(vm.MatKhau);
                     u.MuoiHash = null;
                     _context.SaveChanges();
                 }
                 else
                 {
-                    // 👉 3️⃣ TÀI KHOẢN CŨ – MD5 THUẦN
+                    // ================= 3️⃣ Nếu là MD5 cũ =================
                     var md5 = GetMD5(vm.MatKhau);
 
                     if (!string.IsNullOrEmpty(u.MatKhauHash) &&
@@ -101,7 +101,7 @@ namespace KitchenHome_WsiteBanHang.Areas.Login_Wsite.Controllers
                     {
                         loginOK = true;
 
-                        // 🔁 NÂNG CẤP NGAY → BCrypt
+                        // 🔁 Nâng cấp ngay sang BCrypt
                         u.MatKhauHash = BCrypt.Net.BCrypt.HashPassword(vm.MatKhau);
                         u.MuoiHash = null;
                         _context.SaveChanges();
@@ -138,11 +138,14 @@ namespace KitchenHome_WsiteBanHang.Areas.Login_Wsite.Controllers
             if(u.VaiTros.Any(r => r.MaVaiTro == "QUAN_LY")){
                 return RedirectToAction("Index", "Home", new { area = "Quan_Ly" });
             }
-           
+            if (u.VaiTros.Any(r => r.MaVaiTro == "THU_NGAN"))
+            {
+                return RedirectToAction("Index", "Home", new { area = "Thu_Ngan" });
+            }
             // 2️⃣ THỦ KHO
             if (u.VaiTros.Any(r => r.MaVaiTro == "THU_KHO"))
             {
-                return RedirectToAction("Index", "Kho", new { area = "Admin" });
+                return RedirectToAction("Index", "Home", new { area = "Thu_Kho" });
             }
 
             // 3️⃣ USER → quay lại trang cũ

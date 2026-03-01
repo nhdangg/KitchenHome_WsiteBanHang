@@ -154,97 +154,34 @@
                    class="list-group-item list-group-item-action @(ViewBag.Active == "SanPham" ? "active" : "")">
                     <i class="bi bi-box-seam me-3"></i> Sản phẩm
                 </a>
-                @* <a asp-area="Admin" asp-controller="DanhMuc" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "DanhMuc" ? "active" : "")">
-                    <i class="bi bi-tags me-3"></i> Danh mục
-                </a>
-                <a asp-area="Admin" asp-controller="ThuongHieu" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "ThuongHieu" ? "active" : "")">
-                    <i class="bi bi-award me-3"></i> Thương hiệu
-                </a>
-                <a asp-area="Admin" asp-controller="DonViTinh" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "DonViTinh" ? "active" : "")">
-                    <i class="bi bi-ruler me-3"></i> Đơn vị tính
-                </a>
 
                 <div class="menu-label">Bán hàng & Khách hàng</div>
-                <a asp-area="Admin" asp-controller="DonHang" asp-action="Index"
+                <a asp-area="Quan_Ly" asp-controller="DonHang" asp-action="Index"
                    class="list-group-item list-group-item-action @(ViewBag.Active == "DonHang" ? "active" : "")">
                     <i class="bi bi-cart-check me-3"></i> Đơn hàng
                 </a>
-                <a asp-area="Admin" asp-controller="KhachHang" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "KhachHang" ? "active" : "")">
-                    <i class="bi bi-people me-3"></i> Khách hàng
-                </a>
-                <a asp-area="Admin" asp-controller="DanhGiaSanPham" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "DanhGiaSanPham" ? "active" : "")">
-                    <i class="bi bi-star me-3"></i> Đánh giá sản phẩm
-                </a>
-                <a asp-area="Admin" asp-controller="MaGiamGia" asp-action="Index"
+             
+                <a asp-area="Quan_Ly" asp-controller="MaGiamGia" asp-action="Index"
                    class="list-group-item list-group-item-action @(ViewBag.Active == "MaGiamGia" ? "active" : "")">
                     <i class="bi bi-ticket-perforated me-3"></i> Mã Giảm Giá
                 </a>
 
-                <div class="menu-label">Kho vận & Đổi trả</div>
-                <a asp-area="Admin" asp-controller="Kho" asp-action="Index"
+                <a asp-area="Quan_Ly" asp-controller="DoanhThu" asp-action="Index"
+                   class="list-group-item list-group-item-action @(ViewBag.Active == "DoanhThu" ? "active" : "")">
+                    <i class="bi bi-ticket-perforated me-3"></i> Doanh Thu Theo Ngày
+                </a>
+
+                <div class="menu-label">Kho vận & Thanh toán</div>
+                <a asp-area="Quan_Ly" asp-controller="Kho" asp-action="Index"
                    class="list-group-item list-group-item-action @(ViewBag.Active == "Kho" ? "active" : "")">
                     <i class="bi bi-shop me-3"></i> Quản lý Kho
                 </a>
-                <a asp-area="Admin" asp-controller="NhatKyKho" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "NhatKyKho" ? "active" : "")">
-                    <i class="bi bi-clipboard-data me-3"></i> Nhật ký kho
-                </a>
-                <a asp-area="Admin" asp-controller="TraHang" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "TraHang" ? "active" : "")">
-                    <i class="bi bi-box-arrow-in-left me-3"></i> Trả hàng
-                </a>
-                <a asp-area="Admin" asp-controller="HoanTien" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["controller"]?.ToString() == "HoanTien" ? "active" : "")">
-                    <i class="bi bi-arrow-counterclockwise me-3"></i> Quản lý Hoàn tiền
-                </a>
 
-                <div class="menu-label">Giao diện & Nội dung</div>
-                <a asp-area="Admin" asp-controller="Banner" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "Banner" ? "active" : "")">
-                    <i class="bi bi-images me-3"></i> Quản lý Banner
-                </a>
-                <a asp-area="Admin" asp-controller="TrangNoiDung" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "TrangNoiDung" ? "active" : "")">
-                    <i class="bi bi-journal-text me-3"></i> Trang tĩnh
-                </a>
-
-                <div class="menu-label">Cấu hình & Bảo mật</div>
-                <a asp-area="Admin" asp-controller="ThanhToan" asp-action="Index"
+                <a asp-area="Quan_Ly" asp-controller="ThanhToan" asp-action="Index"
                    class="list-group-item list-group-item-action @(ViewBag.Active == "ThanhToan" ? "active" : "")">
-                    <i class="bi bi-cash-stack me-3"></i> Giao dịch Thanh Toán
+                    <i class="bi bi-shop me-3"></i> Thanh Toán
                 </a>
-                <a asp-area="Admin" asp-controller="PhuongThucThanhToan" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "PhuongThucThanhToan" ? "active" : "")">
-                    <i class="bi bi-credit-card-2-front me-3"></i> Phương thức thanh toán
-                </a>
-                <a asp-area="Admin" asp-controller="TaiKhoan" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "TaiKhoan" ? "active" : "")">
-                    <i class="bi bi-person-lock me-3"></i> Quản lý tài khoản
-                </a>
-                <a asp-area="Admin" asp-controller="QuanLyVaiTro" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "VaiTro" ? "active" : "")">
-                    <i class="bi bi-shield-lock me-3"></i> Vai trò & Quyền
-                </a>
-                <a asp-area="Admin" asp-controller="NhatKyHeThong" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "NhatKyHeThong" ? "active" : "")">
-                    <i class="bi bi-terminal me-3"></i> Nhật ký hệ thống
-                </a>
-                <a asp-area="Admin" asp-controller="NhatKyCongThanhToan" asp-action="Index"
-                   class="list-group-item list-group-item-action @(ViewBag.Active == "NhatKyCongThanhToan" ? "active" : "")">
-                    <i class="bi bi-credit-card me-3"></i> Nhật ký cổng thanh toán
-                </a> *@
-
-                <div class="mt-4 border-top pt-2">
-                    <a asp-area="ADMIN" asp-controller="CauHinh" asp-action="Index"
-                       class="list-group-item list-group-item-action @(ViewBag.Active == "CauHinh" ? "active" : "")">
-                        <i class="bi bi-gear me-3"></i> Cấu hình hệ thống
-                    </a>
-                </div>
+             
             </div>
         </div>
         <div id="page-content-wrapper">
@@ -260,12 +197,12 @@
                                 @(User.Identity.IsAuthenticated? User.Identity.Name?.Substring(0, 1).ToUpper() : "A")
                             </div>
                             <span class="fw-bold d-none d-sm-inline">
-                                @(User.Identity.IsAuthenticated? User.Identity.Name : "Administrator")
+                                @(User.Identity.IsAuthenticated? User.Identity.Name : "Quản Lý")
                             </span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                             <li>
-                                <a class="dropdown-item py-2" asp-area="Admin" asp-controller="InformationADMIN" asp-action="Index">
+                                <a class="dropdown-item py-2" asp-area="Quan_Ly" asp-controller="InformationQuanLy" asp-action="Index">
                                     <i class="bi bi-person me-2"></i> Hồ sơ cá nhân
                                 </a>
                             </li>

@@ -15,7 +15,11 @@
 <div class="card shadow border-0 rounded-3">
     <div class="card-body p-4">
         @* Form Upload file cần enctype *@
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <form asp-area="Admin"
+              asp-controller="SanPham"
+              asp-action="Create"
+              method="post"
+              enctype="multipart/form-data">
 
             @* AntiForgeryToken tự động *@
             <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 border-start border-danger border-4 shadow-sm"></div>

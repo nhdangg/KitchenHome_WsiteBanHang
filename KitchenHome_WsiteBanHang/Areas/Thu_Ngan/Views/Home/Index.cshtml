@@ -1,0 +1,139 @@
+﻿@{
+    ViewData["Title"] = "Dashboard Thu Ngân";
+    Layout = "~/Areas/Thu_Ngan/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<div class="container-fluid py-3 px-0">
+
+    @* --- HEADER --- *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1 h3">
+                <i class="bi bi-speedometer2 text-primary me-2"></i>Tổng Quan Thu Ngân
+            </h2>
+            <p class="text-muted mb-0 small">Theo dõi trạng thái đơn hàng và doanh thu bán hàng</p>
+        </div>
+    </div>
+
+    @* --- SUMMARY CARDS --- *@
+    <div class="row g-4 mb-4">
+
+        @* 1. Đơn hôm nay *@
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center p-3 me-3" style="width: 60px; height: 60px;">
+                        <i class="bi bi-cart-check-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Đơn hôm nay</p>
+                        <h3 class="fw-bold mb-0 text-dark">@ViewBag.SoDonHomNay</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* 2. Doanh thu hôm nay *@
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center p-3 me-3" style="width: 60px; height: 60px;">
+                        <i class="bi bi-cash-coin fs-3"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Doanh thu hôm nay</p>
+                        <h3 class="fw-bold mb-0 text-success">@String.Format("{0:N0}", ViewBag.DoanhThuHomNay ?? 0) đ</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* 3. Tổng doanh thu *@
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center p-3 me-3" style="width: 60px; height: 60px;">
+                        <i class="bi bi-wallet2 fs-3"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Tổng doanh thu</p>
+                        <h3 class="fw-bold mb-0 text-dark">@String.Format("{0:N0}", ViewBag.TongDoanhThu ?? 0) đ</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* 4. Đơn chờ xác nhận *@
+        <div class="col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center p-3 me-3" style="width: 60px; height: 60px;">
+                        <i class="bi bi-hourglass-split fs-3"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small fw-bold mb-1 text-uppercase">Chờ xác nhận</p>
+                        <h3 class="fw-bold mb-0 text-warning text-darken">@ViewBag.DonChoXacNhan</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @* --- DATA TABLE --- *@
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mt-2">
+        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+            <h6 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-star-fill text-warning me-2"></i> Top 5 Sản Phẩm Bán Chạy
+            </h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-muted text-uppercase small fw-bold" style="width: 15%;">SKU</th>
+                            <th class="py-3 text-muted text-uppercase small fw-bold" style="width: 45%;">Tên sản phẩm</th>
+                            <th class="text-center py-3 text-muted text-uppercase small fw-bold" style="width: 20%;">Số lượng bán</th>
+                            <th class="text-end pe-4 py-3 text-muted text-uppercase small fw-bold" style="width: 20%;">Tổng tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.TopBanChay != null && ViewBag.TopBanChay.Count > 0)
+                        {
+                            foreach (var item in ViewBag.TopBanChay)
+                            {
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-1">
+                                            @item.Sku
+                                        </span>
+                                    </td>
+                                    <td class="fw-semibold text-dark">@item.TenSanPham</td>
+                                    <td class="text-center">
+                                        <span class="fw-bold text-primary fs-6">@(item.TongSoLuong ?? 0)</span>
+                                    </td>
+                                    <td class="text-end pe-4 fw-bold text-danger">
+                                        @String.Format("{0:N0}", item.TongTien ?? 0) đ
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inboxes display-4 d-block mb-3 opacity-50"></i>
+                                    Chưa có dữ liệu bán hàng.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

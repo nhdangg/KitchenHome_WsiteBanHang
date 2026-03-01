@@ -17,7 +17,7 @@ public partial class HinhAnhSanPham
     public int BienTheId { get; set; }
 
     [StringLength(500)]
-    public string DuongDan { get; set; } = null!;
+    public string ? DuongDan { get; set; }
 
     public bool LaChinh { get; set; }
 
@@ -27,5 +27,5 @@ public partial class HinhAnhSanPham
 
     [ForeignKey("BienTheId")]
     [InverseProperty("HinhAnhSanPhams")]
-    public virtual BienTheSanPham BienThe { get; set; } = null!;
+    public virtual BienTheSanPham ? BienThe { get; set; }
 }

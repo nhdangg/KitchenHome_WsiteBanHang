@@ -1,0 +1,125 @@
+﻿@model List<KitchenHome_WsiteBanHang.Models.HinhAnhSanPham>
+
+@{
+    ViewData["Title"] = "Quản lý hình ảnh biến thể";
+    Layout = "~/Areas/Quan_Ly/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <h4 class="mb-4">Quản lý hình ảnh biến thể</h4>
+
+    <!-- ================= THÊM ẢNH ================= -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            Thêm hình ảnh
+        </div>
+        <div class="card-body">
+            <form asp-action="ThemHinhAnh" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="bienTheId" value="@ViewBag.BienTheId" />
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Chọn ảnh</label>
+                        <input type="file" name="ImageFile" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>Thứ tự</label>
+                        <input type="number" name="thuTu" value="0" class="form-control" />
+                    </div>
+
+                    <div class="col-md-2 mt-4">
+                        <div class="form-check">
+                            <input type="checkbox" name="laChinh" class="form-check-input" value="true" />
+                            <label class="form-check-label">Ảnh chính</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 mt-4">
+                        <button type="submit" class="btn btn-success">
+                            Thêm ảnh
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= DANH SÁCH ẢNH ================= -->
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="card @(item.LaChinh ? "border-danger" : "")">
+
+                        <img src="~/Image/Image_BienThe/@item.DuongDan"
+                             class="card-img-top"
+                             style="height:200px;object-fit:cover;" />
+
+                        <div class="card-body text-center">
+
+                            @if (item.LaChinh)
+                            {
+                                <span class="badge bg-danger mb-2">Ảnh chính</span>
+                            }
+
+                            <!-- FORM SỬA -->
+                            <form asp-action="EditHinhAnh" method="post" class="mb-2">
+                                <input type="hidden" name="id" value="@item.HinhAnhId" />
+
+                                <div class="mb-2">
+                                    <input type="number"
+                                           name="thuTu"
+                                           value="@item.ThuTu"
+                                           class="form-control form-control-sm"
+                                           placeholder="Thứ tự" />
+                                </div>
+
+                                <div class="form-check mb-2">
+                                    <input type="checkbox"
+                                           name="laChinh"
+                                           value="true"
+                                           class="form-check-input"
+                                           @(item.LaChinh ? "checked" : "") />
+                                    <label class="form-check-label">
+                                        Ảnh chính
+                                    </label>
+                                </div>
+
+                                <button type="submit"
+                                        class="btn btn-warning btn-sm w-100">
+                                    Cập nhật
+                                </button>
+                            </form>
+
+                            <!-- FORM XÓA -->
+                            <form asp-action="DeleteHinhAnh"
+                                  method="post"
+                                  onsubmit="return confirm('Xóa ảnh này?')">
+                                <input type="hidden" name="id" value="@item.HinhAnhId" />
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm w-100">
+                                    Xóa
+                                </button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Chưa có hình ảnh nào.
+                </div>
+            </div>
+        }
+    </div>
+
+</div>

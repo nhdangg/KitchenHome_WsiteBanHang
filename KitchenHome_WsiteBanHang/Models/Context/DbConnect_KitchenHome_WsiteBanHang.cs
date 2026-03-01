@@ -51,9 +51,10 @@ namespace KitchenHome_WsiteBanHang.Models.Context
         public virtual DbSet<TraHang> TraHangs { get; set; } = null!;
         public virtual DbSet<ChiTietTraHang> ChiTietTraHangs { get; set; } = null!;
 
-        public virtual DbSet<KhuyenMai> KhuyenMais { get; set; } = null!;
+        //public virtual DbSet<KhuyenMai> KhuyenMais { get; set; } = null!;
         public virtual DbSet<MaGiamGia> MaGiamGias { get; set; } = null!;
         public virtual DbSet<SuDungMaGiamGium> SuDungMaGiamGias { get; set; } = null!;
+        public virtual DbSet<VwDoanhThuTheoNgay> VwDoanhThuTheoNgays { get; set; } = null!;
 
         // Các bảng n-n nếu bạn có tạo model riêng
         // public virtual DbSet<KhuyenMai_BienThe> KhuyenMai_BienThes { get; set; }
@@ -64,6 +65,7 @@ namespace KitchenHome_WsiteBanHang.Models.Context
         public virtual DbSet<TrangNoiDung> TrangNoiDungs { get; set; } = null!;
         public virtual DbSet<NhatKyHeThong> NhatKyHeThongs { get; set; } = null!;
 
+        public DbSet<VwTopBanChay> VwTopBanChay { get; set; }
         public virtual DbSet<NhatKyCongThanhToan> NhatKyCongThanhToans { get; set; } = null!;
 
         // --- CẤU HÌNH (FLUENT API) ---
@@ -72,6 +74,12 @@ namespace KitchenHome_WsiteBanHang.Models.Context
         {
             modelBuilder.Entity<SuDungMaGiamGium>().ToTable("SuDungMaGiamGia");
             modelBuilder.Entity<MaGiamGia>().ToTable("MaGiamGia");
+
+            modelBuilder.Entity<VwDoanhThuTheoNgay>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("vw_DoanhThuTheoNgay");   // TÊN VIEW TRONG SQL
+            });
 
             // ====== FIX QUAN HỆ TaiKhoan - VaiTro ======
             modelBuilder.Entity<TaiKhoan>()
@@ -98,7 +106,11 @@ namespace KitchenHome_WsiteBanHang.Models.Context
                  }
              );
 
-
+            modelBuilder.Entity<VwTopBanChay>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("vw_TopBanChay"); // đúng tên view trong SQL
+            });
             // ====== COMPOSITE KEY KHÁC ======
             modelBuilder.Entity<TonKho>(entity =>
             {

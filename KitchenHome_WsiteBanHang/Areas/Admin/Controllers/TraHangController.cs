@@ -143,6 +143,21 @@ namespace KitchenHome_WsiteBanHang.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, TraHang traHang)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = "";
+
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        errors += $"Field: {state.Key}\n";
+                        errors += $" - {error.ErrorMessage}\n";
+                    }
+                }
+
+                return Content(errors, "text/plain");
+            }
             if (id != traHang.TraHangId) return NotFound();
 
             var oldData = await _context.TraHangs.AsNoTracking()

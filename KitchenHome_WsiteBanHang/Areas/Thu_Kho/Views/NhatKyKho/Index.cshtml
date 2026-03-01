@@ -1,0 +1,178 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.NhatKyKho>
+
+@{
+    ViewBag.Title = "Nhật ký kho";
+    Layout = "~/Areas/Thu_Kho/Views/Shared/_Layout.cshtml";
+
+    int? selectedKhoId = ViewBag.SelectedKhoId as int?;
+    string searchString = ViewBag.SearchString as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-primary text-uppercase">
+        <i class="bi bi-clock-history me-2"></i>Nhật ký nhập xuất
+    </h3>
+
+    <a asp-action="Create" class="btn btn-success shadow-sm">
+        <i class="bi bi-box-seam me-1"></i> Tạo phiếu Nhập/Xuất
+    </a>
+</div>
+
+<!-- ================= FILTER ================= -->
+<div class="card mb-4 border-0 shadow-sm bg-light">
+    <div class="card-body py-3">
+        <form method="get" class="row g-3 align-items-center">
+
+            <div class="col-auto">
+                <label class="fw-bold text-secondary">
+                    <i class="bi bi-funnel"></i> Lọc theo kho:
+                </label>
+            </div>
+
+            <div class="col-auto">
+                <select name="khoId"
+                        class="form-select form-select-sm"
+                        onchange="this.form.submit()">
+
+                    <option value="">-- Tất cả kho --</option>
+
+                    <select name="khoId"
+                            class="form-select form-select-sm"
+                            onchange="this.form.submit()"
+                            asp-items="ViewBag.ListKho">
+
+                        <option value="">-- Tất cả kho --</option>
+                    </select>
+                </select>
+            </div>
+
+            <div class="col-auto ms-auto">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+
+                    <input type="text"
+                           name="searchString"
+                           value="@searchString"
+                           class="form-control border-start-0"
+                           placeholder="Tìm mã phiếu, SKU..." />
+                </div>
+            </div>
+
+            <div class="col-auto">
+                <button class="btn btn-sm btn-secondary">
+                    Tìm kiếm
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- ================= TABLE ================= -->
+<div class="card shadow border-0 rounded-3">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle small mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Mã phiếu</th>
+                        <th>Thời gian</th>
+                        <th>Kho</th>
+                        <th>Sản phẩm</th>
+                        <th class="text-center">Loại</th>
+                        <th class="text-end">Số lượng</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-primary ps-3">
+                                    @item.MaNhatKy
+                                </td>
+
+                                <td>
+                                    @item.NgayTao.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @item.Kho?.TenKho
+                                </td>
+
+                                <td>
+                                    <div class="fw-bold text-dark">
+                                        @item.BienThe?.SanPham?.TenSanPham
+                                    </div>
+                                    <span class="text-muted">
+                                        (@item.BienThe?.TenBienThe)
+                                    </span>
+                                    <div class="text-info font-monospace">
+                                        @item.BienThe?.Sku
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    @if (item.LoaiPhatSinh == "NHAP")
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                                            NHẬP KHO
+                                        </span>
+                                    }
+                                    else if (item.LoaiPhatSinh == "XUAT")
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">
+                                            XUẤT KHO
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            @item.LoaiPhatSinh
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-end fw-bold fs-6">
+                                    @if (item.LoaiPhatSinh == "XUAT")
+                                    {
+                                        <span class="text-danger">
+                                            -@item.SoLuong
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">
+                                            +@item.SoLuong
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-muted fst-italic text-truncate"
+                                    style="max-width:150px;"
+                                    title="@item.GhiChu">
+                                    @item.GhiChu
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox display-4 d-block mb-3 opacity-25"></i>
+                                Không có dữ liệu nhật ký kho.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>

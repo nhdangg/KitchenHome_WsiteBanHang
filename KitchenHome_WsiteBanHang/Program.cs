@@ -4,10 +4,19 @@ using Microsoft.AspNetCore.Authentication.Cookies; // 1. Thư viện Cookie
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- 1. CẤU HÌNH DB CONTEXT ---
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<DbConnect_KitchenHome_WsiteBanHang>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.CommandTimeout(60) // tăng timeout 60s
+    )
+    .EnableSensitiveDataLogging()
+    .LogTo(Console.WriteLine, LogLevel.Information)
+);
+// --- 1. CẤU HÌNH DB CONTEXT ---
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//builder.Services.AddDbContext<DbConnect_KitchenHome_WsiteBanHang>(options =>
+//    options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<KitchenHome_WsiteBanHang.Services.CartService>();
 

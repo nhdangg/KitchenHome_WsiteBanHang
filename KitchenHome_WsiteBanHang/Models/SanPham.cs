@@ -18,14 +18,14 @@ public partial class SanPham
 
     [StringLength(30)]
     [Unicode(false)]
-    public string MaSanPham { get; set; } = null!;
+    public string ? MaSanPham { get; set; }
 
     [StringLength(200)]
-    public string TenSanPham { get; set; } = null!;
+    public string ? TenSanPham { get; set; }
 
     [StringLength(220)]
     [Unicode(false)]
-    public string Slug { get; set; } = null!;
+    public string ? Slug { get; set; }
 
     [Column("DanhMucID")]
     public int DanhMucId { get; set; }
@@ -60,11 +60,11 @@ public partial class SanPham
 
     [ForeignKey("DanhMucId")]
     [InverseProperty("SanPhams")]
-    public virtual DanhMuc DanhMuc { get; set; } = null!;
+    public virtual DanhMuc ? DanhMuc { get; set; }
 
     [ForeignKey("DonViTinhId")]
     [InverseProperty("SanPhams")]
-    public virtual DonViTinh DonViTinh { get; set; } = null!;
+    public virtual DonViTinh ? DonViTinh { get; set; }
 
     [InverseProperty("SanPham")]
     public virtual ICollection<SanPhamYeuThich> SanPhamYeuThiches { get; set; } = new List<SanPhamYeuThich>();

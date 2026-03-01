@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KitchenHome_WsiteBanHang.Models;
 using KitchenHome_WsiteBanHang.Models.Context;
+using System.Text.Json;
 
 namespace KitchenHome_WsiteBanHang.Areas.Admin.Controllers
 {
@@ -148,34 +149,53 @@ namespace KitchenHome_WsiteBanHang.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    if (thanhToan.TrangThai == "THANH_CONG" && thanhToan.NgayThanhToan == null)
-                    {
-                        thanhToan.NgayThanhToan = DateTime.Now;
-                    }
+                var thanhToanDb = await _context.ThanhToans
+     .Include(t => t.PhuongThuc)
+     .FirstOrDefaultAsync(x => x.ThanhToanId == id);
 
-                    _context.Update(thanhToan);
-                    await _context.SaveChangesAsync();
+                if (thanhToanDb == null)
+                    return NotFound();
 
-                    TempData["Success"] = "Cập nhật trạng thái thành công!";
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateConcurrencyException)
+                string trangThaiCu = thanhToanDb.TrangThai;
+
+                // Cập nhật từng field
+                thanhToanDb.SoTien = thanhToan.SoTien;
+                thanhToanDb.MaGiaoDich = thanhToan.MaGiaoDich;
+                thanhToanDb.TrangThai = thanhToan.TrangThai;
+                thanhToanDb.NgayThanhToan = thanhToan.NgayThanhToan;
+
+                // Nếu chuyển từ trạng thái khác sang THANH_CONG
+                if (trangThaiCu != "THANH_CONG"
+                    && thanhToanDb.TrangThai == "THANH_CONG")
                 {
-                    if (!ThanhToanExists(thanhToan.ThanhToanId))
+                    thanhToanDb.NgayThanhToan ??= DateTime.Now;
+
+                    var data = new
                     {
-                        TempData["Error"] = "Giao dịch không tồn tại hoặc đã bị xóa.";
-                        return NotFound();
-                    }
-                    else throw;
+                        orderId = thanhToanDb.DonHangId,
+                        status = "SUCCESS",
+                        amount = thanhToanDb.SoTien,
+                        message = "Admin cập nhật thanh toán thành công"
+                    };
+
+                    string rawJson = JsonSerializer.Serialize(data);
+
+                    var log = new NhatKyCongThanhToan
+                    {
+                        ThanhToanId = thanhToanDb.ThanhToanId,
+                        CongThanhToan = thanhToanDb.PhuongThuc?.TenPhuongThuc ?? "ADMIN",
+                        DuLieuNhan = rawJson,
+                        MaKetQua = "SUCCESS",
+                        NgayTao = DateTime.Now
+                    };
+
+                    _context.NhatKyCongThanhToans.Add(log);
                 }
-                catch (Exception ex)
-                {
-                    string msg = ex.Message;
-                    if (ex.InnerException != null) msg += " | Chi tiết: " + ex.InnerException.Message;
-                    TempData["Error"] = "Lỗi cập nhật: " + msg;
-                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Cập nhật trạng thái thành công!";
+                return RedirectToAction(nameof(Index));
             }
             else
             {

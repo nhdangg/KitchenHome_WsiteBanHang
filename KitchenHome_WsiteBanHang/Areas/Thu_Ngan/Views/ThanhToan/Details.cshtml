@@ -1,0 +1,109 @@
+﻿@model KitchenHome_WsiteBanHang.Models.ThanhToan
+
+@{
+    ViewData["Title"] = "Chi tiết giao dịch";
+    Layout = "~/Areas/Thu_Ngan/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4" style="max-width: 900px;">
+    <div class="card shadow border-0 rounded-3">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-receipt me-2"></i>Chi tiết Giao dịch #@Model.ThanhToanId</h5>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-sm btn-light text-secondary fw-bold shadow-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Quay lại
+                </a>
+                <a asp-action="Edit" asp-route-id="@Model.ThanhToanId" class="btn btn-sm btn-light text-primary fw-bold shadow-sm">
+                    <i class="bi bi-pencil-square me-1"></i> Cập nhật
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            @* --- THÔNG TIN CHÍNH --- *@
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                        <h6 class="text-muted fw-bold text-uppercase small mb-3">Thông tin đơn hàng</h6>
+                        <div class="mb-2">
+                            <span class="fw-bold">Mã đơn hàng:</span>
+                            <span class="text-primary fw-bold font-monospace">@Model.DonHang.MaDonHang</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="fw-bold">Phương thức:</span>
+                            <span class="badge bg-secondary">@Model.PhuongThuc.TenPhuongThuc</span>
+                        </div>
+                        <div>
+                            <span class="fw-bold">Ngày tạo:</span> @Model.NgayTao.ToString("dd/MM/yyyy HH:mm:ss")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                        <h6 class="text-muted fw-bold text-uppercase small mb-3">Thông tin thanh toán</h6>
+                        <div class="mb-2 d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Số tiền:</span>
+                            <span class="fs-4 fw-bold text-success">@Model.SoTien.ToString("N0") ₫</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="fw-bold">Trạng thái:</span>
+                            @if (Model.TrangThai == "THANH_CONG")
+                            {
+                                <span class="badge bg-success">Thành công</span>
+                            }
+                            else if (Model.TrangThai == "THAT_BAI")
+                            {
+
+                                <span class="badge bg-danger">Thất bại</span>
+                            }
+                            else
+                            {
+
+                                <span class="badge bg-warning text-dark">@Model.TrangThai</span>
+                            }
+                        </div>
+                        <div>
+                            <span class="fw-bold">Mã giao dịch (Gateway):</span>
+                            <span class="font-monospace text-muted">@(Model.MaGiaoDich ?? "Chưa có")</span>
+                        </div>
+                        <div>
+                            <span class="fw-bold">Ngày hoàn tất:</span>
+                            @(Model.NgayThanhToan.HasValue? Model.NgayThanhToan.Value.ToString("dd/MM/yyyy HH:mm") : "---")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* --- NHẬT KÝ GATEWAY (NẾU CÓ) --- *@
+            @if (Model.NhatKyCongThanhToans != null && Model.NhatKyCongThanhToans.Any())
+            {
+                <hr class="my-4">
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-hdd-network me-2"></i>Nhật ký phản hồi từ cổng thanh toán</h6>
+                <div class="table-responsive border rounded">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Cổng</th>
+                                <th>Mã kết quả</th>
+                                <th>Thời gian</th>
+                                <th>Dữ liệu nhận</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.NhatKyCongThanhToans)
+                            {
+                                <tr>
+                                    <td>@log.CongThanhToan</td>
+                                    <td><code>@log.MaKetQua</code></td>
+                                    <td>@log.NgayTao.ToString("HH:mm:ss dd/MM")</td>
+                                    <td class="text-break small" style="max-width: 300px;">@log.DuLieuNhan</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -17,7 +17,7 @@ public partial class DonHang
 
     [StringLength(40)]
     [Unicode(false)]
-    public string MaDonHang { get; set; } = null!;
+    public string? MaDonHang { get; set; }
 
     [Column("KhachHangID")]
     public int? KhachHangId { get; set; }
@@ -30,11 +30,11 @@ public partial class DonHang
 
     [StringLength(25)]
     [Unicode(false)]
-    public string TrangThai { get; set; } = null!;
+    public string ?TrangThai { get; set; }
 
     [StringLength(15)]
     [Unicode(false)]
-    public string KenhBan { get; set; } = null!;
+    public string? KenhBan { get; set; }
 
     [Column(TypeName = "decimal(18, 2)")]
     public decimal TamTinh { get; set; }
@@ -73,7 +73,7 @@ public partial class DonHang
 
     [ForeignKey("KhoId")]
     [InverseProperty("DonHangs")]
-    public virtual Kho Kho { get; set; } = null!;
+    public virtual Kho? Kho { get; set; }
 
     [InverseProperty("DonHang")]
     public virtual ICollection<LichSuTrangThaiDonHang> LichSuTrangThaiDonHangs { get; set; } = new List<LichSuTrangThaiDonHang>();

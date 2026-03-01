@@ -17,7 +17,7 @@ public partial class NhatKyKho
 
     [StringLength(40)]
     [Unicode(false)]
-    public string MaNhatKy { get; set; } = null!;
+    public string? MaNhatKy { get; set; }
 
     [Column("KhoID")]
     public int KhoId { get; set; }
@@ -27,7 +27,7 @@ public partial class NhatKyKho
 
     [StringLength(20)]
     [Unicode(false)]
-    public string LoaiPhatSinh { get; set; } = null!;
+    public string? LoaiPhatSinh { get; set; }
 
     public int SoLuong { get; set; }
 
@@ -45,9 +45,9 @@ public partial class NhatKyKho
 
     [ForeignKey("BienTheId")]
     [InverseProperty("NhatKyKhos")]
-    public virtual BienTheSanPham BienThe { get; set; } = null!;
+    public virtual BienTheSanPham ? BienThe { get; set; }
 
     [ForeignKey("KhoId")]
     [InverseProperty("NhatKyKhos")]
-    public virtual Kho Kho { get; set; } = null!;
+    public virtual Kho ? Kho { get; set; }
 }

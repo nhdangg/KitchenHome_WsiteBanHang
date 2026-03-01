@@ -17,7 +17,7 @@ public partial class Banner
     public string? TieuDe { get; set; }
 
     [StringLength(500)]
-    public string Anh { get; set; } = null!;
+    public string ? Anh { get; set; }
 
     [StringLength(500)]
     public string? Link { get; set; }

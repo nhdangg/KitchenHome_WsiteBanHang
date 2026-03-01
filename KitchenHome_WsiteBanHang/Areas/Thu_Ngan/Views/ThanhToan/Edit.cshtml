@@ -1,0 +1,193 @@
+﻿@model KitchenHome_WsiteBanHang.Models.ThanhToan
+
+@{
+    ViewData["Title"] = "Cập nhật thanh toán";
+    Layout = "~/Areas/Thu_Ngan/Views/Shared/_Layout.cshtml";
+
+    bool isSuccess = Model.TrangThai == "THANH_CONG";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow border-0 border-top border-warning border-3 rounded-3">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-warning text-uppercase">
+                        <i class="bi bi-pencil-square me-2"></i>Cập nhật trạng thái
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    @* THÔNG BÁO *@
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            @TempData["Error"]
+                        </div>
+                    }
+
+                    @if (isSuccess)
+                    {
+                        <div class="alert alert-success">
+                            Giao dịch đã hoàn tất. Không thể chỉnh sửa.
+                        </div>
+                    }
+
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="ThanhToanId" />
+                        <input type="hidden" asp-for="NgayTao" />
+                        <input type="hidden" asp-for="DonHangId" />
+                        <input type="hidden" asp-for="PhuongThucId" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <!-- Đơn hàng -->
+                        <div class="mb-3">
+                            <label class="form-label">Đơn hàng</label>
+                            <input class="form-control"
+                                   value="@Model.DonHang?.MaDonHang"
+                                   disabled />
+                        </div>
+
+                        <!-- Phương thức -->
+                        <div class="mb-3">
+                            <label class="form-label">Phương thức</label>
+                            <input class="form-control"
+                                   value="@Model.PhuongThuc?.TenPhuongThuc"
+                                   disabled />
+                        </div>
+
+                        <!-- Số tiền -->
+                        <div class="mb-3">
+                            <label asp-for="SoTien" class="form-label">Số tiền</label>
+
+                            @if (isSuccess)
+                            {
+                                <input asp-for="SoTien"
+                                       class="form-control"
+                                       readonly />
+                            }
+                            else
+                            {
+                                <input asp-for="SoTien"
+                                       class="form-control"
+                                       type="number" />
+                            }
+
+                            <span asp-validation-for="SoTien" class="text-danger"></span>
+                        </div>
+
+                        <!-- Mã giao dịch -->
+                        <div class="mb-3">
+                            <label asp-for="MaGiaoDich" class="form-label"></label>
+
+                            @if (isSuccess)
+                            {
+                                <input asp-for="MaGiaoDich"
+                                       class="form-control"
+                                       readonly />
+                            }
+                            else
+                            {
+                                <input asp-for="MaGiaoDich"
+                                       class="form-control" />
+                            }
+                        </div>
+
+                        <!-- Ngày thanh toán -->
+                        <div class="mb-3">
+                            <label asp-for="NgayThanhToan" class="form-label"></label>
+
+                            @if (isSuccess)
+                            {
+                                <input asp-for="NgayThanhToan"
+                                       class="form-control"
+                                       type="datetime-local"
+                                       value="@(Model.NgayThanhToan?.ToString("yyyy-MM-ddTHH:mm"))"
+                                       readonly />
+                            }
+                            else
+                            {
+                                <input asp-for="NgayThanhToan"
+                                       class="form-control"
+                                       type="datetime-local"
+                                       value="@(Model.NgayThanhToan?.ToString("yyyy-MM-ddTHH:mm"))" />
+                            }
+                        </div>
+
+                        <!-- Trạng thái -->
+                        <div class="mb-4">
+                            <label asp-for="TrangThai" class="form-label">Trạng thái</label>
+
+                            @if (isSuccess)
+                            {
+                                <select asp-for="TrangThai"
+                                        class="form-select"
+                                        asp-items="ViewBag.TrangThaiList"
+                                        disabled>
+                                </select>
+                            }
+                            else
+                            {
+                                <select asp-for="TrangThai"
+                                        class="form-select"
+                                        asp-items="ViewBag.TrangThaiList"
+                                        id="trangThaiSelect">
+                                </select>
+                            }
+                        </div>
+
+                        <!-- BUTTON -->
+                        @if (!isSuccess)
+                        {
+                            <div class="d-flex justify-content-end gap-2">
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    Quay lại
+                                </a>
+
+                                <button type="submit" class="btn btn-warning">
+                                    Cập nhật
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-end">
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    Quay lại
+                                </a>
+                            </div>
+                        }
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.getElementById("trangThaiSelect")?.addEventListener("change", function () {
+
+            if (this.value === "THANH_CONG") {
+
+                let now = new Date();
+
+                let formatted =
+                    now.getFullYear() + "-" +
+                    String(now.getMonth() + 1).padStart(2, '0') + "-" +
+                    String(now.getDate()).padStart(2, '0') + "T" +
+                    String(now.getHours()).padStart(2, '0') + ":" +
+                    String(now.getMinutes()).padStart(2, '0');
+
+                document.querySelector("input[name='NgayThanhToan']").value = formatted;
+            }
+
+        });
+    </script>
+}

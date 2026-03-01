@@ -1,0 +1,80 @@
+﻿@model KitchenHome_WsiteBanHang.Models.DonHang
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = "~/Areas/Thu_Ngan/Views/Shared/_Layout.cshtml";
+}
+
+<h3 class="fw-bold text-success mb-4">
+    <i class="bi bi-receipt me-2"></i>Chi tiết đơn #@Model.MaDonHang
+</h3>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <p><strong>Khách hàng:</strong> @Model.KhachHang?.HoTen</p>
+        <p><strong>Ngày đặt:</strong> @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</p>
+        <p><strong>Trạng thái:</strong> @Model.TrangThai</p>
+        <p class="fw-bold text-danger fs-5">
+            Tổng tiền: @Model.TongTien.ToString("N0") ₫
+        </p>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-light fw-bold">
+        Danh sách sản phẩm
+    </div>
+    <div class="card-body p-0">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th class="text-end">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ChiTietDonHangs)
+                {
+                    <tr>
+                        <td>@item.TenSanPhamLuu</td>
+                        <td>@item.SoLuong</td>
+                        <td>@item.DonGia.ToString("N0") ₫</td>
+                        <td class="text-end fw-bold">
+                            @( (item.SoLuong * item.DonGia).ToString("N0") ) ₫
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (Model.TrangThai != "HOAN_TAT")
+{
+    <div class="mt-4">
+        <form asp-area="Thu_Ngan"
+              asp-controller="DonHang"
+              asp-action="UpdateStatus"
+              method="post">
+            <input type="hidden" name="id" value="@Model.DonHangId" />
+            <input type="hidden" name="trangThai" value="HOAN_TAT" />
+
+            <button type="submit"
+                    class="btn btn-success">
+                <i class="bi bi-check-circle"></i>
+                Xác nhận đã thu tiền
+            </button>
+        </form>
+    </div>
+}
+
+<div class="mt-3">
+    <a asp-area="Thu_Ngan"
+       asp-controller="DonHang"
+       asp-action="Index"
+       class="btn btn-secondary">
+        Quay lại
+    </a>
+</div>

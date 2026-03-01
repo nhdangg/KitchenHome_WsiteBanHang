@@ -52,9 +52,9 @@
                     <a asp-controller="NhatKyKho" asp-action="Create" class="btn btn-primary">
                         <i class="bi bi-box-arrow-in-right me-1"></i> Nhập / Xuất kho
                     </a>
-                   <a asp-action="ExportToExcel" asp-route-id="@Model.KhoId" class="btn btn-outline-success btn-sm border-dashed mt-2 w-100 fw-bold">
+                    <a asp-action="ExportToExcel" asp-route-id="@Model.KhoId" class="btn btn-outline-success btn-sm border-dashed mt-2 w-100 fw-bold">
                         <i class="bi bi-file-earmark-excel-fill me-1"></i> Xuất Excel Báo Cáo
-                   </a>
+                    </a>
                 </div>
             </div>
         </div>
@@ -65,9 +65,27 @@
             <div class="card-header bg-white py-3 border-bottom">
                 <form asp-action="Details" method="get" class="row g-2 align-items-center">
                     <input type="hidden" name="id" value="@Model.KhoId" />
+
                     <div class="col-md-6">
-                        <h5 class="fw-bold text-dark mb-0">Hàng tồn trong kho</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold text-dark mb-0">Hàng tồn trong kho</h5>
+
+                            <!-- NÚT THÊM Thêm nhập hàng loạt -->
+                            @* chỉ nhập dducocwj khi trong tồn kho có sản phẩm bến thể đó rồi mới nhập hàng loạt được *@
+                            <a asp-area="Admin"
+                               asp-controller="TonKho"
+                               asp-action="ImportExcel"
+                               class="btn btn-success btn-sm rounded-pill px-3"
+                               data-bs-toggle="tooltip"
+                               data-bs-placement="top"
+                               title="Import tồn kho hàng loạt từ file Excel">
+
+                                <i class="bi bi-file-earmark-excel me-1"></i>
+                                Thêm tồn kho
+                            </a>
+                        </div>
                     </div>
+
                     <div class="col-md-5">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
@@ -75,10 +93,13 @@
                             <button type="submit" class="btn btn-primary px-3">Tìm</button>
                         </div>
                     </div>
+
                     @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter as string))
                     {
                         <div class="col-md-1 text-end">
-                            <a asp-action="Details" asp-route-id="@Model.KhoId" class="btn btn-sm btn-light text-danger"><i class="bi bi-x-lg"></i></a>
+                            <a asp-action="Details" asp-route-id="@Model.KhoId" class="btn btn-sm btn-light text-danger">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
                         </div>
                     }
                 </form>
@@ -94,6 +115,7 @@
                                 <th class="text-center">Tổng Tồn</th>
                                 <th class="text-center">Giữ chỗ</th>
                                 <th class="text-center">Khả dụng</th>
+                                <th class="text-center">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -107,16 +129,44 @@
                                             <div class="fw-bold text-dark">@item.BienThe.SanPham.TenSanPham</div>
                                             <small class="text-muted">@item.BienThe.TenBienThe</small>
                                         </td>
-                                        <td><code class="small text-primary">@item.BienThe.Sku</code></td>
+
+                                        <td>
+                                            <code class="small text-primary">@item.BienThe.Sku</code>
+                                        </td>
+
                                         <td class="text-center fw-bold @(item.SoLuongTon <= item.MucDatHangLai ? "text-danger" : "text-dark")">
                                             @item.SoLuongTon.ToString("N0")
-                                            @if(item.SoLuongTon <= item.MucDatHangLai) { 
-                                                <i class="bi bi-exclamation-triangle-fill ms-1 small" title="Sắp hết hàng"></i> 
+                                            @if (item.SoLuongTon <= item.MucDatHangLai)
+                                            {
+                                                <i class="bi bi-exclamation-triangle-fill ms-1 small" title="Sắp hết hàng"></i>
                                             }
                                         </td>
-                                        <td class="text-center text-muted">@item.SoLuongGiuCho.ToString("N0")</td>
+
+                                        <td class="text-center text-muted">
+                                            @item.SoLuongGiuCho.ToString("N0")
+                                        </td>
+
                                         <td class="text-center">
-                                            <span class="badge bg-success px-3 py-2 rounded-pill">@khaDung.ToString("N0")</span>
+                                            <span class="badge bg-success px-3 py-2 rounded-pill">
+                                                @khaDung.ToString("N0")
+                                            </span>
+                                        </td>
+
+                                        <!-- THAO TÁC -->
+                                        <td class="text-center">
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <a asp-area="Admin"
+                                                   asp-controller="TonKho"
+                                                   asp-action="Edit"
+                                                   asp-route-khoId="@item.KhoId"
+                                                   asp-route-bienTheId="@item.BienTheId"
+                                                   asp-route-returnKhoId="@Model.KhoId"
+                                                   class="btn btn-sm btn-warning rounded-pill px-3">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+
+                                               
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -131,32 +181,52 @@
                 <div class="card-footer bg-white border-top py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">Trang @pagedList.PageNumber / @pagedList.PageCount</small>
-                        <div class="pagination-container">
-                            @Html.PagedListPager(pagedList, page => Url.Action("Details", 
-                                new { id = Model.KhoId, page, searchString = ViewBag.CurrentFilter }),
-                                new PagedListRenderOptions {
-                                    DisplayLinkToFirstPage = PagedListDisplayMode.Never,
-                                    DisplayLinkToLastPage = PagedListDisplayMode.Never,
-                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
-                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
-                                    ContainerDivClasses = new[] { "pagination pagination-sm mb-0" },
-                                    UlElementClasses = new[] { "pagination pagination-sm mb-0" },
-                                    LiElementClasses = new[] { "page-item" },
-                                    PageClasses = new[] { "page-link shadow-none" }
-                                })
-                        </div>
+                        <div>
+                            @Html.PagedListPager(pagedList, page => Url.Action("Details",
+                            new { id = Model.KhoId, page, searchString = ViewBag.CurrentFilter }),
+                                                new PagedListRenderOptions
+                                                {
+                                                    DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+                                                    DisplayLinkToLastPage = PagedListDisplayMode.Never,
+                                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                                    ContainerDivClasses = new[] { "pagination pagination-sm mb-0" },
+                                                    UlElementClasses = new[] { "pagination pagination-sm mb-0" },
+                                                    LiElementClasses = new[] { "page-item" },
+                                                    PageClasses = new[] { "page-link shadow-none" }
+                                                })
                     </div>
                 </div>
-            }
+            </div>
+                        }
         </div>
     </div>
 </div>
 
 <style>
-    /* CSS đồng bộ Pagination với Bootstrap 5 */
-    .pagination .page-item.active .page-link { background-color: #0d6efd; border-color: #0d6efd; color: white; }
-    .pagination .page-link { color: #333; border: 1px solid #dee2e6; margin: 0 2px; border-radius: 4px; }
-    .btn-white { background: #fff; border: 1px solid #dee2e6; }
-    .btn-white:hover { background: #f8f9fa; }
-    .border-dashed { border-style: dashed !important; }
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+    }
+
+    .pagination .page-link {
+        color: #333;
+        border: 1px solid #dee2e6;
+        margin: 0 2px;
+        border-radius: 4px;
+    }
+
+    .btn-white {
+        background: #fff;
+        border: 1px solid #dee2e6;
+    }
+
+        .btn-white:hover {
+            background: #f8f9fa;
+        }
+
+    .border-dashed {
+        border-style: dashed !important;
+    }
 </style>

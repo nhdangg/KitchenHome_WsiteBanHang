@@ -31,7 +31,7 @@ namespace KitchenHome_WsiteBanHang.Controllers
                 .Include(x => x.VaiTros)
                 .Any(user =>
                     user.TaiKhoanId == userId &&
-                    user.VaiTros.Any(role => role.MaVaiTro == "ADMIN" || role.MaVaiTro == "QUAN_LY")
+                    user.VaiTros.Any(role => role.MaVaiTro == "ADMIN" || role.MaVaiTro == "QUAN_LY" || role.MaVaiTro == "THU_KHO" || role.MaVaiTro == "THU_NGAN")
                 );
 
             if (!isAdmin)

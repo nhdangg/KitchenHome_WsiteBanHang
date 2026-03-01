@@ -1,0 +1,102 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.VwDoanhThuTheoNgay>
+@{
+    ViewData["Title"] = "Quản lý đơn hàng - Doanh thu theo ngày";
+    Layout = "~/Areas/Quan_Ly/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<div class="container-fluid px-0 py-3">
+
+    @* --- HEADER --- *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1 h3">
+                <i class="bi bi-graph-up-arrow text-primary me-2"></i> Doanh Thu Theo Ngày
+            </h2>
+            <p class="text-muted mb-0 small">Thống kê chi tiết số lượng đơn hàng và doanh thu</p>
+        </div>
+    </div>
+
+    @* --- BỘ LỌC (FILTER FORM) --- *@
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4 col-lg-3">
+                    <label class="form-label fw-bold text-muted small text-uppercase mb-1">
+                        <i class="bi bi-calendar me-1"></i> Từ ngày
+                    </label>
+                    <input type="date" name="tuNgay" class="form-control" value="@Context.Request.Query["tuNgay"]" />
+                </div>
+
+                <div class="col-md-4 col-lg-3">
+                    <label class="form-label fw-bold text-muted small text-uppercase mb-1">
+                        <i class="bi bi-calendar me-1"></i> Đến ngày
+                    </label>
+                    <input type="date" name="denNgay" class="form-control" value="@Context.Request.Query["denNgay"]" />
+                </div>
+
+                <div class="col-md-4 col-lg-4">
+                    <button type="submit" class="btn btn-primary px-4 fw-bold me-2 shadow-sm">
+                        <i class="bi bi-funnel-fill me-1"></i> Lọc dữ liệu
+                    </button>
+
+                    <a href="?" class="btn btn-light border text-muted px-3">
+                        <i class="bi bi-arrow-clockwise"></i> Bỏ lọc
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* --- BẢNG DỮ LIỆU --- *@
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-muted text-uppercase small fw-bold" style="width: 30%">Ngày ghi nhận</th>
+                            <th class="py-3 text-muted text-uppercase small fw-bold text-center" style="width: 30%">Số lượng đơn</th>
+                            <th class="pe-4 py-3 text-muted text-uppercase small fw-bold text-end" style="width: 40%">Doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 py-3 fw-semibold text-dark">
+                                        <i class="bi bi-calendar2-check text-success me-2"></i>
+                                        @item.Ngay?.ToString("dd/MM/yyyy")
+                                    </td>
+
+                                    <td class="text-center py-3">
+                                        <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3 py-2" style="font-size: 0.9rem;">
+                                            @item.SoDon đơn
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end pe-4 py-3 fw-bold text-danger" style="font-size: 1.1rem;">
+                                        @item.DoanhThu?.ToString("N0") đ
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center py-5 text-muted">
+                                    <i class="bi bi-box-seam display-4 d-block mb-3 opacity-50"></i>
+                                    Không có dữ liệu doanh thu trong khoảng thời gian này.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

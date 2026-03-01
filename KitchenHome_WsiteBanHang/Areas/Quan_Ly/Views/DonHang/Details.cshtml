@@ -1,0 +1,215 @@
+﻿@using System.Linq
+@model KitchenHome_WsiteBanHang.Models.DonHang
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = "~/Areas/Quan_Ly/Views/Shared/_Layout.cshtml";
+
+    var diaChi = ViewBag.DiaChiGiao as KitchenHome_WsiteBanHang.Models.DonHangDiaChiGiao;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-primary mb-0">Đơn hàng #@Model.MaDonHang</h3>
+        <small class="text-muted">
+            Ngày đặt: @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")
+        </small>
+    </div>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+@if (TempData["AlertMessage"] != null)
+{
+    <div class="alert @TempData["AlertType"] alert-dismissible fade show">
+        @TempData["AlertMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row">
+    <!-- ================= SẢN PHẨM ================= -->
+    <div class="col-lg-8">
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-white fw-bold">
+                <i class="bi bi-cart"></i> Danh sách sản phẩm
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">SKU</th>
+                            <th class="text-center">SL</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ChiTietDonHangs)
+                        {
+                            <tr>
+                                <td><strong>@item.TenSanPhamLuu</strong></td>
+                                <td class="text-center small text-muted">@item.Sku</td>
+                                <td class="text-center">@item.SoLuong</td>
+                                <td class="text-end">@item.DonGia.ToString("N0")</td>
+                                <td class="text-end fw-bold">
+                                    @item.ThanhTien.Value.ToString("N0")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="4" class="text-end">Tạm tính:</td>
+                            <td class="text-end">@Model.TamTinh.ToString("N0")</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end">Phí vận chuyển:</td>
+                            <td class="text-end">@Model.PhiVanChuyen.ToString("N0")</td>
+                        </tr>
+                        @if (Model.GiamGia > 0)
+                        {
+                            <tr>
+                                <td colspan="4" class="text-end text-success">Giảm giá:</td>
+                                <td class="text-end text-success">
+                                    -@Model.GiamGia.ToString("N0")
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="4" class="text-end fw-bold fs-5">TỔNG CỘNG:</td>
+                            <td class="text-end fw-bold fs-5 text-danger">
+                                @Model.TongTien.ToString("N0") đ
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= LỊCH SỬ ================= -->
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-light fw-bold text-primary">
+                <i class="bi bi-clock-history"></i> Lịch sử xử lý đơn hàng
+            </div>
+            <div class="card-body">
+                @if (Model.LichSuTrangThaiDonHangs?.Any() == true)
+                {
+                    <div class="timeline ps-2">
+                        @foreach (var log in Model.LichSuTrangThaiDonHangs
+                                            .OrderByDescending(x => x.NgayTao))
+                        {
+                            <div class="d-flex mb-3">
+                                <div class="text-muted small me-3 pt-1" style="min-width:100px;text-align:right">
+                                    <div>@log.NgayTao.ToString("HH:mm")</div>
+                                    <div>@log.NgayTao.ToString("dd/MM")</div>
+                                </div>
+                                <div class="border-start border-2 ps-3 border-primary position-relative">
+                                    <div class="position-absolute bg-white border border-primary rounded-circle"
+                                         style="width:10px;height:10px;left:-6px;top:6px"></div>
+                                    <div>
+                                        <span class="fw-bold">@GetStatusName(log.TrangThaiMoi)</span>
+                                        @if (!string.IsNullOrEmpty(log.TrangThaiCu))
+                                        {
+                                            <small class="text-muted">
+                                                (Từ: @GetStatusName(log.TrangThaiCu))
+                                            </small>
+                                        }
+                                    </div>
+                                    <div class="text-muted fst-italic small">@log.GhiChu</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-center text-muted">Chưa có lịch sử.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SIDEBAR ================= -->
+    <div class="col-lg-4">
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-info text-white fw-bold">
+                <i class="bi bi-geo-alt"></i> Thông tin giao hàng
+            </div>
+            <div class="card-body">
+                @if (diaChi != null)
+                {
+                    <p><strong>Người nhận:</strong> @diaChi.TenNguoiNhan</p>
+                    <p><strong>SĐT:</strong> @diaChi.SdtnguoiNhan</p>
+                    <p><strong>Địa chỉ:</strong> @diaChi.DiaChiCuThe</p>
+                    <p>@diaChi.PhuongXa, @diaChi.QuanHuyen, @diaChi.TinhThanh</p>
+
+                    @if (!string.IsNullOrEmpty(diaChi.GhiChuGiao))
+                    {
+                        <div class="alert alert-warning small">
+                            <strong>Ghi chú:</strong> @diaChi.GhiChuGiao
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">Không có thông tin địa chỉ.</p>
+                }
+            </div>
+        </div>
+
+        <!-- ================= UPDATE STATUS ================= -->
+        <div class="card shadow border-0">
+            <div class="card-header bg-warning fw-bold">
+                <i class="bi bi-gear"></i> Cập nhật trạng thái
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateStatus" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.DonHangId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái hiện tại:</label>
+                        <div class="fw-bold text-primary">
+                            @GetStatusName(Model.TrangThai)
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Chuyển sang:</label>
+                        <select name="trangThai" class="form-select">
+                            <option value="CHO_XAC_NHAN">Chờ xác nhận</option>
+                            <option value="DA_XAC_NHAN">Đã xác nhận</option>
+                            <option value="DANG_DONG_GOI">Đang đóng gói</option>
+                            <option value="DANG_GIAO">Đang giao</option>
+                            <option value="DA_GIAO">Đã giao</option>
+                            <option value="HOAN_TAT">Hoàn tất</option>
+                            <option value="HUY" class="text-danger fw-bold">Hủy</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary w-100">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetStatusName(string status)
+    {
+        return status switch
+        {
+            "CHO_XAC_NHAN" => "Chờ xác nhận",
+            "DA_XAC_NHAN" => "Đã xác nhận",
+            "DANG_DONG_GOI" => "Đang đóng gói",
+            "DANG_GIAO" => "Đang giao hàng",
+            "DA_GIAO" => "Đã giao",
+            "HOAN_TAT" => "Hoàn tất",
+            "HUY" => "Đã hủy",
+            _ => status
+        };
+    }
+}

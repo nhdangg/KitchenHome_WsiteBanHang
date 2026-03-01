@@ -1,0 +1,192 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.ThanhToan>
+
+@{
+    ViewData["Title"] = "Quản lý Thanh toán";
+    Layout = "~/Areas/Thu_Ngan/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+
+    <!-- HEADER -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center my-4 gap-3">
+        <h3 class="fw-bold text-primary text-uppercase mb-0">
+            <i class="bi bi-credit-card-2-front-fill me-2"></i>Quản lý Thanh toán
+        </h3>
+    </div>
+
+    <!-- FILTER -->
+    <div class="card shadow-sm border-0 mb-4 bg-light">
+        <div class="card-body py-3">
+            <form asp-action="Index" method="get" class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="searchString"
+                               value="@ViewBag.CurrentFilter"
+                               class="form-control"
+                               placeholder="Tìm mã đơn hàng hoặc mã giao dịch..." />
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <select name="trangThai" class="form-select">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="CHO_THANH_TOAN" selected="@(ViewBag.CurrentStatus == "CHO_THANH_TOAN")">Chờ thanh toán</option>
+                        <option value="THANH_CONG" selected="@(ViewBag.CurrentStatus == "THANH_CONG")">Thành công</option>
+                        <option value="THAT_BAI" selected="@(ViewBag.CurrentStatus == "THAT_BAI")">Thất bại</option>
+                        <option value="HUY" selected="@(ViewBag.CurrentStatus == "HUY")">Đã hủy</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-secondary w-100 fw-bold">
+                        Lọc dữ liệu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card shadow mb-4 border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-nowrap">
+                        <tr>
+                            <th class="ps-4 py-3">Mã Đơn</th>
+                            <th class="py-3">Phương thức</th>
+                            <th class="py-3">Mã Giao Dịch</th>
+                            <th class="py-3 text-end">Số tiền</th>
+                            <th class="py-3 text-center">Trạng thái</th>
+                            <th class="py-3">Ngày tạo</th>
+                            <th class="text-center py-3">Thao tác</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <!-- Mã đơn -->
+                                    <td class="ps-4 fw-bold">
+                                        <span class="text-primary">
+                                            @(item.DonHang?.MaDonHang ?? "---")
+                                        </span>
+                                    </td>
+
+                                    <!-- Phương thức -->
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            @(item.PhuongThuc?.TenPhuongThuc ?? "---")
+                                        </span>
+                                    </td>
+
+                                    <!-- Mã giao dịch -->
+                                    <td class="font-monospace text-muted small">
+                                        @(item.MaGiaoDich ?? "---")
+                                    </td>
+
+                                    <!-- Số tiền -->
+                                    <td class="text-end fw-bold text-success">
+                                        @item.SoTien.ToString("N0") ₫
+                                    </td>
+
+                                    <!-- Trạng thái -->
+                                    <td class="text-center">
+                                        @if (item.TrangThai == "THANH_CONG")
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill">
+                                                Thành công
+                                            </span>
+                                        }
+                                        else if (item.TrangThai == "THAT_BAI")
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill">
+                                                Thất bại
+                                            </span>
+                                        }
+                                        else if (item.TrangThai == "HUY")
+                                        {
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary rounded-pill">
+                                                Đã hủy
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning rounded-pill">
+                                                Chờ xử lý
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <!-- Ngày tạo -->
+                                    <td class="small text-muted">
+                                        @item.NgayTao.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    <!-- Thao tác -->
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            <!-- Chi tiết -->
+                                            <a asp-action="Details"
+                                               asp-route-id="@item.ThanhToanId"
+                                               class="btn btn-outline-info btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                               style="width: 32px; height: 32px;"
+                                               title="Chi tiết">
+                                                <i class="bi bi-info-lg"></i>
+                                            </a>
+
+                                            <!-- Cập nhật -->
+                                            <a asp-action="Edit"
+                                               asp-route-id="@item.ThanhToanId"
+                                               class="btn btn-outline-warning btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm text-dark"
+                                               style="width: 32px; height: 32px;"
+                                               title="Cập nhật trạng thái">
+                                                <i class="bi bi-pencil-fill"
+                                                   style="font-size: 0.8rem;"></i>
+                                            </a>
+
+                                            <!-- XÓA: CHỈ ADMIN THẤY -->
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                                <a asp-action="Delete"
+                                                   asp-route-id="@item.ThanhToanId"
+                                                   class="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                   style="width: 32px; height: 32px;"
+                                                   title="Xóa">
+                                                    <i class="bi bi-trash-fill"
+                                                       style="font-size: 0.8rem;"></i>
+                                                </a>
+                                            }
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <div class="mb-3">
+                                        <i class="bi bi-wallet2 display-1 opacity-25"></i>
+                                    </div>
+                                    <h5 class="fw-bold">Chưa có giao dịch nào</h5>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

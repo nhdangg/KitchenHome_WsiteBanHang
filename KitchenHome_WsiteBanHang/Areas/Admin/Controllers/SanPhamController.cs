@@ -7,7 +7,7 @@ using KitchenHome_WsiteBanHang.Models;
 using KitchenHome_WsiteBanHang.Models.Context;
 using KitchenHome_WsiteBanHang.Controllers;
 
-namespace WsiteBanHang_GiaDung.Areas.Admin.Controllers
+namespace KitchenHome_WsiteBanHang.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class SanPhamController : BaseController
@@ -117,8 +117,24 @@ namespace WsiteBanHang_GiaDung.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(SanPham sanPham, IFormFile ImageFile)
+        public async Task<IActionResult> Edit(SanPham sanPham, IFormFile? ImageFile)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = "";
+
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        errors += $"Field: {state.Key}\n";
+                        errors += $" - {error.ErrorMessage}\n";
+                    }
+                }
+
+                return Content(errors, "text/plain");
+            }
+
             var spDB = await _context.SanPhams.FindAsync(sanPham.SanPhamId);
             if (spDB == null) return NotFound();
 
@@ -276,6 +292,9 @@ namespace WsiteBanHang_GiaDung.Areas.Admin.Controllers
             btDB.MaVach = model.MaVach ?? model.Sku;
             btDB.TenBienThe = model.TenBienThe;
             btDB.GiaBan = model.GiaBan;
+            btDB.GiaNhapThamChieu = model.GiaNhapThamChieu;
+            btDB.GiaKhuyenMai = model.GiaKhuyenMai;
+            btDB.TrongLuongGram = model.TrongLuongGram;
             btDB.SoLuongToiThieu = model.SoLuongToiThieu;
             btDB.DangHoatDong = model.DangHoatDong;
             btDB.ThuocTinhJson = string.IsNullOrEmpty(model.TenBienThe)
@@ -300,7 +319,147 @@ namespace WsiteBanHang_GiaDung.Areas.Admin.Controllers
 
             return View(list);
         }
-        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ThemHinhAnh(int bienTheId, IFormFile ImageFile, bool laChinh, int thuTu = 0)
+        {
+            if (ImageFile == null || ImageFile.Length == 0)
+            {
+                SetAlert("Vui lòng chọn ảnh!", "danger");
+                return RedirectToAction(nameof(ThemHinhAnh), new { bienTheId });
+            }
+
+            string folderPath = Path.Combine(_env.WebRootPath, "Image/Image_BienThe");
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
+            string path = Path.Combine(folderPath, fileName);
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await ImageFile.CopyToAsync(stream);
+            }
+
+            // Nếu là ảnh chính → bỏ ảnh chính cũ
+            if (laChinh)
+            {
+                var oldMain = _context.HinhAnhSanPhams
+                    .Where(x => x.BienTheId == bienTheId && x.LaChinh)
+                    .ToList();
+
+                foreach (var item in oldMain)
+                    item.LaChinh = false;
+            }
+
+            var ha = new HinhAnhSanPham
+            {
+                BienTheId = bienTheId,
+                DuongDan = fileName,
+                LaChinh = laChinh,
+                ThuTu = thuTu,
+                NgayTao = DateTime.Now
+            };
+
+            _context.HinhAnhSanPhams.Add(ha);
+            await _context.SaveChangesAsync();
+
+            SetAlert("Thêm hình ảnh thành công!", "success");
+            return RedirectToAction(nameof(ThemHinhAnh), new { bienTheId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditHinhAnh(long id, bool laChinh, int thuTu)
+        {
+            var ha = await _context.HinhAnhSanPhams.FindAsync(id);
+            if (ha == null) return NotFound();
+
+            if (laChinh)
+            {
+                var oldMain = _context.HinhAnhSanPhams
+                    .Where(x => x.BienTheId == ha.BienTheId && x.LaChinh)
+                    .ToList();
+
+                foreach (var item in oldMain)
+                    item.LaChinh = false;
+            }
+
+            ha.LaChinh = laChinh;
+            ha.ThuTu = thuTu;
+
+            await _context.SaveChangesAsync();
+
+            SetAlert("Cập nhật hình ảnh thành công!", "success");
+            return RedirectToAction(nameof(ThemHinhAnh), new { bienTheId = ha.BienTheId });
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteHinhAnh(long id)
+        {
+            var ha = await _context.HinhAnhSanPhams.FindAsync(id);
+            if (ha == null) return NotFound();
+
+            int bienTheId = ha.BienTheId;
+
+            // Xóa file vật lý
+            if (!string.IsNullOrEmpty(ha.DuongDan))
+            {
+                string path = Path.Combine(_env.WebRootPath, "Image/Image_BienThe", ha.DuongDan);
+                if (System.IO.File.Exists(path))
+                    System.IO.File.Delete(path);
+            }
+
+            _context.HinhAnhSanPhams.Remove(ha);
+            await _context.SaveChangesAsync();
+
+            SetAlert("Xóa hình ảnh thành công!", "success");
+            return RedirectToAction(nameof(ThemHinhAnh), new { bienTheId });
+        }
+
+        // ============== Xóa Biến Thể ===============
+        public IActionResult DeleteBienThe(int id)
+        {
+            var bt = _context.BienTheSanPhams
+                .Include(x => x.SanPham)
+                .FirstOrDefault(x => x.BienTheId == id);
+
+            if (bt == null) return NotFound();
+
+            ViewBag.TenSanPham = bt.SanPham?.TenSanPham;
+            return View(bt);
+        }
+        [HttpPost, ActionName("DeleteBienThe")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBienTheConfirmed(int id)
+        {
+            var bt = await _context.BienTheSanPhams.FindAsync(id);
+            if (bt == null) return NotFound();
+
+            int sanPhamId = bt.SanPhamId;
+
+            // Kiểm tra đã phát sinh đơn hàng chưa
+            bool daCoDon = _context.ChiTietDonHangs.Any(x => x.BienTheId == id);
+
+            if (daCoDon)
+            {
+                SetAlert("Không thể xóa biến thể đã phát sinh đơn hàng!", "danger");
+                return RedirectToAction("BienThe", new { sanPhamId });
+            }
+
+            // Nếu chưa phát sinh -> cho phép xóa
+            var tonKhos = _context.TonKhos.Where(x => x.BienTheId == id);
+            _context.TonKhos.RemoveRange(tonKhos);
+
+            var hinhAnhs = _context.HinhAnhSanPhams.Where(x => x.BienTheId == id);
+            _context.HinhAnhSanPhams.RemoveRange(hinhAnhs);
+
+            _context.BienTheSanPhams.Remove(bt);
+            await _context.SaveChangesAsync();
+
+            SetAlert("Xóa biến thể thành công!", "success");
+            return RedirectToAction("BienThe", new { sanPhamId });
+        }
 
         // ======================= DROPDOWN =======================
         private void LoadDropdown(SanPham sp = null)

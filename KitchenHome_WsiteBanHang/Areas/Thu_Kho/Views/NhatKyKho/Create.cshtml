@@ -1,0 +1,112 @@
+﻿@model KitchenHome_WsiteBanHang.Models.NhatKyKho
+
+@{
+    ViewBag.Title = "Tạo phiếu nhập / xuất";
+    Layout = "~/Areas/Thu_Kho/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow border-0">
+    <div class="card-header bg-gradient bg-primary text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-box-seam me-2"></i>
+            Tạo phiếu nhập / xuất kho
+        </h5>
+    </div>
+
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- Kho -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Kho</label>
+                <select asp-for="KhoId"
+                        class="form-select"
+                        asp-items="ViewBag.KhoId"
+                        id="khoSelect">
+                    <option value="">-- Chọn kho --</option>
+                </select>
+            </div>
+
+            <!-- Biến thể -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">SKU</label>
+                <select asp-for="BienTheId"
+                        class="form-select"
+                        asp-items="ViewBag.BienTheId"
+                        id="bienTheSelect">
+                    <option value="">-- Chọn SKU --</option>
+                </select>
+            </div>
+
+            <!-- Tồn kho hiện tại -->
+            <div class="alert alert-info d-none" id="tonKhoBox">
+                Tồn kho hiện tại: <strong id="tonKhoValue">0</strong>
+            </div>
+
+            <!-- Loại -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Loại phát sinh</label>
+                <select asp-for="LoaiPhatSinh"
+                        class="form-select"
+                        asp-items="ViewBag.LoaiPhatSinh">
+                    <option value="">-- Chọn loại --</option>
+                </select>
+            </div>
+
+            <!-- Số lượng -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Số lượng</label>
+                <input asp-for="SoLuong"
+                       class="form-control"
+                       type="number"
+                       min="1" />
+            </div>
+
+            <!-- Ghi chú -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Ghi chú</label>
+                <textarea asp-for="GhiChu"
+                          class="form-control"
+                          rows="3"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-secondary">
+                    Quay lại
+                </a>
+
+                <button type="submit" class="btn btn-success">
+                    Lưu phiếu
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const khoSelect = document.getElementById("khoSelect");
+        const bienTheSelect = document.getElementById("bienTheSelect");
+        const tonBox = document.getElementById("tonKhoBox");
+        const tonValue = document.getElementById("tonKhoValue");
+
+        function loadTonKho() {
+            if (khoSelect.value && bienTheSelect.value) {
+                  fetch('@Url.Action("GetTonKho", "NhatKyKho", new { area = "Thu_Kho" })`?khoId=${khoSelect.value}&bienTheId=${bienTheSelect.value}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        tonBox.classList.remove("d-none");
+                        tonValue.innerText = data;
+                    });
+            }
+        }
+
+        khoSelect.addEventListener("change", loadTonKho);
+        bienTheSelect.addEventListener("change", loadTonKho);
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

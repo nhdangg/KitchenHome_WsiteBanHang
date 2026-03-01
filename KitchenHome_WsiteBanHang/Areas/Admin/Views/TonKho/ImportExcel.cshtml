@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Import tồn kho từ Excel";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Import tồn kho hàng loạt</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="ImportExcel"
+                  asp-controller="TonKho"
+                  asp-area="Admin"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        Chọn file Excel (.xlsx)
+                    </label>
+                    <input type="file"
+                           name="file"
+                           class="form-control"
+                           accept=".xlsx"
+                           required />
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit"
+                            class="btn btn-success">
+                        <i class="bi bi-upload"></i>
+                        Upload & Cập nhật
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+                        Quay lại
+                    </a>
+                </div>
+            </form>
+
+            <hr />
+
+            <h6>📌 Cấu trúc file Excel phải đúng như sau:</h6>
+
+            <table class="table table-bordered mt-2">
+                <thead class="table-light">
+                    <tr>
+                        <th>MaKho</th>
+                        <th>SKU</th>
+                        <th>SoLuongTon</th>
+                        <th>SoLuongGiuCho</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>KHO_HN</td>
+                        <td>SP001-RED</td>
+                        <td>20</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-warning mt-3">
+                ⚠ Nếu SKU hoặc MaKho không tồn tại, hệ thống sẽ báo lỗi dòng đó.
+            </div>
+
+        </div>
+    </div>
+</div>

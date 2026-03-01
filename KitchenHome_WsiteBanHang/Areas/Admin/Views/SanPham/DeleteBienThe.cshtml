@@ -1,0 +1,65 @@
+﻿@model KitchenHome_WsiteBanHang.Models.BienTheSanPham
+
+@{
+    ViewData["Title"] = "Xóa biến thể";
+    Layout = "_Layout";   // nếu bạn dùng _ViewStart thì có thể bỏ dòng này
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white">
+            <h5>Xác nhận xóa biến thể</h5>
+        </div>
+
+        <div class="card-body">
+
+            <p class="text-danger">
+                Bạn có chắc chắn muốn xóa biến thể này không?
+            </p>
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>SKU</th>
+                    <td>@Model.Sku</td>
+                </tr>
+                <tr>
+                    <th>Tên biến thể</th>
+                    <td>@Model.TenBienThe</td>
+                </tr>
+                <tr>
+                    <th>Giá bán</th>
+                    <td>@Model.GiaBan.ToString("N0") đ</td>
+                </tr>
+                <tr>
+                    <th>Trọng lượng</th>
+                    <td>
+                        @(Model.TrongLuongGram.HasValue
+                                                ? Model.TrongLuongGram + " g"
+                                                : "Chưa cập nhật")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Trạng thái</th>
+                    <td>
+                        @(Model.DangHoatDong ? "Đang hoạt động" : "Ngừng")
+                    </td>
+                </tr>
+            </table>
+
+            <form asp-action="DeleteBienThe" method="post">
+                <input type="hidden" name="id" value="@Model.BienTheId" />
+
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa fa-trash"></i> Xóa
+                </button>
+
+                <a asp-action="BienThe"
+                   asp-route-sanPhamId="@Model.SanPhamId"
+                   class="btn btn-secondary">
+                    Hủy
+                </a>
+            </form>
+
+        </div>
+    </div>
+</div>

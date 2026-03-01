@@ -1,0 +1,132 @@
+﻿@model IEnumerable<KitchenHome_WsiteBanHang.Models.HoanTien>
+
+@{
+    ViewData["Title"] = "Quản lý Hoàn tiền";
+    Layout = "~/Areas/Thu_Ngan/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center my-4 gap-3">
+        <h3 class="fw-bold text-primary text-uppercase mb-0">
+            <i class="bi bi-arrow-counterclockwise me-2"></i>Quản lý Hoàn tiền
+        </h3>
+      
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="card shadow mb-4 border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã Đơn</th>
+                            <th>Lý do</th>
+                            <th class="text-end">Số tiền</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold text-primary">
+                                        @item.ThanhToan?.DonHang?.MaDonHang
+                                    </td>
+
+                                    <td>@item.LyDo</td>
+
+                                    <td class="text-end text-danger fw-bold">
+                                        @item.SoTienHoan.ToString("N0") ₫
+                                    </td>
+
+                                    <td class="text-center">
+                                        @if (item.TrangThai == "DA_HOAN")
+                                        {
+                                            <span class="badge bg-success">Đã hoàn</span>
+                                        }
+                                        else if (item.TrangThai == "THAT_BAI")
+                                        {
+                                            <span class="badge bg-danger">Thất bại</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Chờ hoàn</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @item.NgayTao.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            <a asp-action="Details" asp-route-id="@item.HoanTienId"
+                                               class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+
+                                            @* Chỉ cho sửa khi chưa hoàn *@
+                                            @if (item.TrangThai != "DA_HOAN")
+                                            {
+                                                <a asp-action="Edit" asp-route-id="@item.HoanTienId"
+                                                   class="btn btn-sm btn-outline-warning">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                            }
+
+                                            @* Nút xác nhận hoàn *@
+                                            @if (item.TrangThai == "CHO_HOAN")
+                                            {
+                                                <form asp-action="XacNhanHoan" method="post" class="d-inline">
+                                                    <input type="hidden" name="id" value="@item.HoanTienId" />
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-success"
+                                                            onclick="return confirm('Xác nhận đã hoàn tiền?')">
+                                                        <i class="bi bi-check-lg"></i>
+                                                    </button>
+                                                </form>
+                                            }
+
+                                            @* Chỉ cho xóa khi chưa hoàn *@
+                                            @if (item.TrangThai != "DA_HOAN")
+                                            {
+                                                <a asp-action="Delete" asp-route-id="@item.HoanTienId"
+                                                   class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            }
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    Không có dữ liệu hoàn tiền.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

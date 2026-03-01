@@ -1,0 +1,150 @@
+﻿@model KitchenHome_WsiteBanHang.Models.Kho
+
+@{
+    ViewData["Title"] = "Thêm mới kho";
+    Layout = "~/Areas/Thu_Kho/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --success-color: #1cc88a;
+        --bg-light: #f8f9fc;
+    }
+
+    .form-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    }
+
+    .form-label-custom {
+        font-size: 0.75rem;
+        letter-spacing: 0.05rem;
+        color: #4e73df;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control-modern {
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        border: 1px solid #d1d3e2;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .form-control-modern:focus {
+            border-color: #bac8f3;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.1);
+        }
+
+    .btn-modern {
+        border-radius: 8px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        transition: transform 0.2s;
+    }
+
+        .btn-modern:active {
+            transform: scale(0.95);
+        }
+
+    .back-link {
+        color: #858796;
+        transition: color 0.2s;
+        text-decoration: none;
+    }
+
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div class="d-flex align-items-center">
+                    <a asp-area="Thu_Kho" asp-controller="Kho" asp-action="Index" class="back-link me-3">
+                        <i class="bi bi-chevron-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h3 class="fw-bold text-gray-800 mb-0">Thiết lập Kho mới</h3>
+                        <p class="text-muted small mb-0">Quản lý và lưu trữ thông tin kho hàng vào hệ thống</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card form-card">
+                <div class="card-body p-4 p-md-5">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger-soft border-0 small mb-4" role="alert">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                        </div>
+                    }
+
+                    <form asp-area="Thu_Kho" asp-controller="Kho" asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label form-label-custom fw-bold text-uppercase">
+                                    Mã định danh <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 rounded-start-2">
+                                        <i class="bi bi-qr-code text-muted"></i>
+                                    </span>
+                                    <input asp-for="MaKho" class="form-control form-control-modern border-start-0"
+                                           placeholder="Ví dụ: KHO-HN-01" required />
+                                </div>
+                                <span asp-validation-for="MaKho" class="text-danger x-small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label form-label-custom fw-bold text-uppercase">
+                                    Tên gọi chính thức <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="TenKho" class="form-control form-control-modern"
+                                       placeholder="Ví dụ: Kho Tổng Hà Nội" required />
+                                <span asp-validation-for="TenKho" class="text-danger x-small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label form-label-custom fw-bold text-uppercase">
+                                    Địa điểm chi tiết
+                                </label>
+                                <textarea asp-for="DiaChi" class="form-control form-control-modern"
+                                          rows="3" placeholder="Số nhà, tên đường, khu vực..."></textarea>
+                            </div>
+
+                            <div class="col-12 mt-5">
+                                <div class="d-flex gap-3 justify-content-end">
+                                    <a asp-area="Thu_Kho" asp-controller="Kho" asp-action="Index"
+                                       class="btn btn-light btn-modern px-4">
+                                        Hủy thao tác
+                                    </a>
+                                    <button type="submit" class="btn btn-primary btn-modern px-5 shadow-sm">
+                                        <i class="bi bi-check2-circle me-2"></i>Xác nhận thêm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <p class="text-center text-muted small mt-4">
+                <i class="bi bi-info-circle me-1"></i> Lưu ý: Các trường đánh dấu <span class="text-danger">*</span> là bắt buộc.
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

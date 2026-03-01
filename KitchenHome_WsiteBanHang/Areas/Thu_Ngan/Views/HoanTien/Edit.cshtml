@@ -1,0 +1,116 @@
+﻿@model KitchenHome_WsiteBanHang.Models.HoanTien
+
+@{
+    ViewData["Title"] = "Cập nhật hoàn tiền";
+    Layout = "~/Areas/Thu_Ngan/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card shadow border-0 border-top border-warning border-3 rounded-3">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-warning text-uppercase">
+                        <i class="bi bi-pencil-square me-2"></i>Cập nhật yêu cầu
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    @if (Model.TrangThai == "DA_HOAN")
+                    {
+                        <div class="alert alert-success">
+                            Yêu cầu này đã hoàn tiền. Không thể chỉnh sửa.
+                        </div>
+                    }
+
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="HoanTienId" />
+                        <input type="hidden" asp-for="ThanhToanId" />
+                        <input type="hidden" asp-for="NgayTao" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted small">
+                                Giao dịch gốc
+                            </label>
+                            <input type="text"
+                                   class="form-control bg-light"
+                                   value="@ViewData["ThanhToanInfo"]"
+                                   readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SoTienHoan" class="form-label fw-bold"></label>
+                            <div class="input-group">
+                                <input asp-for="SoTienHoan"
+                                       class="form-control text-end fw-bold"
+                                       type="number"
+                                       readonly="@(Model.TrangThai == "DA_HOAN")" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <span asp-validation-for="SoTienHoan" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="LyDo" class="form-label fw-bold"></label>
+                            <textarea asp-for="LyDo"
+                                      class="form-control"
+                                      rows="3"
+                                      readonly="@(Model.TrangThai == "DA_HOAN")"></textarea>
+                            <span asp-validation-for="LyDo" class="text-danger small"></span>
+                        </div>
+
+                        @* Không cho sửa trạng thái trực tiếp *@
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Trạng thái</label>
+
+                            @if (Model.TrangThai == "CHO_HOAN")
+                            {
+                                <span class="badge bg-warning text-dark">Chờ hoàn</span>
+                            }
+                            else if (Model.TrangThai == "DA_HOAN")
+                            {
+                                <span class="badge bg-success">Đã hoàn</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Thất bại</span>
+                            }
+                        </div>
+
+                        @if (Model.TrangThai != "DA_HOAN")
+                        {
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+                                <a asp-action="Index" class="btn btn-secondary px-4">
+                                    Quay lại
+                                </a>
+
+                                <button type="submit"
+                                        class="btn btn-warning px-4 fw-bold">
+                                    <i class="bi bi-check-lg me-1"></i> Cập nhật
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex justify-content-end">
+                                <a asp-action="Index" class="btn btn-secondary px-4">
+                                    Quay lại
+                                </a>
+                            </div>
+                        }
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

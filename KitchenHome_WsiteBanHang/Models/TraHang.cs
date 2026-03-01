@@ -38,5 +38,5 @@ public partial class TraHang
 
     [ForeignKey("DonHangId")]
     [InverseProperty("TraHangs")]
-    public virtual DonHang DonHang { get; set; } = null!;
+    public virtual DonHang? DonHang { get; set; }
 }

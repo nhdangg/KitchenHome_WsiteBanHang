@@ -47,6 +47,21 @@ namespace KitchenHome_WsiteBanHang.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Banner model, IFormFile? ImageFile)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = "";
+
+                foreach (var state in ModelState)
+                {
+                    foreach (var error in state.Value.Errors)
+                    {
+                        errors += $"Field: {state.Key}\n";
+                        errors += $" - {error.ErrorMessage}\n";
+                    }
+                }
+
+                return Content(errors, "text/plain");
+            }
             if (ModelState.IsValid)
             {
                 if (ImageFile != null && ImageFile.Length > 0)

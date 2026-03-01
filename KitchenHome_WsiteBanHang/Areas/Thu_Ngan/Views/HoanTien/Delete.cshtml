@@ -1,0 +1,25 @@
+﻿@model KitchenHome_WsiteBanHang.Models.HoanTien
+
+@{
+    ViewData["Title"] = "Xóa hoàn tiền";
+    Layout = "~/Areas/Thu_Ngan/Views/Shared/_Layout.cshtml";
+}
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="HoanTienId" />
+
+    @if (Model.TrangThai == "DA_HOAN")
+    {
+        <div class="alert alert-warning text-center">
+            Yêu cầu này đã hoàn tiền. Không thể xóa.
+        </div>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    }
+    else
+    {
+        <button type="submit" class="btn btn-danger">
+            Xóa vĩnh viễn
+        </button>
+    }
+</form>

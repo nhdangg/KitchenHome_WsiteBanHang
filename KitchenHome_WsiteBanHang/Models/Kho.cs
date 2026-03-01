@@ -16,10 +16,10 @@ public partial class Kho
 
     [StringLength(30)]
     [Unicode(false)]
-    public string MaKho { get; set; } = null!;
+    public string MaKho { get; set; }
 
     [StringLength(150)]
-    public string TenKho { get; set; } = null!;
+    public string TenKho { get; set; }
 
     [StringLength(255)]
     public string? DiaChi { get; set; }
