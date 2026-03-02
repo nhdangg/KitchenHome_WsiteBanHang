@@ -90,11 +90,11 @@
 
                             if (string.IsNullOrEmpty(imgUrl))
                             {
-                                imgUrl = Url.Content("~/images/no-image.png");
+                                imgUrl = Url.Content("~/IMAGE/no-image.png");
                             }
                             else if (!imgUrl.StartsWith("http"))
                             {
-                                imgUrl = Url.Content("~/Image/Image_SanPham/" + imgUrl);
+                                imgUrl = Url.Content("~/IMAGE/Img_SanPham/" + imgUrl);
                             }
 
                             <tr>
@@ -102,8 +102,7 @@
                                     <img src="@imgUrl"
                                          alt="@item.TenSanPham"
                                          class="img-thumbnail shadow-sm"
-                                         style="width:60px; height:60px; object-fit:cover;"
-                                         onerror="this.onerror=null;this.src='/images/no-image.png';" />
+                                         style="width:60px; height:60px; object-fit:cover;"/>
                                 </td>
 
                                 <td>

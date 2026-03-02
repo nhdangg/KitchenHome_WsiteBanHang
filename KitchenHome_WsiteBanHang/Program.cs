@@ -1,8 +1,13 @@
 ﻿using KitchenHome_WsiteBanHang.Models.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies; // 1. Thư viện Cookie
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// EPPlus License Context (BẮT BUỘC, nếu không sẽ bị lỗi "A license context must be specified to use EPPlus")
+ExcelPackage.License.SetNonCommercialOrganization("KitchenHome");
 
 
 builder.Services.AddDbContext<DbConnect_KitchenHome_WsiteBanHang>(options =>

@@ -85,7 +85,7 @@ namespace KitchenHome_WsiteBanHang.Areas.Quan_Ly.Controllers
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
                     string fileName = Path.GetFileName(ImageFile.FileName);
-                    string path = Path.Combine(_env.WebRootPath, "Image/Image_SanPham", fileName);
+                    string path = Path.Combine(_env.WebRootPath, "IMAGE/Img_SanPham", fileName);
                     using var stream = new FileStream(path, FileMode.Create);
                     await ImageFile.CopyToAsync(stream);
                     sanPham.AnhDaiDien = fileName;
@@ -153,7 +153,7 @@ namespace KitchenHome_WsiteBanHang.Areas.Quan_Ly.Controllers
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
                     string fileName = Path.GetFileName(ImageFile.FileName);
-                    string path = Path.Combine(_env.WebRootPath, "Image/Image_SanPham", fileName);
+                    string path = Path.Combine(_env.WebRootPath, "IMAGE/Img_SanPham", fileName);
                     using var stream = new FileStream(path, FileMode.Create);
                     await ImageFile.CopyToAsync(stream);
                     spDB.AnhDaiDien = fileName;
@@ -329,7 +329,7 @@ namespace KitchenHome_WsiteBanHang.Areas.Quan_Ly.Controllers
                 return RedirectToAction(nameof(ThemHinhAnh), new { bienTheId });
             }
 
-            string folderPath = Path.Combine(_env.WebRootPath, "Image/Image_BienThe");
+            string folderPath = Path.Combine(_env.WebRootPath, "IMAGE/Image_BienThe");
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
 

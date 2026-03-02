@@ -194,7 +194,7 @@
                     <div class="dropdown ms-auto">
                         <a class="nav-link dropdown-toggle d-flex align-items-center text-dark text-decoration-none" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width:35px; height:35px; font-weight:bold">
-                                @(User.Identity.IsAuthenticated? User.Identity.Name?.Substring(0, 1).ToUpper() : "A")
+                                @(User.Identity.IsAuthenticated? User.Identity.Name?.Substring(0, 1).ToUpper() : "QL")
                             </div>
                             <span class="fw-bold d-none d-sm-inline">
                                 @(User.Identity.IsAuthenticated? User.Identity.Name : "Quản Lý")

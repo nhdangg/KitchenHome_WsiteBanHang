@@ -79,93 +79,109 @@ namespace KitchenHome_WsiteBanHang.Areas.Admin.Controllers
         {
             return View();
         }
+
+
         [HttpPost]
         public async Task<IActionResult> ImportExcel(IFormFile file)
         {
+            int successCount = 0;
             if (file == null || file.Length == 0)
-                return Content("Vui lòng chọn file Excel");
+            {
+                TempData["Error"] = "Vui lòng chọn file Excel";
+                return RedirectToAction(nameof(ImportExcel));
+            }
 
             var errors = new List<string>();
 
-            using (var stream = new MemoryStream())
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            stream.Position = 0;
+
+            using var package = new ExcelPackage(stream);
+            var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+
+            if (worksheet == null || worksheet.Dimension == null)
             {
-                await file.CopyToAsync(stream);
+                TempData["Error"] = "File Excel không có dữ liệu";
+                return RedirectToAction(nameof(ImportExcel));
+            }
 
-                using (var package = new ExcelPackage(stream))
+            int rowCount = worksheet.Dimension.Rows;
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                string maKho = worksheet.Cells[row, 1].Text.Trim();
+                string sku = worksheet.Cells[row, 2].Text.Trim();
+                string slTonText = worksheet.Cells[row, 3].Text.Trim();
+                string slGiuText = worksheet.Cells[row, 4].Text.Trim();
+
+                if (!int.TryParse(slTonText, out int soLuongTon) ||
+                    !int.TryParse(slGiuText, out int soLuongGiu))
                 {
-                    var worksheet = package.Workbook.Worksheets[0];
-                    int rowCount = worksheet.Dimension.Rows;
-
-                    for (int row = 2; row <= rowCount; row++)
-                    {
-                        string maKho = worksheet.Cells[row, 1].Text.Trim();
-                        string sku = worksheet.Cells[row, 2].Text.Trim();
-                        string slTonText = worksheet.Cells[row, 3].Text.Trim();
-                        string slGiuText = worksheet.Cells[row, 4].Text.Trim();
-
-                        if (!int.TryParse(slTonText, out int soLuongTon) ||
-                            !int.TryParse(slGiuText, out int soLuongGiu))
-                        {
-                            errors.Add($"Dòng {row}: Số lượng không hợp lệ");
-                            continue;
-                        }
-
-                        var kho = await _context.Khos
-                            .FirstOrDefaultAsync(x => x.MaKho == maKho);
-
-                        if (kho == null)
-                        {
-                            errors.Add($"Dòng {row}: Kho '{maKho}' không tồn tại");
-                            continue;
-                        }
-
-                        var bienThe = await _context.BienTheSanPhams
-                            .FirstOrDefaultAsync(x => x.Sku == sku);
-
-                        if (bienThe == null)
-                        {
-                            errors.Add($"Dòng {row}: SKU '{sku}' không tồn tại");
-                            continue;
-                        }
-
-                        var tonKho = await _context.TonKhos
-                            .FirstOrDefaultAsync(x =>
-                                x.KhoId == kho.KhoId &&
-                                x.BienTheId == bienThe.BienTheId);
-
-                        if (tonKho == null)
-                        {
-                            tonKho = new TonKho
-                            {
-                                KhoId = kho.KhoId,
-                                BienTheId = bienThe.BienTheId,
-                                SoLuongTon = soLuongTon,
-                                SoLuongGiuCho = soLuongGiu,
-                                MucDatHangLai = 0,
-                                NgayCapNhat = DateTime.Now
-                            };
-
-                            _context.TonKhos.Add(tonKho);
-                        }
-                        else
-                        {
-                            tonKho.SoLuongTon = soLuongTon;
-                            tonKho.SoLuongGiuCho = soLuongGiu;
-                            tonKho.NgayCapNhat = DateTime.Now;
-                        }
-                    }
-
-                    await _context.SaveChangesAsync();
+                    errors.Add($"Dòng {row}: Số lượng không hợp lệ");
+                    continue;
                 }
+
+                var kho = await _context.Khos
+                    .FirstOrDefaultAsync(x => x.MaKho == maKho);
+
+                if (kho == null)
+                {
+                    errors.Add($"Dòng {row}: Kho '{maKho}' không tồn tại");
+                    continue;
+                }
+
+                var bienThe = await _context.BienTheSanPhams
+                    .FirstOrDefaultAsync(x => x.Sku == sku);
+
+                if (bienThe == null)
+                {
+                    errors.Add($"Dòng {row}: SKU '{sku}' không tồn tại");
+                    continue;
+                }
+
+                var tonKho = await _context.TonKhos
+                    .FirstOrDefaultAsync(x =>
+                        x.KhoId == kho.KhoId &&
+                        x.BienTheId == bienThe.BienTheId);
+
+                if (tonKho == null)
+                {
+                    tonKho = new TonKho
+                    {
+                        KhoId = kho.KhoId,
+                        BienTheId = bienThe.BienTheId,
+                        SoLuongTon = soLuongTon,
+                        SoLuongGiuCho = soLuongGiu,
+                        MucDatHangLai = 0,
+                        NgayCapNhat = DateTime.Now
+                    };
+
+                    _context.TonKhos.Add(tonKho);
+                }
+                else
+                {
+                    tonKho.SoLuongTon = soLuongTon;
+                    tonKho.SoLuongGiuCho = soLuongGiu;
+                    tonKho.NgayCapNhat = DateTime.Now;
+                }
+
+                successCount++;   // 👈 thêm dòng này
+            }
+
+            await _context.SaveChangesAsync();
+
+            if (successCount > 0)
+            {
+                TempData["Success"] = $"Import thành công {successCount} dòng.";
             }
 
             if (errors.Any())
             {
-                return Content(string.Join("\n", errors), "text/plain");
+                TempData["ErrorList"] = string.Join("<br/>", errors);
             }
 
-            return Content("Import thành công!");
+            return RedirectToAction(nameof(ImportExcel));
         }
-
     }
 }
