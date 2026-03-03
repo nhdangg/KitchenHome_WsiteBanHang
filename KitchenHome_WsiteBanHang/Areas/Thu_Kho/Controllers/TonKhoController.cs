@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 
-namespace KitchenHome_WsiteBanHang.Areas.Admin.Controllers
+namespace KitchenHome_WsiteBanHang.Areas.Thu_Kho.Controllers
 {
-    [Area("Admin")]
+    [Area("Thu_Kho")]
  
     public class TonKhoController : Controller
     {

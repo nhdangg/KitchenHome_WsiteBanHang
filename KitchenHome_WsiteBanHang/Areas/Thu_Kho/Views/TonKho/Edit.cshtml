@@ -1,0 +1,79 @@
+﻿@model KitchenHome_WsiteBanHang.Models.TonKho
+
+@{
+    ViewData["Title"] = "Chỉnh sửa tồn kho";
+    Layout = "~/Areas/Thu_Kho/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-warning fw-bold text-dark">
+            <i class="bi bi-pencil-square me-2"></i>Chỉnh sửa tồn kho
+        </div>
+
+        <div class="card-body">
+
+            <form asp-area="Thu_Kho"
+                  asp-controller="TonKho"
+                  asp-action="Edit"
+                  method="post">
+
+                <!-- Hidden key -->
+                <input type="hidden" asp-for="KhoId" />
+                <input type="hidden" asp-for="BienTheId" />
+                <input type="hidden" name="returnKhoId" value="@ViewBag.ReturnKhoId" />
+
+                <!-- SKU -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">SKU</label>
+                    <input value="@(Model.BienThe?.Sku ?? "")"
+                           class="form-control"
+                           disabled />
+                </div>
+
+                <!-- Số lượng tồn -->
+                <div class="mb-3">
+                    <label asp-for="SoLuongTon" class="form-label fw-bold"></label>
+                    <input asp-for="SoLuongTon" class="form-control" />
+                    <span asp-validation-for="SoLuongTon" class="text-danger"></span>
+                </div>
+
+                <!-- Giữ chỗ -->
+                <div class="mb-3">
+                    <label asp-for="SoLuongGiuCho" class="form-label fw-bold"></label>
+                    <input asp-for="SoLuongGiuCho" class="form-control" />
+                    <span asp-validation-for="SoLuongGiuCho" class="text-danger"></span>
+                </div>
+
+                <!-- Mức đặt lại -->
+                <div class="mb-3">
+                    <label asp-for="MucDatHangLai" class="form-label fw-bold"></label>
+                    <input asp-for="MucDatHangLai" class="form-control" />
+                    <span asp-validation-for="MucDatHangLai" class="text-danger"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save me-1"></i> Cập nhật
+                    </button>
+
+                    <a asp-area="Thu_Kho"
+                       asp-controller="Kho"
+                       asp-action="Details"
+                       asp-route-id="@ViewBag.ReturnKhoId"
+                       class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Quay lại
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

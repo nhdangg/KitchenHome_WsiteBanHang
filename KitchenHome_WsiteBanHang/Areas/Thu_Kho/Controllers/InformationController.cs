@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using KitchenHome_WsiteBanHang.Models;
 using KitchenHome_WsiteBanHang.Models.Context;
 
-namespace WsiteBanHang_GiaDung.Areas.ADMIN.Controllers
+namespace WsiteBanHang_GiaDung.Areas.Thu_Kho.Controllers
 {
-    [Area("ADMIN")]
-    public class InformationADMINController : Controller
+    [Area("Thu_Kho")]
+    public class InformationController : Controller
     {
         private readonly DbConnect_KitchenHome_WsiteBanHang _context;
 
-        public InformationADMINController(DbConnect_KitchenHome_WsiteBanHang context)
+        public InformationController(DbConnect_KitchenHome_WsiteBanHang context)
         {
             _context = context;
         }

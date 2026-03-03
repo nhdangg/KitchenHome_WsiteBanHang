@@ -8,7 +8,7 @@ using KitchenHome_WsiteBanHang.Models.Context;
 using ClosedXML.Excel; // <--- Nhớ thêm dòng này ở đầu file
 using System.IO;       // <--- Để dùng MemoryStream
 
-namespace WsiteBanHang_GiaDung.Areas.Thu_Kho.Controllers
+namespace KitchenHome_WsiteBanHang.Areas.Thu_Kho.Controllers
 {
     [Area("Thu_Kho")]
     public class KhoController : BaseController

@@ -1,166 +1,173 @@
-﻿using KitchenHome_WsiteBanHang.Models;
+﻿using KitchenHome_WsiteBanHang.Controllers;
+using KitchenHome_WsiteBanHang.Models;
 using KitchenHome_WsiteBanHang.Models.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace WsiteBanHang_GiaDung.Areas.Thu_Kho.Controllers
+namespace KitchenHome_WsiteBanHang.Areas.Thu_Kho.Controllers
 {
     [Area("Thu_Kho")]
-    public class NhatKyKhoController : Controller
+    public class NhatKyKhoController : BaseController
     {
         private readonly DbConnect_KitchenHome_WsiteBanHang _context;
 
-        public NhatKyKhoController(DbConnect_KitchenHome_WsiteBanHang context)
+        public NhatKyKhoController(DbConnect_KitchenHome_WsiteBanHang context): base(context)
         {
             _context = context;
         }
 
-        // =========================================================
-        // INDEX (GIỮ NGUYÊN)
-        // =========================================================
-        public async Task<IActionResult> Index(int? khoId, string? searchString)
+        // 1. Xem lịch sử nhập xuất
+        public async Task<IActionResult> Index(int? khoId, string searchString)
         {
-            var query = _context.NhatKyKhos
-                .AsNoTracking()
-                .Include(n => n.Kho)
-                .Include(n => n.BienThe)
-                    .ThenInclude(b => b.SanPham)
-                .AsQueryable();
+            var logs = _context.NhatKyKhos
+                               .Include(n => n.Kho)
+                               .Include(n => n.BienThe)
+                                   .ThenInclude(b => b.SanPham)
+                               .AsQueryable();
 
             if (khoId.HasValue)
             {
-                query = query.Where(x => x.KhoId == khoId.Value);
-                ViewBag.SelectedKhoId = khoId.Value;
+                logs = logs.Where(x => x.KhoId == khoId);
+                ViewBag.KhoID = khoId;
             }
 
-            if (!string.IsNullOrWhiteSpace(searchString))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(x =>
+                logs = logs.Where(x =>
                     x.MaNhatKy.Contains(searchString) ||
                     x.BienThe.Sku.Contains(searchString));
-
-                ViewBag.SearchString = searchString;
             }
 
-            ViewBag.ListKho = new SelectList(
-                await _context.Khos
-                    .Where(k => k.DangHoatDong)
-                    .OrderBy(k => k.TenKho)
-                    .ToListAsync(),
-                "KhoId",
-                "TenKho",
-                khoId
-            );
+            ViewBag.ListKho = await _context.Khos.ToListAsync();
 
-            var result = await query
-                .OrderByDescending(x => x.NgayTao)
-                .ToListAsync();
-
-            return View(result);
+            return View(await logs.OrderByDescending(x => x.NgayTao).ToListAsync());
         }
 
-        // =========================================================
-        // CREATE
-        // =========================================================
-        [HttpGet]
-        public IActionResult Create()
+        // 2. Giao diện tạo phiếu
+        public async Task<IActionResult> Create()
         {
-            LoadDropdowns();
+            ViewBag.KhoId = new SelectList(
+                await _context.Khos.Where(k => k.DangHoatDong).ToListAsync(),
+                "KhoId",
+                "TenKho"
+            );
+
+            var products = await _context.BienTheSanPhams
+                .Where(b => b.DangHoatDong)
+                .Select(b => new
+                {
+                    b.BienTheId,
+                    DisplayText = b.Sku + " - " +
+                                  b.SanPham.TenSanPham +
+                                  " (" + b.TenBienThe + ")"
+                }).ToListAsync();
+
+            ViewBag.BienTheId = new SelectList(products, "BienTheId", "DisplayText");
+
             return View();
         }
 
+        // 3. Xử lý Nhập / Xuất
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(NhatKyKho model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                LoadDropdowns();
-                return View(model);
-            }
-
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try
-            {
-                // 🔥 TỰ SINH MÃ PHIẾU
-                model.MaNhatKy = "NK" + DateTime.Now.ToString("yyyyMMddHHmmss");
-                model.NgayTao = DateTime.Now;
-
-                // Tìm tồn kho
-                var tonKho = await _context.TonKhos
-                    .FirstOrDefaultAsync(t =>
-                        t.KhoId == model.KhoId &&
-                        t.BienTheId == model.BienTheId);
-
-                if (tonKho == null)
+                await using var transaction = await _context.Database.BeginTransactionAsync();
+                try
                 {
-                    tonKho = new TonKho
-                    {
-                        KhoId = model.KhoId,
-                        BienTheId = model.BienTheId,
-                        SoLuongTon = 0,
-                        SoLuongGiuCho = 0
-                    };
-                    _context.TonKhos.Add(tonKho);
-                }
+                    // A. Ghi nhật ký
+                    model.NgayTao = DateTime.Now;
+                    model.MaNhatKy = "NK" + DateTime.Now.ToString("yyyyMMddHHmmss");
 
-                // 🔥 CHẶN XUẤT ÂM
-                if (model.LoaiPhatSinh == "XUAT")
-                {
-                    if (tonKho.SoLuongTon < model.SoLuong)
+                    _context.NhatKyKhos.Add(model);
+
+                    // B. Cập nhật tồn kho
+                    var tonKho = await _context.TonKhos
+                        .FirstOrDefaultAsync(t =>
+                            t.KhoId == model.KhoId &&
+                            t.BienTheId == model.BienTheId);
+
+                    if (tonKho == null)
                     {
-                        ModelState.AddModelError("", "❌ Không đủ tồn kho để xuất.");
-                        LoadDropdowns();
-                        return View(model);
+                        tonKho = new TonKho
+                        {
+                            KhoId = model.KhoId,
+                            BienTheId = model.BienTheId,
+                            SoLuongTon = 0,
+                            SoLuongGiuCho = 0,
+                            MucDatHangLai = 10,
+                            NgayCapNhat = DateTime.Now
+                        };
+                        _context.TonKhos.Add(tonKho);
                     }
 
-                    tonKho.SoLuongTon -= model.SoLuong;
+                    if (model.LoaiPhatSinh == "NHAP")
+                    {
+                        tonKho.SoLuongTon += model.SoLuong;
+                    }
+                    else if (model.LoaiPhatSinh == "XUAT")
+                    {
+                        if (tonKho.SoLuongTon < model.SoLuong)
+                        {
+                            throw new Exception("Số lượng tồn kho không đủ để xuất!");
+                        }
+                        tonKho.SoLuongTon -= model.SoLuong;
+                    }
+
+                    tonKho.NgayCapNhat = DateTime.Now;
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    SetAlert($"Tạo phiếu {model.LoaiPhatSinh} thành công!", "success");
+                    return RedirectToAction(nameof(Index));
                 }
-                else
+                catch (Exception ex)
                 {
-                    tonKho.SoLuongTon += model.SoLuong;
+                    await transaction.RollbackAsync();
+                    ModelState.AddModelError("", "Lỗi xử lý: " + ex.Message);
                 }
-
-                _context.NhatKyKhos.Add(model);
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
+
+            // Load lại dropdown khi lỗi
+            ViewBag.KhoId = new SelectList(
+                  await _context.Khos.Where(k => k.DangHoatDong).ToListAsync(),
+                  "KhoId",
+                  "TenKho"
+              );
+
+
+            var products = await _context.BienTheSanPhams
+                .Select(b => new
+                {
+                    b.BienTheId,
+                    DisplayText = b.Sku + " - " + b.SanPham.TenSanPham
+                }).ToListAsync();
+
+            ViewBag.BienTheId = new SelectList(products, "BienTheId", "DisplayText");
+
+            return View(model);
         }
 
-        // =========================================================
-        // LOAD DROPDOWN
-        // =========================================================
-        private void LoadDropdowns()
+        // 4. Chi tiết phiếu
+        public async Task<IActionResult> Details(long id)
         {
-            ViewBag.KhoId = new SelectList(_context.Khos, "KhoId", "TenKho");
-            ViewBag.BienTheId = new SelectList(_context.BienTheSanPhams, "BienTheId", "Sku");
+            var item = await _context.NhatKyKhos
+                .Include(n => n.Kho)
+                .Include(n => n.BienThe)
+                    .ThenInclude(b => b.SanPham)
+                .FirstOrDefaultAsync(x => x.NhatKyKhoId == id);
 
-            ViewBag.LoaiPhatSinh = new SelectList(new List<string>
-            {
-                "NHAP",
-                "XUAT",
-                "DIEU_CHINH"
-            });
-        }
+            if (item == null)
+                return NotFound();
 
-        [HttpGet]
-        public async Task<IActionResult> GetTonKho(int khoId, int bienTheId)
-        {
-            var ton = await _context.TonKhos
-                .Where(t => t.KhoId == khoId && t.BienTheId == bienTheId)
-                .Select(t => t.SoLuongTon)
-                .FirstOrDefaultAsync();
-
-            return Json(ton);
+            return View(item);
         }
     }
 }

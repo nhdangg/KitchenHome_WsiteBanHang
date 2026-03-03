@@ -49,8 +49,14 @@
                     }
                 </div>
                 <div class="d-grid gap-2">
-                    <a asp-controller="NhatKyKho" asp-action="Create" class="btn btn-primary">
-                        <i class="bi bi-box-arrow-in-right me-1"></i> Nhập / Xuất kho
+                    <a asp-area="Admin"
+                       asp-controller="NhatKyKho"
+                       asp-action="Create"
+                       asp-route-khoId="@Model.KhoId"
+                       class="btn btn-primary w-100">
+
+                        <i class="bi bi-box-arrow-in-right me-1"></i>
+                        Nhập / Xuất kho
                     </a>
                     <a asp-action="ExportToExcel" asp-route-id="@Model.KhoId" class="btn btn-outline-success btn-sm border-dashed mt-2 w-100 fw-bold">
                         <i class="bi bi-file-earmark-excel-fill me-1"></i> Xuất Excel Báo Cáo
@@ -81,7 +87,8 @@
                                title="Import tồn kho hàng loạt từ file Excel">
 
                                 <i class="bi bi-file-earmark-excel me-1"></i>
-                                Thêm tồn kho
+                                Nhập Sp Số lượng nhiều
+
                             </a>
                         </div>
                     </div>
@@ -155,17 +162,33 @@
                                         <!-- THAO TÁC -->
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center gap-2">
+
+                                                <!-- Nhập kho -->
                                                 <a asp-area="Admin"
                                                    asp-controller="TonKho"
-                                                   asp-action="Edit"
+                                                   asp-action="NhapXuat"
                                                    asp-route-khoId="@item.KhoId"
                                                    asp-route-bienTheId="@item.BienTheId"
+                                                   asp-route-loai="NHAP"
                                                    asp-route-returnKhoId="@Model.KhoId"
-                                                   class="btn btn-sm btn-warning rounded-pill px-3">
-                                                    <i class="bi bi-pencil"></i>
+                                                   class="btn btn-sm btn-success rounded-pill px-3"
+                                                   title="Nhập kho">
+                                                    <i class="bi bi-box-arrow-in-down"></i>
                                                 </a>
 
-                                               
+                                                <!-- Xuất kho -->
+                                                <a asp-area="Admin"
+                                                   asp-controller="TonKho"
+                                                   asp-action="NhapXuat"
+                                                   asp-route-khoId="@item.KhoId"
+                                                   asp-route-bienTheId="@item.BienTheId"
+                                                   asp-route-loai="XUAT"
+                                                   asp-route-returnKhoId="@Model.KhoId"
+                                                   class="btn btn-sm btn-danger rounded-pill px-3"
+                                                   title="Xuất kho">
+                                                    <i class="bi bi-box-arrow-up"></i>
+                                                </a>
+
                                             </div>
                                         </td>
                                     </tr>
