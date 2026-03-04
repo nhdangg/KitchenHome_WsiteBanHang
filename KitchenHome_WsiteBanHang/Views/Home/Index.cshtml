@@ -12,6 +12,7 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
+
 <style>
     /* ==================================================================
            1. CSS GỐC (GIỮ NGUYÊN)
@@ -412,11 +413,47 @@
         color: #999;
         font-size: 0.95rem;
     }
+
+    .custom-cart-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #198754;
+        color: #fff;
+        padding: 14px 22px;
+        border-radius: 10px;
+        font-weight: 600;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        z-index: 9999;
+        animation: slideInRight 0.4s ease;
+    }
+
+    @@keyframes slideInRight {
+        from
+
+    {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    }
 </style>
 
 <main>
+    @* thông báo thêm vào giỏ hàng *@
+    @if (TempData["CartSuccess"] != null)
+    {
+        <div id="cartAlert" class="custom-cart-alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["CartSuccess"]
+        </div>
+    }
     <div class="container my-4">
-
         @* --- 1. BANNER SLIDER --- *@
         <div class="row g-3">
             <div class="col-12">
@@ -815,5 +852,9 @@
                 complete: function () { btn.prop('disabled', false).html(originalText); }
             });
         }
+
+               setTimeout(function () {
+            $("#cartAlert").fadeOut(400);
+        }, 3000);
     </script>
 }

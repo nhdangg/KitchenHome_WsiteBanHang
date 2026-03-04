@@ -67,6 +67,8 @@ namespace KitchenHome_WsiteBanHang.Controllers
                 variantId,
                 quantity);
 
+            TempData["CartSuccess"] = "Đã thêm sản phẩm vào giỏ hàng thành công!";
+
             if (!string.IsNullOrWhiteSpace(returnUrl))
                 return Redirect(returnUrl);
 

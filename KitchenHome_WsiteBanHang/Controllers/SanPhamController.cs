@@ -1,29 +1,33 @@
-﻿using KitchenHome_WsiteBanHang.Models;
+﻿using KitchenHome_WsiteBanHang.Helpers;
+using KitchenHome_WsiteBanHang.Models;
 using KitchenHome_WsiteBanHang.Models.Context;
 using KitchenHome_WsiteBanHang.Models.ViewModels;
+using KitchenHome_WsiteBanHang.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.PortableExecutable;
 
 namespace KitchenHome_WsiteBanHang.Controllers
 {
     public class SanPhamController : Controller
     {
         private readonly DbConnect_KitchenHome_WsiteBanHang _context;
-
-        public SanPhamController(DbConnect_KitchenHome_WsiteBanHang context)
+        private readonly CartService _cartService;
+        public SanPhamController(DbConnect_KitchenHome_WsiteBanHang context, CartService cartService)
         {
             _context = context;
+            _cartService = cartService;
         }
-
-        public async Task<IActionResult> Index(
-            int? danhMucId,
-            List<int>? thuongHieuIds,
-            decimal? minPrice,
-            decimal? maxPrice,
-            string sortBy,
-            string searchString,
-            int page = 1)
+        private int? GetTaiKhoanId()
         {
+            return HttpContext.Session.GetInt32("USER_ID");
+        }
+        public async Task<IActionResult> Index(int? danhMucId,List<int>? thuongHieuIds,decimal? minPrice,decimal? maxPrice,string sortBy,string searchString,int page = 1)
+        {
+            var maPhien = CartCookie.GetOrCreate(HttpContext);
+            var taiKhoanId = GetTaiKhoanId();
+            ViewBag.CartCount = _cartService.GetCartCount(taiKhoanId, maPhien);
+
             int pageSize = 9; // Số sản phẩm trên 1 trang
 
             // 1. Query cơ bản (Eager loading các bảng cần thiết)
@@ -101,7 +105,7 @@ namespace KitchenHome_WsiteBanHang.Controllers
                 PageIndex = page,
                 TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
             };
-
+           
             return View(model);
         }
     }

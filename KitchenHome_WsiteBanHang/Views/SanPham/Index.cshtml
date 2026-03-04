@@ -316,8 +316,44 @@
         opacity: 0.5;
         cursor: not-allowed;
     }
-</style>
 
+    .custom-cart-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #198754;
+        color: #fff;
+        padding: 14px 22px;
+        border-radius: 10px;
+        font-weight: 600;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        z-index: 9999;
+        animation: slideInRight 0.4s ease;
+    }
+
+    @@keyframes slideInRight {
+        from
+
+    {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    }
+</style>
+  @* thông báo thêm vào giỏ hàng *@
+@if (TempData["CartSuccess"] != null)
+{
+    <div id="cartAlert" class="custom-cart-alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        @TempData["CartSuccess"]
+    </div>
+}
 
 <div class="container py-5">
     @* --- HEADER TRANG --- *@
@@ -601,5 +637,9 @@
                 }
             });
         }
-    </script>
+
+                   setTimeout(function () {
+            $("#cartAlert").fadeOut(400);
+        }, 3000);
+    </script> 
 }

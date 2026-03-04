@@ -11,8 +11,8 @@ namespace KitchenHome_WsiteBanHang.Areas.Login_Wsite.Models
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
         [DataType(DataType.Password)]
         [Display(Name = "Mật khẩu")]
-        public string MatKhau { get; set; }
+        public string ? MatKhau { get; set; }
 
-        public string ReturnUrl { get; set; }
+        public string ? ReturnUrl { get; set; }
     }
 }
