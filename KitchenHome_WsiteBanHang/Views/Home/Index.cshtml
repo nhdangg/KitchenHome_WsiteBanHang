@@ -532,64 +532,131 @@
         {
             <section class="mt-5">
                 <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-2">
-                    <h3 class="fw-bold text-uppercase mb-0 text-warning"><i class="bi bi-fire"></i> Top Bán Chạy</h3>
-                    <a asp-controller="SanPham" asp-action="Index" class="text-decoration-none fw-bold small text-warning">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+                    <h3 class="fw-bold text-uppercase mb-0 text-warning">
+                        <i class="bi bi-fire"></i> Top Bán Chạy
+                    </h3>
+                    <a asp-controller="SanPham" asp-action="Index"
+                       class="text-decoration-none fw-bold small text-warning">
+                        Xem tất cả <i class="bi bi-chevron-right"></i>
+                    </a>
                 </div>
+
                 <div class="row g-4">
                     @foreach (var sp in Model.SanPhamBanChay.Take(4))
                     {
-                        var anhSP = !string.IsNullOrEmpty(sp.AnhDaiDien) && sp.AnhDaiDien.StartsWith("http") ? sp.AnhDaiDien : Url.Content("~/IMAGE/Img_SanPham/" + sp.AnhDaiDien);
+                        var anhSP = !string.IsNullOrEmpty(sp.AnhDaiDien) && sp.AnhDaiDien.StartsWith("http")
+                        ? sp.AnhDaiDien
+                        : Url.Content("~/IMAGE/Img_SanPham/" + sp.AnhDaiDien);
+
                         var variant = sp.BienTheSanPhams?.FirstOrDefault(bt => bt.DangHoatDong);
                         decimal? giaGoc = variant?.GiaBan;
 
-                        // [CHECK YÊU THÍCH]
                         bool isLiked = wishlistIds.Contains(sp.SanPhamId);
 
-                        var r = (Model != null && Model.Ratings != null && Model.Ratings.ContainsKey(sp.SanPhamId)) ? Model.Ratings[sp.SanPhamId] : new RatingInfo { AvgStar = 0, ReviewCount = 0 };
-                        double avg = r.AvgStar; int count = r.ReviewCount;
+                        var r = (Model != null && Model.Ratings != null && Model.Ratings.ContainsKey(sp.SanPhamId))
+                        ? Model.Ratings[sp.SanPhamId]
+                        : new RatingInfo { AvgStar = 0, ReviewCount = 0 };
+
+                        double avg = r.AvgStar;
+                        int count = r.ReviewCount;
+                    }
+
+                    @foreach (var sp in Model.SanPhamBanChay.Take(4))
+                    {
+                        var anhSP = !string.IsNullOrEmpty(sp.AnhDaiDien) && sp.AnhDaiDien.StartsWith("http")
+                        ? sp.AnhDaiDien
+                        : Url.Content("~/IMAGE/Img_SanPham/" + sp.AnhDaiDien);
+
+                        var variant = sp.BienTheSanPhams?.FirstOrDefault(bt => bt.DangHoatDong);
+                        decimal? giaGoc = variant?.GiaBan;
+
+                        bool isLiked = wishlistIds.Contains(sp.SanPhamId);
+
+                        var r = (Model != null && Model.Ratings != null && Model.Ratings.ContainsKey(sp.SanPhamId))
+                        ? Model.Ratings[sp.SanPhamId]
+                        : new RatingInfo { AvgStar = 0, ReviewCount = 0 };
+
+                        double avg = r.AvgStar;
+                        int count = r.ReviewCount;
 
                         <div class="col-6 col-md-4 col-lg-3">
                             <div class="card h-100 product-card">
+
                                 <div class="product-media">
-                                    <span class="badge badge-sale bg-warning text-dark"><i class="bi bi-fire"></i> HOT</span>
+                                    <span class="badge badge-sale bg-warning text-dark">
+                                        <i class="bi bi-fire"></i> HOT
+                                    </span>
+
                                     <a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId">
                                         <img src="@anhSP" class="product-img" alt="@sp.TenSanPham" />
                                     </a>
-                                    <div class="product-actions">
-                                        <a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId" class="action-btn text-dark"><i class="bi bi-eye"></i></a>
 
-                                        @* NÚT TIM *@
-                                        <a href="javascript:void(0);" onclick="toggleWishlist(this, @sp.SanPhamId)" class="action-btn btn-wishlist @(isLiked ? "active" : "")" title="Yêu thích">
+                                    <div class="product-actions">
+                                        <a asp-controller="Home" asp-action="ChiTiet"
+                                           asp-route-id="@sp.SanPhamId"
+                                           class="action-btn text-dark">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        <a href="javascript:void(0);"
+                                           onclick="toggleWishlist(this, @sp.SanPhamId)"
+                                           class="action-btn btn-wishlist @(isLiked ? "active" : "")"
+                                           title="Yêu thích">
                                             <i class="bi @(isLiked ? "bi-heart-fill" : "bi-heart")"></i>
                                         </a>
 
-                                        <a href="@(variant != null ? Url.Action("Them", "GioHang", new { variantId = variant.BienTheId, returnUrl = Context.Request.Path }) : "#")" class="action-btn text-primary"><i class="bi bi-cart-plus"></i></a>
-                                    </div>
-                                </div>
-                                <div class="product-body text-center">
-                                    <div class="product-title"><a asp-controller="Home" asp-action="ChiTiet" asp-route-id="@sp.SanPhamId">@sp.TenSanPham</a></div>
-                                    <div class="rating-row">
-                                        <div class="rating-stars">@for (int k = 0; k < 5; k++) { if (k < Math.Floor(avg)) {
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                    } else
-                                    {
-
-                                        <i class="bi bi-star text-warning"></i>
-                                    }
-                                }
-</div>
-                                <span class="rating-pill">@avg.ToString("0.0") • @count</span>
-                            </div>
-                            <div class="price-row">
-                                <span class="price-now">@string.Format("{0:N0} đ", giaGoc)</span>
+                                        <a href="@(variant != null
+                                                                                   ? Url.Action("Them", "GioHang",
+                                                                                       new { variantId = variant.BienTheId, returnUrl = Context.Request.Path })
+                                                                                   : "#")"
+                                   class="action-btn text-primary">
+                                    <i class="bi bi-cart-plus"></i>
+                                </a>
                             </div>
                         </div>
-                    </div>
-                </div>
+
+                                <div class="product-body text-center">
+                                    <div class="product-title">
+                                        <a asp-controller="Home" asp-action="ChiTiet"
+                                           asp-route-id="@sp.SanPhamId">
+                                            @sp.TenSanPham
+                                        </a>
+                                    </div>
+
+                                    <div class="rating-row">
+                                        <div class="rating-stars">
+                                    @for (int k = 0; k < 5; k++)
+                                            {
+                                                if (k < Math.Floor(avg))
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-warning"></i>
+                                                }
+                                            }
+                                    </div>
+                                    <span class="rating-pill">
+                                        @avg.ToString("0.0") • @count
+                                    </span>
+                                </div>
+
+                                <div class="price-row">
+                                    <span class="price-now">
+                                        @(giaGoc.HasValue
+                                                                            ? string.Format("{0:N0} đ", giaGoc)
+                                                                            : "Liên hệ")
+                                </span>
+                            </div>
+                        </div>
+
+                            </div>
+                        </div>
                                 }
-            </div>
-        </section>
-                }
+                </div>
+            </section>
+        }
 
         @* --- 5. SẢN PHẨM NỔI BẬT --- *@
         @if (Model?.DanhSachSanPham != null && Model.DanhSachSanPham.Any())
@@ -672,15 +739,42 @@
                 <div class="row g-4">
                     @foreach (var sp in Model.DanhSachGiamGia)
                     {
-                        var anhSP = !string.IsNullOrEmpty(sp.AnhDaiDien) && sp.AnhDaiDien.StartsWith("http") ? sp.AnhDaiDien : Url.Content("~/IMAGE/Img_SanPham/" + sp.AnhDaiDien);
-                        var variant = sp.BienTheSanPhams?.Where(bt => bt.DangHoatDong && bt.GiaBan > 0).OrderBy(bt => (bt.GiaKhuyenMai ?? bt.GiaBan)).FirstOrDefault();
+                        var anhSP = !string.IsNullOrEmpty(sp.AnhDaiDien) && sp.AnhDaiDien.StartsWith("http")
+                        ? sp.AnhDaiDien
+                        : Url.Content("~/IMAGE/Img_SanPham/" + sp.AnhDaiDien);
+
+                        // ===== LẤY ĐÚNG BIẾN THỂ ĐANG GIẢM =====
+                        var variant = sp.BienTheSanPhams?
+                        .Where(bt => bt.DangHoatDong
+                        && bt.GiaKhuyenMai.HasValue
+                        && bt.GiaKhuyenMai < bt.GiaBan)
+                        .OrderBy(bt => bt.GiaKhuyenMai)
+                        .FirstOrDefault();
+
+                        // fallback nếu không có
+                        if (variant == null)
+                        {
+                            variant = sp.BienTheSanPhams?
+                            .Where(bt => bt.DangHoatDong && bt.GiaBan > 0)
+                            .OrderBy(bt => bt.GiaBan)
+                            .FirstOrDefault();
+                        }
+
                         decimal? giaGoc = variant?.GiaBan;
-                        decimal? giaKM = (variant?.GiaKhuyenMai.HasValue == true && variant.GiaKhuyenMai > 0) ? variant.GiaKhuyenMai : (decimal?)null;
-                        bool coSale = giaKM.HasValue && giaGoc.HasValue && giaKM.Value < giaGoc.Value;
+                        decimal? giaKM = variant?.GiaKhuyenMai;
+
+                        bool coSale = giaKM.HasValue
+                        && giaGoc.HasValue
+                        && giaKM.Value < giaGoc.Value;
+
                         bool isLiked = wishlistIds.Contains(sp.SanPhamId);
 
-                        var r = (Model != null && Model.Ratings != null && Model.Ratings.ContainsKey(sp.SanPhamId)) ? Model.Ratings[sp.SanPhamId] : new RatingInfo { AvgStar = 0, ReviewCount = 0 };
-                        double avg = r.AvgStar; int count = r.ReviewCount;
+                        var r = (Model != null && Model.Ratings != null && Model.Ratings.ContainsKey(sp.SanPhamId))
+                        ? Model.Ratings[sp.SanPhamId]
+                        : new RatingInfo { AvgStar = 0, ReviewCount = 0 };
+
+                        double avg = r.AvgStar;
+                        int count = r.ReviewCount;
 
                         <div class="col-6 col-md-4 col-lg-3">
                             <div class="card h-100 product-card">
