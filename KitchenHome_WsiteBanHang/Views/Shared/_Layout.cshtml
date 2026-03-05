@@ -202,6 +202,40 @@
                 transform: translateY(-5px);
                 box-shadow: 0 6px 15px rgba(0,0,0,0.2);
             }
+
+        .navbar {
+            z-index: 1050;
+        }
+
+        .dropdown-menu {
+            z-index: 2000 !important;
+        }
+
+        /* ===== TOAST YÊU THÍCH ===== */
+        .wishlist-toast {
+            position: fixed;
+            top: 90px;
+            right: 25px;
+            background: #198754;
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateX(40px);
+            transition: all .3s ease;
+        }
+
+            .wishlist-toast.show {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            .wishlist-toast.remove {
+                background: #dc3545;
+            }
     </style>
 </head>
 <body>
@@ -394,7 +428,23 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
+    <div id="wishlistToast" class="wishlist-toast"></div>
+    <script>
+        function showWishlistToast(message, isRemove = false) {
+            var toast = $("#wishlistToast");
 
+            toast.text(message);
+            toast.removeClass("remove");
+
+            if (isRemove) toast.addClass("remove");
+
+            toast.addClass("show");
+
+            setTimeout(function () {
+                toast.removeClass("show");
+            }, 2500);
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

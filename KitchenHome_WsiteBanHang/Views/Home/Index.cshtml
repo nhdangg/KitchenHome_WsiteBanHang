@@ -453,6 +453,9 @@
             @TempData["CartSuccess"]
         </div>
     }
+    @* thông báo yêu thích (wishlist) *@
+    <div id="wishlistToast" class="custom-cart-alert" style="display:none;"></div>
+
     <div class="container my-4">
         @* --- 1. BANNER SLIDER --- *@
         <div class="row g-3">
@@ -816,22 +819,58 @@
     <script>
         function toggleWishlist(btn, productId) {
             var icon = $(btn).find('i');
+            var isActive = $(btn).hasClass('active');
+
             $.ajax({
-                url: '@Url.Action("CapNhat", "YeuThich")', type: 'POST', data: { id: productId },
+                url: '@Url.Action("CapNhat", "YeuThich")',
+                type: 'POST',
+                data: { id: productId },
                 success: function (res) {
+
                     if (res.success) {
+
                         if (res.isLiked) {
                             $(btn).addClass('active');
                             icon.removeClass('bi-heart').addClass('bi-heart-fill');
-                        } else {
+                            showWishlistToast("❤️ Đã thêm vào yêu thích", false);
+                        }
+                        else {
                             $(btn).removeClass('active');
                             icon.removeClass('bi-heart-fill').addClass('bi-heart');
+                            showWishlistToast("❌ Đã xoá khỏi yêu thích", true);
                         }
-                    } else if (res.requireLogin && confirm(res.message)) {
-                        window.location.href = '@Url.Action("Index", "Home", new { area = "Login_Wsite" })?returnUrl=' + encodeURIComponent(window.location.href);
+
+                    } else if (res.requireLogin) {
+                        if (confirm(res.message)) {
+                            window.location.href =
+                                '@Url.Action("Index", "Home", new { area = "Login_Wsite" })'
+                                + '?returnUrl=' + encodeURIComponent(window.location.href);
+                        }
                     }
-                }, error: function () { alert("Lỗi kết nối!"); }
+                },
+                error: function () {
+                    showWishlistToast("Lỗi kết nối mạng", true);
+                }
             });
+        }
+        function showWishlistToast(message, isRemove) {
+            var toast = $("#wishlistToast");
+
+            toast.stop(true, true);
+
+            if (isRemove) {
+                toast.css("background", "#dc3545"); // đỏ
+            } else {
+                toast.css("background", "#198754"); // xanh
+            }
+
+            toast.html('<i class="bi bi-check-circle-fill me-2"></i>' + message);
+
+            toast.fadeIn(300);
+
+            setTimeout(function () {
+                toast.fadeOut(400);
+            }, 2500);
         }
 
         function submitNewsletter(e) {

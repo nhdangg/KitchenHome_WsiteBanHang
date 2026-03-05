@@ -84,13 +84,14 @@ namespace KitchenHome_WsiteBanHang.Controllers
                         d.KhachHangId == khachHang.KhachHangId &&
                         d.MacDinh);
 
-                if (diaChi != null)
-                {
-                    model.DiaChiCuThe = diaChi.DiaChiCuThe;
-                    model.TinhThanh = diaChi.TinhThanh;
-                    model.QuanHuyen = diaChi.QuanHuyen;
-                    model.PhuongXa = diaChi.PhuongXa;
-                }
+                //tự động cập nhật địa chỉ giao hàng nếu có địa chỉ mặc định
+                //if (diaChi != null)
+                //{
+                //    model.DiaChiCuThe = diaChi.DiaChiCuThe;
+                //    model.TinhThanh = diaChi.TinhThanh;
+                //    model.QuanHuyen = diaChi.QuanHuyen;
+                //    model.PhuongXa = diaChi.PhuongXa;
+                //}
             }
 
             return View(model);
@@ -287,7 +288,8 @@ namespace KitchenHome_WsiteBanHang.Controllers
                     TenBienThe = bt.TenBienThe ?? bt.Sku,
                     SKU = bt.Sku,
                     SoLuong = item.SoLuong,
-                    DonGia = giaBan
+                    DonGia = giaBan,
+                    AnhDaiDien = sp.AnhDaiDien
                 });
             }
 

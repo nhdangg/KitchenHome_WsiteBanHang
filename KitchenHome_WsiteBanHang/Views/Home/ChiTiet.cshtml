@@ -106,10 +106,45 @@
     }
 
     }
+
+    .custom-cart-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #198754;
+        color: #fff;
+        padding: 14px 22px;
+        border-radius: 10px;
+        font-weight: 600;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        z-index: 9999;
+        animation: slideInRight 0.4s ease;
+    }
+
+    @@keyframes slideInRight {
+        from
+
+    {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    }
 </style>
 
 <div class="container my-5">
-
+    @if (TempData["CartSuccess"] != null)
+    {
+        <div id="cartAlert" class="custom-cart-alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["CartSuccess"]
+        </div>
+    }
     <!-- BREADCRUMB -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -211,9 +246,16 @@
                 </div>
             </div>
 
-            <button class="btn btn-primary btn-lg w-100 rounded-pill">
-                <i class="bi bi-cart-plus me-2"></i> Thêm vào giỏ hàng
-            </button>
+            <!-- them giỏ hàng -->
+            <form asp-controller="GioHang" asp-action="Them" method="get">
+                <input type="hidden" name="variantId" id="selectedVariant" value="@defaultVariant?.BienTheId" />
+                <input type="hidden" name="quantity" id="selectedQty" value="1" />
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill">
+                    <i class="bi bi-cart-plus me-2"></i> Thêm vào giỏ hàng
+                </button>
+            </form>
 
             <div class="mt-4 bg-light p-3 rounded">
                 <p class="mb-1"><i class="bi bi-check-circle-fill text-success me-2"></i>Bảo hành chính hãng</p>
@@ -332,7 +374,7 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
-    // --- KHỞI TẠO SWIPER (Giữ nguyên của bạn) ---
+    // ================== SWIPER ==================
     const thumbSwiper = new Swiper('.thumb-swiper', {
         spaceBetween: 10,
         slidesPerView: 4,
@@ -346,46 +388,81 @@
     });
 
     function changeGalleryByVariant(variantId) {
-        document.querySelectorAll('.main-swiper .swiper-slide').forEach((s, i) => {
-            if (s.dataset.variant == variantId) mainSwiper.slideTo(i);
-        });
+        document.querySelectorAll('.main-swiper .swiper-slide')
+            .forEach((s, i) => {
+                if (s.dataset.variant == variantId) {
+                    mainSwiper.slideTo(i);
+                }
+            });
     }
 
+    // ================== CHỌN BIẾN THỂ ==================
     function selectVariant(btn) {
-        document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+
+        // Active button
+        document.querySelectorAll('.variant-btn')
+            .forEach(b => b.classList.remove('active'));
+
         btn.classList.add('active');
-        document.getElementById('display-price').innerText = Number(btn.dataset.price).toLocaleString('vi-VN') + ' đ';
+
+        // Cập nhật giá
+        const price = Number(btn.dataset.price);
+        document.getElementById('display-price').innerText =
+            price.toLocaleString('vi-VN') + ' đ';
+
+        // Cập nhật hidden variantId
+        const hiddenVariant = document.getElementById('selectedVariant');
+        if (hiddenVariant) {
+            hiddenVariant.value = btn.dataset.id;
+        }
     }
 
+    // ================== CẬP NHẬT SỐ LƯỢNG ==================
     function updateQty(v) {
-        let i = document.getElementById('qty');
-        i.value = Math.max(1, parseInt(i.value) + v);
+
+        let qtyInput = document.getElementById('qty');
+        let newValue = Math.max(1, parseInt(qtyInput.value) + v);
+        qtyInput.value = newValue;
+
+        // cập nhật hidden quantity
+        const hiddenQty = document.getElementById('selectedQty');
+        if (hiddenQty) {
+            hiddenQty.value = newValue;
+        }
     }
 
-    // --- LOGIC CHỌN SAO (MỚI) ---
-    document.addEventListener('DOMContentLoaded', function() {
+    // ================== ĐÁNH GIÁ SAO ==================
+    document.addEventListener('DOMContentLoaded', function () {
+
         const stars = document.querySelectorAll('.rating-stars i');
         const inputSoSao = document.getElementById('inputSoSao');
 
         function updateStars(value) {
             stars.forEach(s => {
-                const sValue = s.getAttribute('data-value');
-                if (sValue <= value) {
+                const starValue = s.getAttribute('data-value');
+                if (starValue <= value) {
                     s.classList.replace('bi-star', 'bi-star-fill');
                 } else {
                     s.classList.replace('bi-star-fill', 'bi-star');
                 }
             });
-            inputSoSao.value = value;
+
+            if (inputSoSao) {
+                inputSoSao.value = value;
+            }
         }
 
-        // Mặc định chọn 5 sao
+        // mặc định 5 sao
         updateStars(5);
 
         stars.forEach(star => {
-            star.addEventListener('click', function() {
+            star.addEventListener('click', function () {
                 updateStars(this.getAttribute('data-value'));
             });
         });
     });
+
+        setTimeout(function () {
+        $("#cartAlert").fadeOut(400);
+    }, 3000);
 </script>

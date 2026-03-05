@@ -236,10 +236,43 @@
     .spotlight-card .prod-name a {
         font-size: 1.4rem; /* Chữ to hơn */
     }
+    .custom-cart-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #198754;
+    color: #fff;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    z-index: 9999;
+    animation: slideInRight 0.4s ease;
+}
+
+@@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 </style>
 
 <div class="container py-5">
-    
+      @* thông báo thêm vào giỏ hàng *@
+    @if (TempData["CartSuccess"] != null)
+    {
+        <div id="cartAlert" class="custom-cart-alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["CartSuccess"]
+        </div>
+    }
+    @* thông báo yêu thích *@
+    <div id="wishlistToast" class="custom-cart-alert" style="display:none;"></div>
     @* --- HERO HEADER --- *@
     <div class="text-center mb-5 pb-3">
         <span class="badge bg-light text-primary border border-primary rounded-pill px-3 py-2 mb-3 fw-bold">BỘ SƯU TẬP 2026</span>
@@ -395,8 +428,10 @@
     <script>
         function toggleWishlist(btn, productId) {
             var icon = $(btn).find('i');
-            // Hiệu ứng click ngay lập tức (UX Better)
-            if ($(btn).hasClass('active')) {
+            var isActive = $(btn).hasClass('active');
+
+            // Hiệu ứng trước (UX tốt hơn)
+            if (isActive) {
                 $(btn).removeClass('active');
                 icon.removeClass('bi-heart-fill').addClass('bi-heart');
             } else {
@@ -404,25 +439,60 @@
                 icon.removeClass('bi-heart').addClass('bi-heart-fill');
             }
 
-            // Gửi Ajax ngầm
             $.ajax({
-                url: '@Url.Action("CapNhat", "YeuThich", new { area = "" })', 
+                url: '@Url.Action("CapNhat", "YeuThich")',
                 type: 'POST',
                 data: { id: productId },
                 success: function (res) {
-                    if (!res.success && res.requireLogin) {
-                        // Revert nếu chưa login
+
+                    if (res.success) {
+
+                        if (res.isLiked) {
+                            showWishlistToast("❤️ Đã thêm vào yêu thích", false);
+                        } else {
+                            showWishlistToast("❌ Đã xoá khỏi yêu thích", true);
+                        }
+
+                    } else if (res.requireLogin) {
+                        // revert lại nếu chưa login
                         $(btn).removeClass('active');
                         icon.removeClass('bi-heart-fill').addClass('bi-heart');
-                        if(confirm(res.message)) {
-                            window.location.href = '@Url.Action("Index", "Home", new { area = "Login_Wsite" })?returnUrl=' + encodeURIComponent(window.location.href);
+
+                        if (confirm(res.message)) {
+                            window.location.href =
+                                '@Url.Action("Index", "Home", new { area = "Login_Wsite" })?returnUrl='
+                                + encodeURIComponent(window.location.href);
                         }
                     }
                 },
                 error: function () {
-                    alert("Lỗi kết nối mạng.");
+                    showWishlistToast("Lỗi kết nối mạng", true);
                 }
             });
         }
+
+        function showWishlistToast(message, isRemove) {
+            var toast = $("#wishlistToast");
+
+            toast.stop(true, true);
+            toast.removeClass("bg-danger bg-success");
+
+            if (isRemove) {
+                toast.css("background", "#dc3545");
+            } else {
+                toast.css("background", "#198754");
+            }
+
+            toast.html('<i class="bi bi-check-circle-fill me-2"></i>' + message);
+            toast.fadeIn(300);
+
+            setTimeout(function () {
+                toast.fadeOut(400);
+            }, 2500);
+        }
+
+         setTimeout(function () {
+            $("#cartAlert").fadeOut(400);
+        }, 3000);
     </script>
 }

@@ -125,11 +125,15 @@
                             {
                                 <li class="list-group-item px-0 d-flex justify-content-between">
                                     <div class="d-flex">
-                                        <img src="@(string.IsNullOrEmpty(item.AnhDaiDien)
-                                            ? "/images/no-image.png"
-                                            : item.AnhDaiDien)"
-                                             style="width:50px;height:50px;object-fit:cover"
-                                             class="rounded border me-2" />
+                                        <img src="@(
+                                             string.IsNullOrEmpty(item.AnhDaiDien)
+                                                 ? Url.Content("~/IMAGE/no-image.png")
+                                                 : (item.AnhDaiDien.StartsWith("http")
+                                                     ? item.AnhDaiDien
+                                                     : Url.Content("~/IMAGE/Img_SanPham/" + item.AnhDaiDien))
+)"
+                                         style="width:50px;height:50px;object-fit:cover"
+                                         class="rounded border me-2" />
 
                                         <div>
                                             <h6 class="mb-0">@item.TenSanPham</h6>
