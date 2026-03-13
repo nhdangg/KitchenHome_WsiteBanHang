@@ -281,8 +281,21 @@
 
                 <div class="d-flex align-items-center gap-2">
                     <div class="input-group search-group d-flex align-items-center d-none d-lg-flex">
-                        <span class="text-secondary ps-2"><i class="fa-solid fa-magnifying-glass"></i></span>
-                        <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+
+                        <form asp-controller="SanPham" asp-action="Index" method="get"
+                              class="input-group search-group d-flex align-items-center d-none d-lg-flex">
+
+                            <button type="submit" class="border-0 bg-transparent text-secondary ps-2"
+                                    style="cursor:pointer;">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+
+                            <input type="text"
+                                   name="searchString"
+                                   class="form-control"
+                                   placeholder="Tìm kiếm sản phẩm..."
+                                   value="@Context.Request.Query["searchString"]">
+                        </form>
                     </div>
 
                     <a asp-area="" asp-controller="GioHang" asp-action="Index" class="icon-btn ms-2 cart-wrap" title="Giỏ hàng">

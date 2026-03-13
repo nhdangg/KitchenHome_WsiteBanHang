@@ -128,6 +128,14 @@ namespace KitchenHome_WsiteBanHang.Areas.Login_Wsite.Controllers
 
             u.LanDangNhapCuoi = DateTime.Now;
             _context.SaveChanges();
+            GhiNhatKy(
+                u.TaiKhoanId,
+                "LOGIN",
+                "TaiKhoan",
+                u.TaiKhoanId.ToString(),
+                null,
+                $"User {u.TenDangNhap} đăng nhập"
+            );
 
             // ================== ĐIỀU HƯỚNG ==================
 
@@ -255,11 +263,43 @@ namespace KitchenHome_WsiteBanHang.Areas.Login_Wsite.Controllers
             }
         }
 
+        // ================== GHI NHAT KÝ LOG ==============
+        private void GhiNhatKy(int? taiKhoanId, string hanhDong, string tenBang, string? khoaBanGhi = null, string? duLieuCu = null, string? duLieuMoi = null)
+        {
+            var log = new NhatKyHeThong
+            {
+                TaiKhoanId = taiKhoanId,
+                HanhDong = hanhDong,
+                TenBang = tenBang,
+                KhoaBanGhi = khoaBanGhi,
+                DuLieuCu = duLieuCu,
+                DuLieuMoi = duLieuMoi,
+                DiaChiIp = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                NgayTao = DateTime.Now
+            };
+
+            _context.NhatKyHeThongs.Add(log);
+            _context.SaveChanges();
+        }
 
         // ================== LOGOUT ==================
         [HttpGet]
         public IActionResult Logout()
         {
+            var userId = HttpContext.Session.GetInt32("USER_ID");
+
+            if (userId != null)
+            {
+                GhiNhatKy(
+                    userId,
+                    "LOGOUT",
+                    "TaiKhoan",
+                    userId.ToString(),
+                    null,
+                    "User logout"
+                );
+            }
+
             HttpContext.Session.Clear();
 
             Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
