@@ -41,7 +41,7 @@ namespace WsiteBanHang_KitchenHome.Controllers
         // ==============================
         public async Task<IActionResult> Index()
         {
-            // --- Cookie giỏ hàng (GIỮ NGUYÊN NGHIỆP VỤ CŨ) ---
+            
             var maPhien = CartCookie.GetOrCreate(HttpContext);
 
             if (string.IsNullOrEmpty(maPhien))
@@ -76,7 +76,7 @@ namespace WsiteBanHang_KitchenHome.Controllers
             var model = new HomeView_TrangChu();
 
             // ===============================
-            // 1. Banner (CŨ)
+            // 1. Banner
             // ===============================
             model.DanhSachBanner = await _context.Banners
                 .Where(b => b.IsActive)
@@ -84,7 +84,7 @@ namespace WsiteBanHang_KitchenHome.Controllers
                 .ToListAsync();
 
             // ===============================
-            // 2. Danh mục nổi bật (MỚI)
+            // 2. Danh mục nổi bật 
             // ===============================
             model.DanhMucNoiBat = await _context.DanhMucs
                 .Where(d => d.DangHoatDong)
@@ -93,7 +93,7 @@ namespace WsiteBanHang_KitchenHome.Controllers
                 .ToListAsync();
 
             // ===============================
-            // 3. Thương hiệu đối tác (MỚI)
+            // 3. Thương hiệu đối tác
             // ===============================
             model.ThuongHieuDoiTac = await _context.ThuongHieus
                 .Where(t => t.DangHoatDong)
@@ -101,7 +101,7 @@ namespace WsiteBanHang_KitchenHome.Controllers
                 .ToListAsync();
 
             // ===============================
-            // 4. Sản phẩm nổi bật (CŨ)
+            // 4. Sản phẩm nổi bật
             // ===============================
             model.DanhSachSanPham = await _context.SanPhams
                 .Include(sp => sp.BienTheSanPhams)
@@ -113,7 +113,7 @@ namespace WsiteBanHang_KitchenHome.Controllers
                 .ToListAsync();
 
             // ===============================
-            // 5. Sản phẩm giảm giá (CŨ)
+            // 5. Sản phẩm giảm giá 
             // ===============================
             var idsNoiBat = model.DanhSachSanPham.Select(x => x.SanPhamId).ToList();
 

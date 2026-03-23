@@ -25,7 +25,6 @@ CREATE TABLE dbo.TaiKhoan (
     TaiKhoanID          INT IDENTITY(1,1) PRIMARY KEY,
     TenDangNhap         VARCHAR(50) NOT NULL UNIQUE,
     MatKhauHash         VARCHAR(255) NOT NULL,
-    MuoiHash            VARCHAR(255) NULL,
     Email               VARCHAR(120) NULL,
     SoDienThoai         VARCHAR(20) NULL,
     DangHoatDong        BIT NOT NULL DEFAULT 1,
@@ -441,30 +440,6 @@ GO
 /* =========================
    10) KHUYEN MAI - MA GIAM GIA
    ========================= */
-
-CREATE TABLE dbo.KhuyenMai (
-    KhuyenMaiID     INT IDENTITY(1,1) PRIMARY KEY,
-    MaKhuyenMai     VARCHAR(40) NOT NULL UNIQUE,
-    TenKhuyenMai    NVARCHAR(200) NOT NULL,
-    LoaiGiam        VARCHAR(10) NOT NULL, -- PHAN_TRAM, SO_TIEN
-    GiaTriGiam      DECIMAL(18,2) NOT NULL,
-    BatDau          DATETIME2 NOT NULL,
-    KetThuc         DATETIME2 NOT NULL,
-    DonHangToiThieu DECIMAL(18,2) NOT NULL DEFAULT 0,
-    GiamToiDa       DECIMAL(18,2) NULL,
-    DangHoatDong    BIT NOT NULL DEFAULT 1,
-    CONSTRAINT CK_KM_Loai CHECK (LoaiGiam IN ('PHAN_TRAM','SO_TIEN')),
-    CONSTRAINT CK_KM_GiaTri CHECK (GiaTriGiam>=0),
-    CONSTRAINT CK_KM_ThoiGian CHECK (KetThuc > BatDau)
-);
-
-CREATE TABLE dbo.KhuyenMai_BienThe (
-    KhuyenMaiID     INT NOT NULL,
-    BienTheID       INT NOT NULL,
-    PRIMARY KEY (KhuyenMaiID, BienTheID),
-    CONSTRAINT FK_KMBT_KM FOREIGN KEY(KhuyenMaiID) REFERENCES dbo.KhuyenMai(KhuyenMaiID),
-    CONSTRAINT FK_KMBT_BT FOREIGN KEY(BienTheID) REFERENCES dbo.BienTheSanPham(BienTheID)
-);
 
 CREATE TABLE dbo.MaGiamGia (
     MaGiamGiaID     INT IDENTITY(1,1) PRIMARY KEY,
