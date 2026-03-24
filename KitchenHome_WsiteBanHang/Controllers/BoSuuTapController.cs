@@ -1,5 +1,7 @@
-﻿using KitchenHome_WsiteBanHang.Models;
+﻿using KitchenHome_WsiteBanHang.Helpers;
+using KitchenHome_WsiteBanHang.Models;
 using KitchenHome_WsiteBanHang.Models.Context;
+using KitchenHome_WsiteBanHang.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,17 +10,24 @@ namespace KitchenHome_WsiteBanHang.Controllers
     public class BoSuuTapController : Controller
     {
         private readonly DbConnect_KitchenHome_WsiteBanHang _context;
+        private readonly CartService _cartService;
 
-        public BoSuuTapController(DbConnect_KitchenHome_WsiteBanHang context)
+        public BoSuuTapController(DbConnect_KitchenHome_WsiteBanHang context,CartService cartService)
         {
             _context = context;
+            _cartService = cartService;
         }
 
         // GET: /BoSuuTap/Index
         public async Task<IActionResult> Index()
         {
+          
             // 1. Lấy danh sách ID yêu thích để tô đỏ tim
             var taiKhoanId = HttpContext.Session.GetInt32("USER_ID");
+
+            var maPhien = CartCookie.GetOrCreate(HttpContext);
+            ViewBag.CartCount = _cartService.GetCartCount(taiKhoanId, maPhien);
+
             var wishlistIds = new List<int>();
             if (taiKhoanId != null)
             {

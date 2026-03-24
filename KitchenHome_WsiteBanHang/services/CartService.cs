@@ -93,27 +93,62 @@ namespace KitchenHome_WsiteBanHang.Services
 
         // ================= THÊM VÀO GIỎ =================
         public void AddToCart(
-            int? taiKhoanId,
-            int? khachHangId,
-            string maPhien,
-            int bienTheId,
-            int qty = 1)
+    int? taiKhoanId,
+    int? khachHangId,
+    string maPhien,
+    int bienTheId,
+    int qty = 1)
         {
             if (qty <= 0) qty = 1;
 
             if (!taiKhoanId.HasValue && string.IsNullOrEmpty(maPhien))
-                return;
+                throw new Exception("Không xác định được người dùng!");
 
             var cart = GetOrCreateCart(taiKhoanId, khachHangId, maPhien);
 
+            // ================== 🔥 CHECK BIẾN THỂ ==================
             var bt = _context.BienTheSanPhams
                 .FirstOrDefault(x =>
                     x.BienTheId == bienTheId &&
-                    x.DangHoatDong == true);
+                    x.DangHoatDong);
 
-            if (bt == null || bt.GiaBan <= 0) return;
+            if (bt == null || bt.GiaBan <= 0)
+                throw new Exception("Sản phẩm không hợp lệ!");
 
+            // ================== 🔥 TỔNG TỒN KHO ==================
+            var tonKhos = _context.TonKhos
+                .Where(x => x.BienTheId == bienTheId)
+                .ToList();
+
+            int tongTon = tonKhos.Sum(x => x.SoLuongTon);
+
+            if (tongTon <= 0)
+                throw new Exception("Sản phẩm đã hết hàng!");
+
+            // ================== 🔥 TỔNG ĐÃ CÓ TRONG TẤT CẢ GIỎ ==================
+            int tongTrongTatCaGio = _context.ChiTietGioHangs
+                .Where(x => x.BienTheId == bienTheId)
+                .Sum(x => (int?)x.SoLuong) ?? 0;
+
+            // ================== 🔥 SỐ LƯỢNG HIỆN TẠI TRONG GIỎ ==================
+            var line = _context.ChiTietGioHangs.FirstOrDefault(x =>
+                x.GioHangId == cart.GioHangId &&
+                x.BienTheId == bienTheId);
+
+            int soLuongHienTai = line?.SoLuong ?? 0;
+
+            int tongSauThem = soLuongHienTai + qty;
+
+            // ================== 🚨 CHECK CHẶN ==================
+            if (tongTrongTatCaGio + qty > tongTon)
+                throw new Exception($"Chỉ còn {tongTon - tongTrongTatCaGio} sản phẩm có thể bán!");
+
+            if (tongSauThem > tongTon)
+                throw new Exception($"Bạn chỉ có thể thêm tối đa {tongTon} sản phẩm!");
+
+            // ================== 💰 GIÁ ==================
             decimal gia = bt.GiaBan;
+
             if (bt.GiaKhuyenMai.HasValue &&
                 bt.GiaKhuyenMai.Value > 0 &&
                 bt.GiaKhuyenMai.Value < bt.GiaBan)
@@ -121,10 +156,7 @@ namespace KitchenHome_WsiteBanHang.Services
                 gia = bt.GiaKhuyenMai.Value;
             }
 
-            var line = _context.ChiTietGioHangs.FirstOrDefault(x =>
-                x.GioHangId == cart.GioHangId &&
-                x.BienTheId == bienTheId);
-
+            // ================== 🛒 THÊM / CỘNG ==================
             if (line != null)
             {
                 line.SoLuong += qty;
@@ -143,6 +175,7 @@ namespace KitchenHome_WsiteBanHang.Services
             }
 
             cart.NgayCapNhat = DateTime.Now;
+
             _context.SaveChanges();
         }
     }

@@ -119,6 +119,7 @@ namespace KitchenHome_WsiteBanHang.Controllers
             decimal tienGiam = 0;
             MaGiamGia? coupon = null;
 
+            // ================= CHECK MÃ GIẢM GIÁ =================
             if (!string.IsNullOrEmpty(model.MaGiamGia))
             {
                 var kq = KiemTraMaGiamGia(
@@ -155,6 +156,69 @@ namespace KitchenHome_WsiteBanHang.Controllers
             using var transaction = _context.Database.BeginTransaction();
             try
             {
+                // ================= 🔥 CHECK + GIỮ HÀNG (LOCK DB) =================
+                foreach (var item in cartData.Items)
+                {
+                    var tonKhos = _context.TonKhos
+                      .FromSqlRaw(@"
+                        SELECT * FROM TonKho WITH (UPDLOCK, ROWLOCK)
+                        WHERE BienTheID = {0}", item.BienTheID)
+                      .ToList();
+
+                    int soLuongCoTheBan = tonKhos.Sum(x => x.SoLuongTon - x.SoLuongGiuCho);
+
+                    if (item.SoLuong > soLuongCoTheBan)
+                    {
+                        ModelState.AddModelError("",
+                            $"Sản phẩm '{item.TenSanPham}' chỉ còn {soLuongCoTheBan} sản phẩm!");
+
+                        model.CartItems = cartData.Items;
+                        model.TongTienHang = cartData.TongTienHang;
+                        model.DanhSachPhuongThuc = _context.PhuongThucThanhToans
+                            .Where(p => p.DangHoatDong)
+                            .ToList();
+
+                        return View("Index", model);
+                    }
+
+                    int soLuongCanLay = item.SoLuong;
+
+                    foreach (var tk in tonKhos)
+                    {
+                        int available = tk.SoLuongTon - tk.SoLuongGiuCho;
+                        if (available <= 0) continue;
+
+                        int lay = Math.Min(available, soLuongCanLay);
+
+                        // 👉 giữ hàng
+                        tk.SoLuongGiuCho += lay;
+
+                        // 👉 (tùy chọn pro) trừ luôn kho
+                        // tk.SoLuongTon -= lay;
+
+                        soLuongCanLay -= lay;
+
+                        if (soLuongCanLay <= 0) break;
+                    }
+
+                    if (soLuongCanLay > 0)
+                    {
+                        ModelState.AddModelError("", "Không đủ hàng trong kho!");
+
+                        model.CartItems = cartData.Items;
+                        model.TongTienHang = cartData.TongTienHang;
+                        model.DanhSachPhuongThuc = _context.PhuongThucThanhToans
+                            .Where(p => p.DangHoatDong)
+                            .ToList();
+
+                        return View("Index", model);
+                    }
+                }
+
+                // 🔥 QUAN TRỌNG: save ngay để lock
+                _context.SaveChanges();
+
+                // ================= TẠO ĐƠN =================
                 var khoMacDinh = _context.Khos.FirstOrDefault();
                 if (khoMacDinh == null)
                     throw new Exception("Chưa cấu hình kho.");
@@ -177,6 +241,7 @@ namespace KitchenHome_WsiteBanHang.Controllers
                 _context.DonHangs.Add(donHang);
                 _context.SaveChanges();
 
+                // ================= MÃ GIẢM GIÁ =================
                 if (coupon != null && khachHang != null)
                 {
                     _context.SuDungMaGiamGias.Add(new SuDungMaGiamGium
@@ -190,6 +255,7 @@ namespace KitchenHome_WsiteBanHang.Controllers
                     coupon.DaDung += 1;
                 }
 
+                // ================= ĐỊA CHỈ =================
                 _context.DonHang_DiaChiGiaos.Add(new DonHangDiaChiGiao
                 {
                     DonHangId = donHang.DonHangId,
@@ -201,6 +267,7 @@ namespace KitchenHome_WsiteBanHang.Controllers
                     PhuongXa = model.PhuongXa
                 });
 
+                // ================= CHI TIẾT =================
                 foreach (var item in cartData.Items)
                 {
                     _context.ChiTietDonHangs.Add(new ChiTietDonHang
@@ -214,6 +281,7 @@ namespace KitchenHome_WsiteBanHang.Controllers
                     });
                 }
 
+                // ================= THANH TOÁN =================
                 _context.ThanhToans.Add(new ThanhToan
                 {
                     DonHangId = donHang.DonHangId,
@@ -223,13 +291,19 @@ namespace KitchenHome_WsiteBanHang.Controllers
                     NgayTao = DateTime.Now
                 });
 
-                var gioHang = _context.GioHangs.FirstOrDefault(g =>
-                    g.TaiKhoanId == userId && g.TrangThai == "DANG_MUA");
+                // ================= CẬP NHẬT GIỎ =================
+                var gioHang = _context.GioHangs
+                    .Include(g => g.ChiTietGioHangs)
+                    .FirstOrDefault(g =>
+                        g.TaiKhoanId == userId && g.TrangThai == "DANG_MUA");
 
                 if (gioHang != null)
                 {
                     gioHang.TrangThai = "DA_CHUYEN_THANH_DON";
                     gioHang.NgayCapNhat = DateTime.Now;
+
+                    // 👉 XÓA CHI TIẾT GIỎ (khuyến nghị)
+                    _context.ChiTietGioHangs.RemoveRange(gioHang.ChiTietGioHangs);
                 }
 
                 _context.SaveChanges();
@@ -240,12 +314,15 @@ namespace KitchenHome_WsiteBanHang.Controllers
             catch (Exception ex)
             {
                 transaction.Rollback();
+
                 ModelState.AddModelError("", ex.Message);
+
                 model.CartItems = cartData.Items;
                 model.TongTienHang = cartData.TongTienHang;
                 model.DanhSachPhuongThuc = _context.PhuongThucThanhToans
                     .Where(p => p.DangHoatDong)
                     .ToList();
+
                 return View("Index", model);
             }
         }

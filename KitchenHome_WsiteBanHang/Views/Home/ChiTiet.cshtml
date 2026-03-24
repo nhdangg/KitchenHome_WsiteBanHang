@@ -122,27 +122,42 @@
     }
 
     @@keyframes slideInRight {
-        from
+    from
 
-    {
-        opacity: 0;
-        transform: translateX(50px);
-    }
+        {
+            opacity: 0;
+            transform: translateX(50px);
+        }
 
-    to {
-        opacity: 1;
-        transform: translateX(0);
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
+        .custom-cart-alert.error {
+            background: #dc3545; /* đỏ */
+        }
 
-    }
+        .custom-cart-alert.warning {
+            background: #ffc107;
+            color: #000;
+        }
 </style>
 
 <div class="container my-5">
     @if (TempData["CartSuccess"] != null)
     {
-        <div id="cartAlert" class="custom-cart-alert">
+        <div class="custom-cart-alert success">
             <i class="bi bi-check-circle-fill me-2"></i>
             @TempData["CartSuccess"]
+        </div>
+    }
+
+    @if (TempData["CartError"] != null)
+    {
+        <div class="custom-cart-alert error">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            @TempData["CartError"]
         </div>
     }
     <!-- BREADCRUMB -->
@@ -462,7 +477,9 @@
         });
     });
 
-        setTimeout(function () {
-        $("#cartAlert").fadeOut(400);
-    }, 3000);
+       setTimeout(function () {
+            $(".custom-cart-alert").fadeOut(400, function () {
+                $(this).remove();
+            });
+        }, 3000);
 </script>

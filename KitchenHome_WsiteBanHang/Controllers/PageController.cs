@@ -1,6 +1,8 @@
-﻿using KitchenHome_WsiteBanHang.Models;
+﻿using KitchenHome_WsiteBanHang.Helpers;
+using KitchenHome_WsiteBanHang.Models;
 using KitchenHome_WsiteBanHang.Models.Class_phu;
 using KitchenHome_WsiteBanHang.Models.Context;
+using KitchenHome_WsiteBanHang.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -13,11 +15,14 @@ namespace WsiteBanHang_KitchenHome.Controllers
     {
         // 1. Khai báo DbContext (Sử dụng DI)
         private readonly DbConnect_KitchenHome_WsiteBanHang _context;
+        private readonly CartService _cartService;
+
 
         // 2. Tiêm DbContext qua Constructor
-        public PageController(DbConnect_KitchenHome_WsiteBanHang context)
+        public PageController(DbConnect_KitchenHome_WsiteBanHang context, CartService cartService)
         {
             _context = context;
+            _cartService = cartService;
         }
 
         // Hàm lấy User ID từ Session (.NET Core)
@@ -36,6 +41,7 @@ namespace WsiteBanHang_KitchenHome.Controllers
         [HttpGet]
         public async Task<IActionResult> Show(string slug)
         {
+
             if (string.IsNullOrEmpty(slug))
             {
                 return RedirectToAction("Index", "Home");
@@ -47,6 +53,7 @@ namespace WsiteBanHang_KitchenHome.Controllers
 
             // Logic tạm thời lấy Cookie thủ công nếu chưa sửa Helper:
             var maPhien = HttpContext.Request.Cookies["CartSession"];
+ 
             if (string.IsNullOrEmpty(maPhien))
             {
                 maPhien = Guid.NewGuid().ToString();
@@ -55,6 +62,8 @@ namespace WsiteBanHang_KitchenHome.Controllers
             }
 
             var taiKhoanId = GetTaiKhoanId();
+
+            ViewBag.CartCount = _cartService.GetCartCount(taiKhoanId, maPhien);
 
             //// 4. Gọi Service (Cần sửa CartService để nhận DbContext đã inject hoặc truyền _context vào)
             //var cartService = new CartService(_context);

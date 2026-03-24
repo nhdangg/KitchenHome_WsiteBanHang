@@ -442,17 +442,35 @@
     }
 
     }
+
+    .custom-cart-alert.error {
+        background: #dc3545; /* đỏ */
+    }
+
+    .custom-cart-alert.warning {
+        background: #ffc107;
+        color: #000;
+    }
 </style>
 
 <main>
-    @* thông báo thêm vào giỏ hàng *@
     @if (TempData["CartSuccess"] != null)
     {
-        <div id="cartAlert" class="custom-cart-alert">
+        <div class="custom-cart-alert success">
             <i class="bi bi-check-circle-fill me-2"></i>
             @TempData["CartSuccess"]
         </div>
     }
+
+    @if (TempData["CartError"] != null)
+    {
+        <div class="custom-cart-alert error">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            @TempData["CartError"]
+        </div>
+    }
+
+
     @* thông báo yêu thích (wishlist) *@
     <div id="wishlistToast" class="custom-cart-alert" style="display:none;"></div>
 
@@ -986,8 +1004,10 @@
             });
         }
 
-               setTimeout(function () {
-            $("#cartAlert").fadeOut(400);
+        setTimeout(function () {
+            $(".custom-cart-alert").fadeOut(400, function () {
+                $(this).remove();
+            });
         }, 3000);
     </script>
 }

@@ -5,6 +5,7 @@ using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpClient();
 
 // EPPlus License Context (BẮT BUỘC, nếu không sẽ bị lỗi "A license context must be specified to use EPPlus")
 ExcelPackage.License.SetNonCommercialOrganization("KitchenHome");

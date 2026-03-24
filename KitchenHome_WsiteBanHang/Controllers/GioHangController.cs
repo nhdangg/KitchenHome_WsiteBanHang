@@ -41,11 +41,12 @@ namespace KitchenHome_WsiteBanHang.Controllers
 
         // ================= THÊM VÀO GIỎ =================
         [HttpGet]
+        [HttpGet]
         public IActionResult Them(int variantId, int quantity = 1, string returnUrl = null)
         {
             int? taiKhoanId = GetTaiKhoanId();
 
-            // GIỮ NGUYÊN NGHIỆP VỤ: bắt buộc đăng nhập
+            // 🔒 Bắt buộc đăng nhập
             if (!taiKhoanId.HasValue)
             {
                 return RedirectToAction(
@@ -60,14 +61,21 @@ namespace KitchenHome_WsiteBanHang.Controllers
 
             var maPhien = CartCookie.GetOrCreate(HttpContext);
 
-            _cartService.AddToCart(
-                taiKhoanId,
-                null,
-                maPhien,
-                variantId,
-                quantity);
+            try
+            {
+                _cartService.AddToCart(
+                    taiKhoanId,
+                    null,
+                    maPhien,
+                    variantId,
+                    quantity);
 
-            TempData["CartSuccess"] = "Đã thêm sản phẩm vào giỏ hàng thành công!";
+                TempData["CartSuccess"] = "Đã thêm sản phẩm vào giỏ hàng!";
+            }
+            catch (Exception ex)
+            {
+                TempData["CartError"] = ex.Message;
+            }
 
             if (!string.IsNullOrWhiteSpace(returnUrl))
                 return Redirect(returnUrl);

@@ -185,24 +185,29 @@
         /* --- MỚI THÊM: CSS CHO NÚT BACK TO TOP --- */
         #btn-back-to-top {
             position: fixed;
-            bottom: 25px;
-            right: 25px;
+            bottom: 25px; /* Giữ nguyên hoặc chỉnh cho khớp vị trí nút chat nếu cần */
+            right: 20px; /* Chỉnh lại 20px cho thẳng hàng với nút chat */
             display: none;
             z-index: 9999;
-            width: 45px;
-            height: 45px;
+            /* Chỉnh kích thước về 40px cho bằng nút chat */
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             padding: 0;
-            font-size: 1.2rem;
+            /* Giảm cỡ icon xuống 18px (~1.1rem) cho cân đối với nút 40px */
+            font-size: 1.1rem;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
+            /* Đảm bảo icon nằm chính giữa */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
             #btn-back-to-top:hover {
                 transform: translateY(-5px);
                 box-shadow: 0 6px 15px rgba(0,0,0,0.2);
             }
-
         .navbar {
             z-index: 1050;
         }
@@ -366,6 +371,241 @@
         <i class="bi bi-arrow-up"></i>
     </button>
 
+    <style>
+        /* Nút tròn mở chat */
+        .chat-toggle-btn {
+            position: fixed;
+            bottom: 70px; /* Hạ xuống một chút cho cân đối */
+            right: 20px;
+            width: 40px; /* Giảm từ 50px xuống 40px */
+            height: 40px; /* Giảm từ 50px xuống 40px */
+            background: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 1050;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px; /* Giảm cỡ icon từ 22px xuống 18px */
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .chat-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Khung chat */
+        .chat-window {
+            position: fixed;
+            bottom: 80px; /* Sát với nút bấm hơn */
+            right: 20px;
+            width: 280px; /* Thu hẹp từ 320px xuống 280px */
+            background: white;
+            border-radius: 12px; /* Bo góc nhẹ hơn cho hợp với kích thước bé */
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            z-index: 1050;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+        }
+
+            .chat-window.show {
+                display: flex;
+                animation: slideUp 0.3s ease;
+            }
+
+        @@keyframes slideUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .chat-header {
+            background: #0d6efd;
+            color: white;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Vùng tin nhắn SO LE */
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .msg-row {
+            display: flex;
+            width: 100%;
+        }
+
+        .msg-user {
+            justify-content: flex-end;
+        }
+
+        .msg-bot {
+            justify-content: flex-start;
+        }
+
+        .msg-content {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .msg-user .msg-content {
+            background: #0d6efd;
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg-bot .msg-content {
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+            border-bottom-left-radius: 2px;
+        }
+
+        /* Vùng Input có nút gửi */
+        .chat-input-area {
+            padding: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 6px 15px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .btn-send {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+            .btn-send:hover {
+                background: #0b5ed7;
+            }
+    </style>
+
+    <button id="btn-toggle-chat" class="chat-toggle-btn">
+        <i class="bi bi-chat-dots-fill"></i>
+    </button>
+
+    <div id="chatbox-window" class="chat-window">
+        <div class="chat-header">
+            <span><i class="bi bi-headset"></i> Hỗ trợ KitchenHome</span>
+            <button id="btn-close-chat" style="background:none; border:none; color:white; font-size:20px;">&times;</button>
+        </div>
+
+        <div id="messages" class="chat-messages">
+            <div class="msg-row msg-bot">
+                <div class="msg-content">Xin chào! 👋 Bạn cần KitchenHome hỗ trợ gì ạ?</div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input id="chat-input" class="chat-input" placeholder="Nhập câu hỏi..." autocomplete="off" />
+            <button id="btn-send" class="btn-send" title="Gửi">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnToggle = document.getElementById('btn-toggle-chat');
+            const btnClose = document.getElementById('btn-close-chat');
+            const chatWindow = document.getElementById('chatbox-window');
+            const input = document.getElementById('chat-input');
+            const btnSend = document.getElementById('btn-send');
+            const box = document.getElementById('messages');
+
+            // Đóng/Mở chat
+            const toggleChat = () => chatWindow.classList.toggle('show');
+            btnToggle.onclick = toggleChat;
+            btnClose.onclick = toggleChat;
+
+            // Hàm gửi tin nhắn chính
+            async function sendMessage() {
+                let msg = input.value.trim();
+                if (msg === "") return;
+
+                input.value = ""; // Xóa ô nhập
+
+                // 1. Thêm tin nhắn của Bạn (Phải)
+                box.innerHTML += `
+                    <div class="msg-row msg-user">
+                        <div class="msg-content">${msg}</div>
+                    </div>`;
+                box.scrollTop = box.scrollHeight;
+
+                try {
+                    // 2. Gọi API
+                    let res = await fetch("/Chatbot/Ask", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: "message=" + encodeURIComponent(msg)
+                    });
+                    let data = await res.json();
+
+                    // 3. Thêm tin nhắn của Bot (Trái)
+                    box.innerHTML += `
+                        <div class="msg-row msg-bot">
+                            <div class="msg-content">${data.reply}</div>
+                        </div>`;
+                    box.scrollTop = box.scrollHeight;
+                } catch (err) {
+                    console.error("Lỗi gửi tin:", err);
+                }
+            }
+
+            // Sự kiện click nút Gửi
+            btnSend.addEventListener("click", sendMessage);
+
+            // Sự kiện nhấn Enter
+            input.addEventListener("keypress", function(e) {
+                if (e.key === "Enter") {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+
     <footer>
         <div class="container">
             <div class="row">
@@ -457,6 +697,32 @@
                 toast.removeClass("show");
             }, 2500);
         }
+
+    </script>
+
+    <script>
+        document.getElementById("input").addEventListener("keypress", async function (e) {
+            if (e.key === "Enter") {
+                let msg = this.value;
+                this.value = "";
+
+                let box = document.getElementById("messages");
+                box.innerHTML += "<div><b>Bạn:</b> " + msg + "</div>";
+
+                let res = await fetch("/Chatbot/Ask", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "message=" + encodeURIComponent(msg)
+                });
+
+                let data = await res.json();
+
+                box.innerHTML += "<div><b>Bot:</b> " + data.reply + "</div>";
+                box.scrollTop = box.scrollHeight;
+            }
+        });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

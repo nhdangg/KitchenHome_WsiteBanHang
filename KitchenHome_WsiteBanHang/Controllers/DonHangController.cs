@@ -1,5 +1,7 @@
-﻿using KitchenHome_WsiteBanHang.Models;
+﻿using KitchenHome_WsiteBanHang.Helpers;
+using KitchenHome_WsiteBanHang.Models;
 using KitchenHome_WsiteBanHang.Models.Context;
+using KitchenHome_WsiteBanHang.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,16 +10,25 @@ namespace KitchenHome_WsiteBanHang.Controllers
     public class DonHangController : Controller
     {
         private readonly DbConnect_KitchenHome_WsiteBanHang _context;
+        private readonly CartService _cartService;
 
-        public DonHangController(DbConnect_KitchenHome_WsiteBanHang context)
+        public DonHangController(DbConnect_KitchenHome_WsiteBanHang context, CartService cartService)
         {
             _context = context;
+            _cartService = cartService;
         }
-
+        private int? GetTaiKhoanId()
+        {
+            return HttpContext.Session.GetInt32("USER_ID");
+        }
         private int? UserId => HttpContext.Session.GetInt32("USER_ID");
 
         public async Task<IActionResult> Index()
         {
+            var maPhien = CartCookie.GetOrCreate(HttpContext);
+            var taiKhoanId = GetTaiKhoanId();
+            ViewBag.CartCount = _cartService.GetCartCount(taiKhoanId, maPhien);
+
             if (!UserId.HasValue)
             {
                 return RedirectToAction(
