@@ -256,7 +256,7 @@
                 <label class="fw-bold mb-2 d-block">Số lượng:</label>
                 <div class="input-group">
                     <button class="btn btn-outline-secondary" onclick="updateQty(-1)">-</button>
-                    <input type="number" id="qty" class="form-control text-center" value="1" min="1">
+                    <input type="number" id="qty" class="form-control text-center" value="1" min="1" oninput="syncQty()">
                     <button class="btn btn-outline-secondary" onclick="updateQty(1)">+</button>
                 </div>
             </div>
@@ -477,6 +477,14 @@
         });
     });
 
+        function syncQty() {
+        const qty = document.getElementById('qty').value;
+        const hiddenQty = document.getElementById('selectedQty');
+
+        if (hiddenQty) {
+            hiddenQty.value = Math.max(1, parseInt(qty) || 1);
+        }
+    }
        setTimeout(function () {
             $(".custom-cart-alert").fadeOut(400, function () {
                 $(this).remove();
